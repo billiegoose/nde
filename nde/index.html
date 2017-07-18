@@ -1,0 +1,11 @@
+<!doctype html>
+<title>Nde</title>
+<script src="https://unpkg.com/getlibs"></script>
+<script>
+  // Global shims needs to be configured before loading app.js apparently.
+  System.config({paths: {
+    'fs': './builtins/fs.js',
+    'path': 'https://wzrd.in/standalone/omnipath'
+  }})
+</script>
+<script type="x-module" src="./app.js"></script>

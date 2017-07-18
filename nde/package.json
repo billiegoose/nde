@@ -1,0 +1,24 @@
+{
+  "name": "nde",
+  "version": "0.0.0",
+  "description": "The next-generation development environment for modern JavaScript developers",
+  "scripts": {
+    "build": "make_xhrfs_index > index.json",
+    "start": "serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "William Hilton <wmhilton@gmail.com>",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmhilton/Nde.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wmhilton/Nde/issues"
+  },
+  "homepage": "https://github.com/wmhilton/Nde#readme",
+  "devDependencies": {
+    "browserfs": "^1.3.0",
+    "serve": "^6.0.2"
+  }
+}
