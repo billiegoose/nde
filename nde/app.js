@@ -15,13 +15,18 @@ window.GoldenLayout = GoldenLayout
 import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
+import FileTreeView from './FileTreeView/FileTreeView.js'
 
 // Setup
 var myLayout = new GoldenLayout({
   content: [{
-    type: 'column',
+    type: 'row',
     content: [{
-      type: 'row',
+      type:'react-component',
+      component: 'FileTreeView',
+      props: {  }
+    }, {
+      type: 'column',
       content:[{
         type:'react-component',
         component: 'EditableTextFile',
@@ -32,7 +37,7 @@ var myLayout = new GoldenLayout({
         props: { filepath: '../README.md' }
       }]
     },{
-      type: 'row',
+      type: 'column',
       content:[{
         type:'react-component',
         component: 'EditableTextFile',
@@ -43,7 +48,7 @@ var myLayout = new GoldenLayout({
         props: { filepath: 'EditableTextFile.js' }
       }]
     },{
-      type: 'row',
+      type: 'column',
       content:[{
         type:'react-component',
         component: 'EditableTextFile',
@@ -58,4 +63,5 @@ var myLayout = new GoldenLayout({
 });
 myLayout.registerComponent('MarkdownViewer', MarkdownViewer);
 myLayout.registerComponent('EditableTextFile', EditableTextFile);
+myLayout.registerComponent('FileTreeView', FileTreeView);
 myLayout.init();

@@ -15,6 +15,7 @@ function fetchFromLocalFS (src) {
 }
 
 function fetchDefaultFile (src) {
+  src = path.resolve(src)
   return fetch(src).then(res => res.text()).then(text => {
     return new Promise(function(resolve, reject) {
       fs.writeFile(src, text, err => err ? reject(err) : resolve(text))

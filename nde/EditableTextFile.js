@@ -8,7 +8,6 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dis
 import cuid from 'cuid'
 
 function fetchFromLocalFS (src) {
-  // This makes sure that ./README.md gets saved to /nde/README.md and ../README.md gets saved to /README.md
   src = path.path(path.resolve(src))
   console.log('read src =', src)
   return new Promise(function(resolve, reject) {
@@ -19,11 +18,11 @@ function fetchFromLocalFS (src) {
 }
 
 function fetchDefaultFile (src) {
+  src = path.resolve(src)
   console.log('fetch src =', src)
   return fetch(src).then(res => res.text()).then(text => {
     return new Promise(function(resolve, reject) {
-      // This makes sure that ./README.md gets saved to /nde/README.md and ../README.md gets saved to /README.md
-      src = path.path(path.resolve(src))
+      src = path.path(src)
       console.log('save src =', src)
       console.log('mkdirp src =', path.dirname(src))
       mkdirp(path.dirname(src)).then(() => {

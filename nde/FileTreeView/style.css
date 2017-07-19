@@ -1,0 +1,66 @@
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2017 Websemantics --- original CSS from https://github.com/websemantics/markdown-browser-plus
+ * Copyright (c) 2017 William Hilton --- minor modifications to make React component
+ */
+._tree {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    background-color: #d9dbde;
+    padding: 0 6px;
+    font-size: 14px;
+}
+.icon {
+    color: #9a9a9a;
+    margin-right: 6px;
+    vertical-align: text-bottom;
+}
+._tree, ._tree ul {
+    list-style: none;
+    margin: 0;
+}
+._content, ._sidebar {
+    display: block;
+    outline: 0;
+    overflow-y: scroll;
+}
+._tree input[type=checkbox], ._tree ul {
+    display: none;
+}
+._tree ul {
+    padding: 0;
+    padding-left: 1em;
+}
+._tree label, ._tree li a {
+    padding: 2px;
+    color: #4078c0;
+    text-decoration: none;
+    display: block;
+}
+._tree li {
+    margin: 0;
+    user-select: none;
+    line-height: 20px;
+}
+._tree label:hover {
+    background: #f5f5f5;
+}
+._tree a:active, ._tree a:focus {
+    color: #9A9A9A;
+}
+._tree input[type=checkbox]:checked+label+ul, ._tree input[type=checkbox]:checked+label:nth-of-type(n)+ul {
+    display: block;
+}
+._tree label svg.folder path {
+    fill: #80a6cd;
+}
+._tree label svg.folder path.open {
+    fill: none;
+}
+._tree input[type=checkbox]:checked+label svg.folder path.open {
+    fill: #fff;
+}
