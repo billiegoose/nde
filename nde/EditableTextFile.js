@@ -3,35 +3,25 @@ import AceEditor from 'react-ace'
 import 'brace/theme/monokai'
 import fs from 'fs'
 import path from 'path'
-import mkdirp from 'make-dir'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import cuid from 'cuid'
 
-function fetchFromLocalFS (src) {
-  src = path.path(path.resolve(src))
-  console.log('read src =', src)
+// This function is a total mess. I must be sleep deprived.
+const mkdirs = (filename) => {
   return new Promise(function(resolve, reject) {
-    fs.readFile(src, 'utf8', (err, file) => {
-      return err ? reject(err) : resolve(file)
-    })
-  })
-}
-
-function fetchDefaultFile (src) {
-  src = path.resolve(src)
-  console.log('fetch src =', src)
-  return fetch(src).then(res => res.text()).then(text => {
-    return new Promise(function(resolve, reject) {
-      src = path.path(src)
-      console.log('save src =', src)
-      console.log('mkdirp src =', path.dirname(src))
-      mkdirp(path.dirname(src)).then(() => {
-        fs.writeFile(src, text, err => err ? reject(err) : resolve(text))
-      }).catch(() => {
-        fs.writeFile(src, text, err => err ? reject(err) : resolve(text))
-      })
-    })
-  })
+    let dirname = path.dirname(filename)
+    let dirs = dirname.replace(/(^\/)|(\/$)/g, '').split('/').filter(x => x !== '')
+    for (let i = 1; i < dirs.length + 1; i++) {
+      let dir = dirs.slice(0, i).join('/')
+      console.log('dir =', dir)
+      try {
+        fs.mkdirSync(dir)
+      } catch (e) {
+        if (e.code !== 'EEXIST') return reject(e)
+      }
+    }
+    resolve()
+  });
 }
 
 export default class EditableTextFile extends React.Component {
@@ -54,12 +44,10 @@ export default class EditableTextFile extends React.Component {
       cuid: cuid(),
       mode: 'none'
     }
-    fetchFromLocalFS(filepath)
-    .then(text => this.setState({content: text, unsavedContent: text}))
-    .catch(err => {
-      fetchDefaultFile(filepath)
-      .then(text => this.setState({content: text, unsavedContent: text}))
-      .catch(err => console.log)
+    fs.readFile(filepath, 'utf8', (err, text) => {
+      if (err) return console.log(err)
+      console.log(filepath, text)
+      this.setState({content: text, unsavedContent: text})
     })
     
     glContainer.setTitle(filepath)
@@ -83,17 +71,19 @@ export default class EditableTextFile extends React.Component {
     let onChange = this.onChange.bind(this)
     let menuRun = this.runCommand.bind(this)
     const menuFileSave = () => {
-      fs.writeFile(this.props.filepath, this.state.unsavedContent, err => console.log)
+      fs.writeFile(this.props.filepath, this.state.unsavedContent, 'utf8', err => console.log)
     }
     const menuFileReset = () => {
-      fetchFromLocalFS(this.props.filepath)
-      .then(text => this.setState({content: text, unsavedContent: text}))
-      .catch(console.log)
+      fs.readFile(this.props.filepath, 'utf8', (err, text) => {
+        if (err) return console.log(err)
+        this.setState({content: text, unsavedContent: text})
+      })
     }
     const menuFileRestore = () => {
-      fetchDefaultFile(this.props.filepath)
-      .then(text => this.setState({content: text, unsavedContent: text}))
-      .catch(console.log)
+      fs.readFile('/orig/' + this.props.filepath, 'utf8', (err, text) => {
+        if (err) return console.log(err)
+        this.setState({content: text, unsavedContent: text})
+      })
     }
     return (
       <article>

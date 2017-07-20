@@ -25,38 +25,38 @@ var myLayout = new GoldenLayout({
       type:'react-component',
       component: 'FileTreeView',
       props: {  }
+    },{
+      type: 'column',
+      content:[{
+        type:'react-component',
+        component: 'EditableTextFile',
+        props: { filepath: 'nde/app.js' }
+      },{
+        type:'react-component',
+        component: 'EditableTextFile',
+        props: { filepath: 'nde/EditableTextFile.js' }
+      }]
     }, {
       type: 'column',
       content:[{
         type:'react-component',
         component: 'EditableTextFile',
-        props: { filepath: '../README.md' }
+        props: { filepath: 'README.md' }
       },{
         type:'react-component',
         component: 'MarkdownViewer',
-        props: { filepath: '../README.md' }
+        props: { filepath: 'README.md' }
       }]
     },{
       type: 'column',
       content:[{
         type:'react-component',
         component: 'EditableTextFile',
-        props: { filepath: 'app.js' }
-      },{
-        type:'react-component',
-        component: 'EditableTextFile',
-        props: { filepath: 'EditableTextFile.js' }
-      }]
-    },{
-      type: 'column',
-      content:[{
-        type:'react-component',
-        component: 'EditableTextFile',
-        props: { filepath: './README.md' }
+        props: { filepath: 'nde/README.md' }
       },{
         type:'react-component',
         component: 'MarkdownViewer',
-        props: { filepath: './README.md' }
+        props: { filepath: 'nde/README.md' }
       }]
     }]
   }]

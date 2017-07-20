@@ -1,14 +1,20 @@
 // Step 1. Setup BrowserFS
 import BrowserFS from 'browserfs'
-BrowserFS.install(window)
-var lsfs = new BrowserFS.FileSystem.LocalStorage();
+// BrowserFS.install(window)
+
+var ajaxFS = new BrowserFS.FileSystem.XmlHttpRequest();
+var localStorageFS = new BrowserFS.FileSystem.LocalStorage();
+var overlayFS = new BrowserFS.FileSystem.OverlayFS(localStorageFS, ajaxFS);
+var mfs = new BrowserFS.FileSystem.MountableFileSystem();
+mfs.mount('/', overlayFS);
+mfs.mount('/orig', ajaxFS);
 // Initialize it as the root file system.
-BrowserFS.initialize(lsfs);
+BrowserFS.initialize(mfs);
 // Step 2. Export fs
 const fs = BrowserFS.BFSRequire('fs')
 export default fs
 console.log('fs =', fs)
-// Step 3. Make SystemJS alias 'fs' to this module.
-if (System.paths['fs'] === undefined) {
-  System.config({paths: {'fs': './builtins/fs.js'}})
-}
+overlayFS.initialize(() => {
+  console.log(fs.readdirSync('/'))
+  console.log(fs.readFileSync('README.md', 'utf8'))
+})
