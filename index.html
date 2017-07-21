@@ -3,9 +3,16 @@
 <script src="https://unpkg.com/getlibs"></script>
 <script>
   // Global shims needs to be configured before loading app.js apparently.
-  System.config({paths: {
-    'fs': './nde/builtins/fs.js',
-    'path': 'https://wzrd.in/standalone/omnipath'
-  }})
+  System.config({
+    map: {
+      '@hot': '@empty'
+    },
+    paths: {
+      'fs': './nde/builtins/fs.js',
+      'path': 'https://wzrd.in/standalone/omnipath'
+    }
+  })
+  System.import('systemjs-hmr').then(() => {
+    System.import('./nde/app.js')
+  })
 </script>
-<script type="x-module" src="./nde/app.js"></script>
