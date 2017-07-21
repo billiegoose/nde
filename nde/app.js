@@ -16,15 +16,27 @@ import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
 import FileTreeView from './FileTreeView/FileTreeView.js'
+import FileTreeData from '../index.json'
+
+let myLayout = null
+
+const onClick = ({filepath, id}) => {
+  console.log(filepath, id)
+  myLayout.createDragSource(document.getElementById(id), {
+    type:'react-component',
+    component: 'EditableTextFile',
+    props: { filepath: filepath }
+  })
+}
 
 // Setup
-var myLayout = new GoldenLayout({
+myLayout = new GoldenLayout({
   content: [{
     type: 'row',
     content: [{
       type:'react-component',
       component: 'FileTreeView',
-      props: {  }
+      props: { data: FileTreeData, onClick: onClick }
     },{
       type: 'column',
       content:[{
@@ -65,3 +77,4 @@ myLayout.registerComponent('MarkdownViewer', MarkdownViewer);
 myLayout.registerComponent('EditableTextFile', EditableTextFile);
 myLayout.registerComponent('FileTreeView', FileTreeView);
 myLayout.init();
+

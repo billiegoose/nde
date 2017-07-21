@@ -6,9 +6,10 @@ import cuid from 'cuid'
 // Import component styles
 import './style.css'
 import 'file-icons-js/css/style.css'
-
 import icons from 'file-icons-js'
-import FolderIcon from './FolderIcon.js'
+
+import FileComponent from './FileComponent.js'
+import FolderComponent from './FolderComponent.js'
 
 export default class FileTreeView extends React.Component {
   constructor ({glContainer}) {
@@ -23,48 +24,33 @@ export default class FileTreeView extends React.Component {
     }
   }
   render () {
-    console.log('icons.getClassWithColor("LICENSE.md") =', icons.getClassWithColor("LICENSE.md"))
-    
-    const makeFile = (filepath) => {
-      let className = 'icon ' + icons.getClassWithColor(filepath);
-      return (
-        <li>
-          <label>
-            <a target="#">
-              <i className={className}></i>
-              {filepath}
-            </a>
-          </label>
-        </li>
-      )
+
+    const makeOpenHandler = (root, key, id) => () => {
+      let filepath = path.join(...root, key)
+      this.props.onClick({filepath, id})
     }
     
-    const makeFolder = (filepath, children) => {
-      let className = 'icon ' + icons.getClassWithColor(filepath);
-      let id = cuid();
-      return (
-        <li>
-          <input type="checkbox" name={id} id={id}/>
-          <label htmlFor={id}>
-            <FolderIcon/>
-            {filepath}
-          </label>
-          <ul>
-            {children}
-          </ul>
-        </li>
-      )
+    const makeList = (root, data) => {
+      let items = []
+      for (let [key, value] of Object.entries(data)) {
+        if (value) {
+          let children = makeList([...root, key], value);
+          items.push(<FolderComponent filename={key}>{children}</FolderComponent>);
+        } else {
+          let id = cuid();
+          let onClick = makeOpenHandler(root, key, id);
+          items.push(<FileComponent filename={key} onClick={onClick} cuid={id}/>);
+        }
+      }
+      return items
     }
     
-    let items = [];
-    items.push(makeFile('LICENSE.md'));
-    items.push(makeFile('README.md'));
-    
-    let folder = makeFolder('This does not actually work yet', items)
-    
+    let folder = makeList([], this.props.data);
     return (
       <nav className="_tree">
-        {folder}
+        <ul>
+          {folder}
+        </ul>
       </nav>
     );
   }

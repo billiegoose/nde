@@ -11,7 +11,7 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     background-color: #d9dbde;
-    padding: 0 6px;
+    padding: 6px 0;
     font-size: 14px;
 }
 .icon {
@@ -54,6 +54,15 @@
 }
 ._tree input[type=checkbox]:checked+label+ul, ._tree input[type=checkbox]:checked+label:nth-of-type(n)+ul {
     display: block;
+}
+._tree > ul {
+    display: block;
+}
+._tree label svg.folder {
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-top: 2px;
+    padding-bottom: 1px;
 }
 ._tree label svg.folder path {
     fill: #80a6cd;
