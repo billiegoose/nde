@@ -1,3 +1,4 @@
-# The Nde website
+# argilo
 The next-generation development environment for modern JavaScript developers
-(pronounced "indie")
+
+argilo is the Esperanto word for "clay".

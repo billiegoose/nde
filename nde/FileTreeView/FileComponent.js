@@ -1,11 +1,11 @@
 import icons from 'file-icons-js'
 
-const FileComponent = ({filename, onClick, onDoubleClick, cuid}) => {
+const FileComponent = ({filename, cuid}) => {
   let className = 'icon ' + icons.getClassWithColor(filename);
   return (
     <li id={cuid}>
       <label>
-        <a target="#" onClick={onClick} onDoubleClick={onDoubleClick}>
+        <a target="#">
           <i className={className}></i>
           {filename}
         </a>

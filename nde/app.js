@@ -19,20 +19,9 @@ window.GoldenLayout = GoldenLayout
 import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
-import FileTreeView from './FileTreeView/FileTreeView.js'
 import FileTreeData from '../index.json'
 
 let MotherLayout = null
-
-const onClick = ({filepath, id}) => {
-  console.log('HEY HEY HEY')
-  console.log(filepath, id)
-  MotherLayout.createDragSource(document.getElementById(id), {
-    type:'react-component',
-    component: 'EditableTextFile',
-    props: { filepath: filepath }
-  })
-}
 
 // Hot reload case
 if (module) {
@@ -46,7 +35,7 @@ if (module) {
       content: [{
         type:'react-component',
         component: 'FileTreeView',
-        props: { data: FileTreeData, onClick: onClick }
+        props: { data: FileTreeData}
       },{
         type: 'column',
         content:[{
@@ -87,8 +76,19 @@ if (module) {
 
 MotherLayout.registerComponent('MarkdownViewer', MarkdownViewer);
 MotherLayout.registerComponent('EditableTextFile', EditableTextFile);
+
+// Build the FileTreeView component so it's interconnected with GoldenLayout
+import {FileTreeViewBuilder, FileComponent, FolderComponent} from './FileTreeView/index.js'
+import DragSourceWrapperBuilder from './DragSourceWrapperBuilder.js'
+const DraggableFileComponent = DragSourceWrapperBuilder({
+  goldenLayoutInstance: MotherLayout,
+  Component: FileComponent
+});
+const FileTreeView = FileTreeViewBuilder(FolderComponent, DraggableFileComponent);
 MotherLayout.registerComponent('FileTreeView', FileTreeView);
+
 MotherLayout.init();
+window.MotherLayout = MotherLayout
 
 
 export let savedState = null
