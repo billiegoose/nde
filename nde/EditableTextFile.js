@@ -46,13 +46,12 @@ export default class EditableTextFile extends React.Component {
     }
     fs.readFile(filepath, 'utf8', (err, text) => {
       if (err) return console.log(err)
-      console.log(filepath, text)
       this.setState({content: text, unsavedContent: text})
     })
     
     glContainer.setTitle(filepath)
-    glContainer.on('tab', tab => {
-      console.log('tab =', tab.element)
+    glContainer.on('resize', (foo) => {
+      this.ace.editor.resize()
     })
   }
   runCommand () {
@@ -89,6 +88,7 @@ export default class EditableTextFile extends React.Component {
       <article>
         <ContextMenuTrigger id={this.state.cuid}>
           <AceEditor
+            ref={(ace) => { this.ace = ace; }}
             mode={this.state.mode}
             theme="monokai"
             width="100%"
