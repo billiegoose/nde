@@ -3,7 +3,8 @@ import AceEditor from 'react-ace'
 import 'brace/theme/monokai'
 import fs from 'fs'
 import path from 'path'
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
+import { MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
+import ContextMenu from './ContextMenu.js'
 import cuid from 'cuid'
 
 // This function is a total mess. I must be sleep deprived.
@@ -100,18 +101,13 @@ export default class EditableTextFile extends React.Component {
             editorProps={{$blockScrolling: true}}
           />
         </ContextMenuTrigger>
-        <ContextMenu id={this.state.cuid}>
-          <MenuItem data={"some_data"} onClick={menuFileSave}>
-            Save
-          </MenuItem>
-          <MenuItem data={"some_data"} onClick={menuFileReset}>
-            Reset
-          </MenuItem>
-          <MenuItem data={"some_data"} onClick={menuFileRestore}>
-            Restore (original)
-          </MenuItem>
-          <MenuItem divider />
-          <MenuItem data={"some_data"} onClick={menuRun}>
+        <ContextMenu
+          id={this.state.cuid}
+          onSave={menuFileSave}
+          onReset={menuFileReset}
+          onRestore={menuFileRestore}
+        >
+          <MenuItem onClick={menuRun}>
             Run ▶️
           </MenuItem>
         </ContextMenu>
