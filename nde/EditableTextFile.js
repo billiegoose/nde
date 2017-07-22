@@ -95,6 +95,7 @@ export default class EditableTextFile extends React.Component {
             height="100%"
             value={this.state.unsavedContent || this.state.content}
             onChange={onChange}
+            style={{fontFamily: 'Fira Code'}}
             editorProps={{$blockScrolling: true}}
           />
         </ContextMenuTrigger>
