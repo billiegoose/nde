@@ -39,19 +39,20 @@ export default class EditableTextFile extends React.Component {
       })
     }
     this.state = {
-      content: '',
+      content: 'Loading...',
       unsavedContent: null,
       cuid: cuid(),
       mode: 'none'
     }
-    fs.readFile(filepath, 'utf8', (err, text) => {
-      if (err) return console.log(err)
-      this.setState({content: text, unsavedContent: text})
-    })
-    
     glContainer.setTitle(filepath)
     glContainer.on('resize', (foo) => {
       this.ace.editor.resize()
+    })
+  }
+  componentDidMount () {
+    fs.readFile(this.props.filepath, 'utf8', (err, text) => {
+      if (err) return console.log(err)
+      this.setState({content: text, unsavedContent: text})
     })
   }
   runCommand () {

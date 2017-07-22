@@ -12,9 +12,6 @@ mfs.mount('/orig', ajaxFS);
 BrowserFS.initialize(mfs);
 // Step 2. Export fs
 const fs = BrowserFS.BFSRequire('fs')
+window.fs = fs
 export default fs
-console.log('fs =', fs)
-overlayFS.initialize(() => {
-  console.log(fs.readdirSync('/'))
-  console.log(fs.readFileSync('README.md', 'utf8'))
-})
+overlayFS.initialize(function () {})

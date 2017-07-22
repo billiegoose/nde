@@ -20,6 +20,7 @@ import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
 import FileTreeData from '../index.json'
+import FileNavigatorBuilder from './FileNavigatorBuilder.js'
 
 let MotherLayout = null
 
@@ -34,7 +35,7 @@ if (module) {
       type: 'row',
       content: [{
         type:'react-component',
-        component: 'FileTreeView',
+        component: 'FileNavigator',
         props: { data: FileTreeData}
       },{
         type: 'column',
@@ -76,20 +77,10 @@ if (module) {
 
 MotherLayout.registerComponent('MarkdownViewer', MarkdownViewer);
 MotherLayout.registerComponent('EditableTextFile', EditableTextFile);
-
-// Build the FileTreeView component so it's interconnected with GoldenLayout
-import {FileTreeViewBuilder, FileComponent, FolderComponent} from './FileTreeView/index.js'
-import DragSourceWrapperBuilder from './DragSourceWrapperBuilder.js'
-const DraggableFileComponent = DragSourceWrapperBuilder({
-  goldenLayoutInstance: MotherLayout,
-  Component: FileComponent
-});
-const FileTreeView = FileTreeViewBuilder(FolderComponent, DraggableFileComponent);
-MotherLayout.registerComponent('FileTreeView', FileTreeView);
+MotherLayout.registerComponent('FileNavigator', FileNavigatorBuilder(MotherLayout));
 
 MotherLayout.init();
 window.MotherLayout = MotherLayout
-
 
 export let savedState = null
 
