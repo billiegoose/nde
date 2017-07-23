@@ -90,4 +90,22 @@ export const __unload = () => {
   savedState = MotherLayout.toConfig()
   console.log('Teardown...')
   MotherLayout.destroy()
+  // Unsubscribe from filesystem events
+  fs.Events.off('change', onChange)
 }
+
+// Listen for files that we need to hot-reload when saved.
+import fs from 'fs'
+import path from 'path'
+let base
+System.resolve('/').then(here => base = here)
+
+const onChange = ({filename}) => {
+  let file = path.join(base, filename)
+  console.log(file)
+  if (file in System.loads) {
+    console.log('Reloading!')
+    System.reload(file)
+  }
+}
+fs.Events.on('change', onChange)
