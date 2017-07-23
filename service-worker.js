@@ -1,5 +1,6 @@
 global = self
 importScripts('https://unpkg.com/browserfs@1.3.0')
+importScripts('https://wzrd.in/standalone/mime')
 console.log('BrowserFS =', BrowserFS)
 
 const Files = new Promise(function(resolve, reject) {
@@ -24,7 +25,7 @@ self.addEventListener('fetch', (event) => {
   // Turn URL into a file path
   let path = pathFromURL(request.url)
   // Sanity check
-  if (path === '/') return
+  if (path === '/') path = '/index.html' // TODO: Do I have to do all the path normalization logic normally handled by the server?
   // Otherwise, try fetching from the "file system".
   event.respondWith(tryFsFirst(path))
 })
@@ -37,7 +38,11 @@ async function tryFsFirst (path) {
           console.log('Holy crap we found ' + path + ' in the file system')
           fs.readFile(path, 'utf8', (err, data) => {
             if (err) return reject(err)
-            return resolve(new Response(data))
+            return resolve(new Response(data, {
+              headers: {
+                'Content-Type': mime.lookup(path)
+              }
+            }))
           })
         } else {
           console.log(path + ' ain\'t there')
