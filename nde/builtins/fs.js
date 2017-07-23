@@ -1,15 +1,20 @@
 // Step 1. Setup BrowserFS
 import BrowserFS from 'browserfs'
-// BrowserFS.install(window)
 
-let ajaxFS = new BrowserFS.FileSystem.XmlHttpRequest();
-let localStorageFS = new BrowserFS.FileSystem.LocalStorage();
-let overlayFS = new BrowserFS.FileSystem.OverlayFS(localStorageFS, ajaxFS);
-let mfs = new BrowserFS.FileSystem.MountableFileSystem();
-mfs.mount('/', overlayFS);
-mfs.mount('/orig', ajaxFS);
-// Initialize it as the root file system.
-BrowserFS.initialize(mfs);
+export const fsReady = new Promise(function(resolve, reject) {
+  new BrowserFS.FileSystem.IndexedDB((err, idbfs) => {
+    let ajaxFS = new BrowserFS.FileSystem.XmlHttpRequest();
+    // let localStorageFS = new BrowserFS.FileSystem.LocalStorage();
+    let overlayFS = new BrowserFS.FileSystem.OverlayFS(idbfs, ajaxFS);
+    overlayFS.initialize(() => {
+      let mfs = new BrowserFS.FileSystem.MountableFileSystem();
+      mfs.mount('/', overlayFS);
+      // Initialize it as the root file system.
+      BrowserFS.initialize(mfs);
+      resolve()
+    })
+  })
+})
 // Step 2. Export fs
 const fs = BrowserFS.BFSRequire('fs')
 // Cheap hack to get file monitoring in
@@ -47,13 +52,11 @@ fs.writeFileSync = function (file, ...args) {
 
 window.fs = fs
 export default fs
-overlayFS.initialize(function () {})
 
 // (Failing) Attempt to prevent "RangeError: Maximum call stack size exceeded"
 import {module} from '@hot'
 export const __unload = () => {
   // Detach all event listeners
   fs.Events.removeAllListeners()
-  mfs.umount('/orig');
   mfs.umount('/');
 }

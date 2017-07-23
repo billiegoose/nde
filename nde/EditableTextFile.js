@@ -81,10 +81,10 @@ export default class EditableTextFile extends React.Component {
       })
     }
     const menuFileRestore = () => {
-      fs.readFile('/orig/' + this.props.filepath, 'utf8', (err, text) => {
-        if (err) return console.log(err)
+      // We add the query parameter to thwart the service-worker.
+      fetch(this.props.filepath + '?').then(res => res.text()).then(text => {
         this.setState({content: text, unsavedContent: text})
-      })
+      }).catch(console.log)
     }
     return (
       <article>

@@ -15,6 +15,9 @@ window.React = React
 window.ReactDOM = ReactDOM
 window.GoldenLayout = GoldenLayout
 
+import fs, {fsReady} from 'fs'
+import path from 'path'
+
 // Application code
 import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
@@ -79,7 +82,9 @@ MotherLayout.registerComponent('MarkdownViewer', MarkdownViewer);
 MotherLayout.registerComponent('EditableTextFile', EditableTextFile);
 MotherLayout.registerComponent('FileNavigator', FileNavigatorBuilder(MotherLayout));
 
-MotherLayout.init();
+fsReady.then(() => {
+  MotherLayout.init();
+})
 window.MotherLayout = MotherLayout
 
 export let savedState = null
@@ -95,8 +100,6 @@ export const __unload = () => {
 }
 
 // Listen for files that we need to hot-reload when saved.
-import fs from 'fs'
-import path from 'path'
 let base
 System.resolve('/').then(here => base = here)
 
@@ -109,3 +112,8 @@ const onChange = ({filename}) => {
   }
 }
 fs.Events.on('change', onChange)
+
+
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.register('/service-worker.js')
+}
