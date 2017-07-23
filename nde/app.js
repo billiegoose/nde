@@ -105,7 +105,7 @@ System.resolve('/').then(here => base = here)
 
 const onChange = ({filename}) => {
   let file = path.join(base, filename)
-  console.log(file)
+  console.log(file + ' file changed')
   if (file in System.loads) {
     console.log('Reloading!')
     System.reload(file)

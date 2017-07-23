@@ -55,6 +55,18 @@ export default class EditableTextFile extends React.Component {
       if (err) return console.log(err)
       this.setState({content: text, unsavedContent: text})
     })
+    // Thanks https://github.com/joemccann/dillinger/issues/66
+    this.ace.editor.commands.addCommand({
+      name: 'saveFile',
+      bindKey: {
+        win: 'Ctrl-S',
+        mac: 'Command-S',
+        sender: 'editor|cli'
+      },
+      exec: (env, args, request) => {
+       this.saveFile()
+      }
+    })
   }
   runCommand () {
     return
@@ -68,24 +80,23 @@ export default class EditableTextFile extends React.Component {
       unsavedContent: newValue
     })
   }
+  saveFile () {
+    fs.writeFile(this.props.filepath, this.state.unsavedContent, 'utf8', err => console.log)
+  }
+  reloadSavedFile () {
+    fs.readFile(this.props.filepath, 'utf8', (err, text) => {
+      if (err) return console.log(err)
+      this.setState({content: text, unsavedContent: text})
+    })
+  }
+  restoreOriginalFile () {
+    // We add the query parameter to thwart the service-worker.
+    fetch(this.props.filepath + '?').then(res => res.text()).then(text => {
+      this.setState({content: text, unsavedContent: text})
+    }).catch(console.log)
+  }
   render () {
     let onChange = this.onChange.bind(this)
-    let menuRun = this.runCommand.bind(this)
-    const menuFileSave = () => {
-      fs.writeFile(this.props.filepath, this.state.unsavedContent, 'utf8', err => console.log)
-    }
-    const menuFileReset = () => {
-      fs.readFile(this.props.filepath, 'utf8', (err, text) => {
-        if (err) return console.log(err)
-        this.setState({content: text, unsavedContent: text})
-      })
-    }
-    const menuFileRestore = () => {
-      // We add the query parameter to thwart the service-worker.
-      fetch(this.props.filepath + '?').then(res => res.text()).then(text => {
-        this.setState({content: text, unsavedContent: text})
-      }).catch(console.log)
-    }
     return (
       <article>
         <ContextMenuTrigger id={this.state.cuid}>
@@ -103,11 +114,11 @@ export default class EditableTextFile extends React.Component {
         </ContextMenuTrigger>
         <ContextMenu
           id={this.state.cuid}
-          onSave={menuFileSave}
-          onReset={menuFileReset}
-          onRestore={menuFileRestore}
+          onSave={() => this.saveFile()}
+          onReset={() => this.reloadSavedFile()}
+          onRestore={() => this.restoreOriginalFile()}
         >
-          <MenuItem onClick={menuRun}>
+          <MenuItem onClick={() => this.runCommand()}>
             Run ▶️
           </MenuItem>
         </ContextMenu>
