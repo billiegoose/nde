@@ -8,18 +8,19 @@ import './style.css'
 import 'file-icons-js/css/style.css'
 import icons from 'file-icons-js'
 
-export default function FileTreeViewBuilder ({FolderComponent, FileComponent, ReadDir}) {
+export default function FileTreeViewBuilder ({FolderComponent, FileComponent}) {
   const makeList = (root, data) => {
-    let items = []
+    let folders = []
+    let files = []
     for (let [key, value] of Object.entries(data)) {
       if (value) {
         let children = makeList([...root, key], value);
-        items.push(<FolderComponent filename={key}>{children}</FolderComponent>);
+        folders.push(<FolderComponent filename={key}>{children}</FolderComponent>);
       } else {
-        items.push(<FileComponent filename={key} filepath={path.join(...root, key)}/>);
+        files.push(<FileComponent filename={key} filepath={path.join(...root, key)}/>);
       }
     }
-    return items
+    return folders.concat(files)
   }
   return class FileTreeView extends React.Component {
     constructor ({glContainer}) {

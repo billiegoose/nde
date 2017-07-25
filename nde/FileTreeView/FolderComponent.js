@@ -5,14 +5,13 @@ class FolderComponent extends React.Component {
   constructor () {
     super()
     this.state = {
-      open: false,
-      loading: false
+      open: false
     }
   }
   toggle () {
-    this.setState({
-      open: !this.state.open
-    })
+    this.setState((state, props) => ({
+      open: !state.open
+    }))
   }
   render () {
     let {filename, children, ...props} = this.props
