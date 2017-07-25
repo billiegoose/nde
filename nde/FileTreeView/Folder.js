@@ -1,7 +1,10 @@
 import React from 'react'
 import FolderIcon from './FolderIcon.js'
+import FileList from './FileList.js'
 
-class FolderComponent extends React.Component {
+import './style.css'
+
+class Folder extends React.Component {
   constructor () {
     super()
     this.state = {
@@ -14,7 +17,8 @@ class FolderComponent extends React.Component {
     }))
   }
   render () {
-    let {filename, children, ...props} = this.props
+    let {filename, ...props} = this.props
+    let filelist = this.state.open ? <FileList {...props} /> : ''
     return (
       <li {...props}>
         <label>
@@ -23,11 +27,9 @@ class FolderComponent extends React.Component {
             {filename}
           </a>
         </label>
-        <ul>
-          {this.state.open ? children : ''}
-        </ul>
+        {filelist}
       </li>
     )
   }
 }
-export default FolderComponent
+export default Folder

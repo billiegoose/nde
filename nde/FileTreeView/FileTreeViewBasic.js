@@ -1,8 +1,16 @@
-import FileTreeViewBuilder from './FileTreeViewBuilder'
-import FileComponent from './FileComponent'
-import FolderComponent from './FolderComponent'
-const FileTreeViewBasic = FileTreeViewBuilder({
-  FolderComponent,
-  FileComponent
-});
-export default FileTreeViewBasic
+import React from 'react'
+import FileList from './FileList'
+import File from './File'
+import Folder from './Folder'
+// Import component styles
+import './style.css'
+class BasicFileTree extends React.Component {
+  render () {
+    return (
+      <nav className="_tree">
+        <FileList root={[]} data={this.props.data} FileComponent={File} FolderComponent={Folder}/>
+      </nav>
+    )
+  }
+}
+export default BasicFileTree

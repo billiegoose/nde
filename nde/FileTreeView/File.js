@@ -1,6 +1,7 @@
+import 'file-icons-js/css/style.css'
 import icons from 'file-icons-js'
 
-const FileComponent = ({filename, ...props}) => {
+const File = ({filename, ...props}) => {
   let className = 'icon ' + icons.getClassWithColor(filename);
   return (
     <li {...props}>
@@ -13,4 +14,4 @@ const FileComponent = ({filename, ...props}) => {
     </li>
   )
 }
-export default FileComponent
+export default File

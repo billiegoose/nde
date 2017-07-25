@@ -22,8 +22,9 @@ import path from 'path'
 import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
-import FileTreeData from '../index.json'
-import FileNavigatorBuilder from './FileNavigatorBuilder.js'
+// import FileNavigator from './FileNavigator.js'
+import starterData from '../index.json'
+import FileNavigator from './FileTreeView/FileTreeViewBasic.js'
 
 let MotherLayout = null
 
@@ -39,7 +40,7 @@ if (module) {
       content: [{
         type:'react-component',
         component: 'FileNavigator',
-        props: { data: FileTreeData}
+        props: { data: starterData}
       },{
         type: 'column',
         content:[{
@@ -80,7 +81,7 @@ if (module) {
 
 MotherLayout.registerComponent('MarkdownViewer', MarkdownViewer);
 MotherLayout.registerComponent('EditableTextFile', EditableTextFile);
-MotherLayout.registerComponent('FileNavigator', FileNavigatorBuilder(MotherLayout));
+MotherLayout.registerComponent('FileNavigator', FileNavigator);
 
 fsReady.then(() => {
   MotherLayout.init();
