@@ -7,11 +7,16 @@ import ApplicationFolderComponent from './ApplicationFolderComponent.js'
 
 import starterData from '../index.json'
 
-const FileNavigator {
-  render (
-    <nav class="_tree">
-      <FileList root={[]} data={starterData} FileComponent={ApplicationFileComponent} FolderComponent={ApplicationFolderComponent}/>
-    </nav>
-  )
+class FileNavigator extends React.Component {
+  componentDidMount () {
+    this.props.glContainer.setTitle('File Navigator')
+  }
+  render () {
+    return (
+      <nav className="_tree">
+        <FileList root={[]} data={starterData} FileComponent={ApplicationFileComponent} FolderComponent={ApplicationFolderComponent} {...this.props}/>
+      </nav>
+    )
+  }
 }
 export default FileNavigator

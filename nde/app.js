@@ -22,9 +22,9 @@ import path from 'path'
 import './app.css'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
-// import FileNavigator from './FileNavigator.js'
-import starterData from '../index.json'
-import FileNavigator from './FileTreeView/FileTreeViewBasic.js'
+import FileNavigator from './FileNavigator.js'
+// import starterData from '../index.json'
+// import FileNavigator from './FileTreeView/FileTreeViewBasic.js'
 
 let MotherLayout = null
 
@@ -40,7 +40,7 @@ if (module) {
       content: [{
         type:'react-component',
         component: 'FileNavigator',
-        props: { data: starterData}
+        props: { }
       },{
         type: 'column',
         content:[{

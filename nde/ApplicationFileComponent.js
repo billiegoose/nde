@@ -1,4 +1,4 @@
-import react from 'react'
+import React from 'react'
 import File from './FileTreeView/File.js'
 
 export default class ApplicationFileComponent extends React.Component {

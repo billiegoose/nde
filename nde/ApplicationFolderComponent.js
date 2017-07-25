@@ -1,10 +1,13 @@
-import react from 'react'
+import React from 'react'
 import Folder from './FileTreeView/Folder.js'
 
 export default class ApplicationFolderComponent extends React.Component {
+  click () {
+    this.props.glEventHub.emit('folderClick', this.props.filename)
+  }
   render () {
     return (
-      <Folder {...this.props}></Folder>
+      <Folder onClick={this.click.bind(this)} {...this.props}></Folder>
     )
   }
 }
