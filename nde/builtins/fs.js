@@ -64,5 +64,5 @@ import {module} from '@hot'
 export const __unload = () => {
   // Detach all event listeners
   fs.Events.removeAllListeners()
-  mfs.umount('/');
+  // fs.umount('/');
 }
