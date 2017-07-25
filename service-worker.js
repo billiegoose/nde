@@ -1,10 +1,10 @@
 global = self
-importScripts('https://unpkg.com/browserfs@1.3.0')
+importScripts('https://unpkg.com/browserfs@1.4.2')
 importScripts('https://wzrd.in/standalone/mime')
 console.log('BrowserFS =', BrowserFS)
 
 const Files = new Promise(function(resolve, reject) {
-  new BrowserFS.FileSystem.IndexedDB((err, idbfs) => {
+  BrowserFS.FileSystem.IndexedDB.Create({}, (err, idbfs) => {
     if (err) return reject(err)
     BrowserFS.initialize(idbfs)
     let fs = BrowserFS.BFSRequire('fs')

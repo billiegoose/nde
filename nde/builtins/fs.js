@@ -2,18 +2,24 @@
 import BrowserFS from 'browserfs'
 
 export const fsReady = new Promise(function(resolve, reject) {
-  new BrowserFS.FileSystem.IndexedDB((err, idbfs) => {
-    let ajaxFS = new BrowserFS.FileSystem.XmlHttpRequest();
-    // let localStorageFS = new BrowserFS.FileSystem.LocalStorage();
-    let overlayFS = new BrowserFS.FileSystem.OverlayFS(idbfs, ajaxFS);
-    overlayFS.initialize(() => {
-      let mfs = new BrowserFS.FileSystem.MountableFileSystem();
-      mfs.mount('/', overlayFS);
-      // Initialize it as the root file system.
-      BrowserFS.initialize(mfs);
-      resolve()
-    })
-  })
+  BrowserFS.configure({
+    fs: "MountableFileSystem",
+    options: {
+      "/": {
+        fs: "OverlayFS",
+        options: {
+          writable: {
+            fs: "IndexedDB",
+            options: {}
+          },
+          readable: {
+            fs: "XmlHttpRequest",
+            options: {}
+          }
+        }
+      }
+    }
+  }, (err) => err ? reject(err) : resolve())
 })
 // Step 2. Export fs
 const fs = BrowserFS.BFSRequire('fs')
