@@ -14,6 +14,9 @@ const FileNavigatorBuilder = (MotherLayout) => {
       Component: FileComponent
     })
   })
-  return FileTreeViewBuilder(FolderComponent, ApplicationFileComponent);
+  return FileTreeViewBuilder({
+    FolderComponent,
+    FileComponent: ApplicationFileComponent
+  });
 }
 export default FileNavigatorBuilder
