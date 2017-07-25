@@ -8,7 +8,7 @@ import './style.css'
 import 'file-icons-js/css/style.css'
 import icons from 'file-icons-js'
 
-export default function FileTreeViewBuilder ({FolderComponent, FileComponent}) {
+export default function FileTreeViewBuilder ({FolderComponent, FileComponent, ReadDir}) {
   const makeList = (root, data) => {
     let items = []
     for (let [key, value] of Object.entries(data)) {
@@ -16,8 +16,7 @@ export default function FileTreeViewBuilder ({FolderComponent, FileComponent}) {
         let children = makeList([...root, key], value);
         items.push(<FolderComponent filename={key}>{children}</FolderComponent>);
       } else {
-        let id = cuid();
-        items.push(<FileComponent filename={key} filepath={path.join(...root, key)} cuid={id}/>);
+        items.push(<FileComponent filename={key} filepath={path.join(...root, key)}/>);
       }
     }
     return items

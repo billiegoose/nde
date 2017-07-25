@@ -1,9 +1,9 @@
 import icons from 'file-icons-js'
 
-const FileComponent = ({filename, cuid, ...props}) => {
+const FileComponent = ({filename, ...props}) => {
   let className = 'icon ' + icons.getClassWithColor(filename);
   return (
-    <li id={cuid} {...props}>
+    <li {...props}>
       <label>
         <a target="#">
           <i className={className}></i>

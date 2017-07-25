@@ -1,21 +1,34 @@
-import cuid from 'cuid'
+import React from 'react'
 import FolderIcon from './FolderIcon.js'
 
-const FolderComponent = ({filename, children}) => {
-  let id = cuid();
-  return (
-    <li>
-      <input type="checkbox" name={id} id={id}/>
-      <label htmlFor={id}>
-        <a target="#">
-          <FolderIcon/>
-          {filename}
-        </a>
-      </label>
-      <ul>
-        {children}
-      </ul>
-    </li>
-  )
+class FolderComponent extends React.Component {
+  constructor () {
+    super()
+    this.state = {
+      open: false,
+      loading: false
+    }
+  }
+  toggle () {
+    this.setState({
+      open: !this.state.open
+    })
+  }
+  render () {
+    let {filename, children, ...props} = this.props
+    return (
+      <li {...props}>
+        <label>
+          <a target="#" onClick={this.toggle.bind(this)}>
+            <FolderIcon open={this.state.open}/>
+            {filename}
+          </a>
+        </label>
+        <ul>
+          {this.state.open ? children : ''}
+        </ul>
+      </li>
+    )
+  }
 }
 export default FolderComponent

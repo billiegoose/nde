@@ -28,9 +28,6 @@
     outline: 0;
     overflow-y: scroll;
 }
-._tree input[type=checkbox], ._tree ul {
-    display: none;
-}
 ._tree ul {
     padding: 0;
     padding-left: 1em;
@@ -52,12 +49,6 @@
 ._tree a:active, ._tree a:focus {
     color: #9A9A9A;
 }
-._tree input[type=checkbox]:checked+label+ul, ._tree input[type=checkbox]:checked+label:nth-of-type(n)+ul {
-    display: block;
-}
-._tree > ul {
-    display: block;
-}
 ._tree label svg.folder {
     padding-left: 1px;
     padding-right: 1px;
@@ -66,10 +57,4 @@
 }
 ._tree label svg.folder path {
     fill: #80a6cd;
-}
-._tree label svg.folder path.open {
-    fill: none;
-}
-._tree input[type=checkbox]:checked+label svg.folder path.open {
-    fill: #fff;
 }
