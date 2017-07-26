@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 // Hot Module Reload patch
 import { module } from '@hot'
 // import { AppContainer } from 'react-hot-loader'
