@@ -69,7 +69,9 @@ class FileNavigator extends React.Component {
     statDir('/').then(result => {
       console.log('result =', result)
       this.setState((state, props) => {
-        Object.assign(state.data, result)
+        let foo = {}
+        _.set(foo, ['data'], result)
+        _.merge(state, foo)
         return state
       })
     })
