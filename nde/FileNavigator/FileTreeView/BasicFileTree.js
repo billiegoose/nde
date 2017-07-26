@@ -4,7 +4,7 @@ import File from './File'
 import Folder from './Folder'
 // Import component styles
 import './style.css'
-
+import _ from 'lodash'
 
 const BasicFolder = ({filename, open, ClickCallback, filepath}) => (
   <Folder filename={filename} open={open} onClick={() => ClickCallback(filepath)} />
@@ -19,12 +19,8 @@ class BasicFileTree extends React.Component {
   }
   toggle (fullpath) {
     this.setState((state, props) => {
-      if (!state.statedata[fullpath]) {
-        state.statedata[fullpath] = {
-          open: false
-        }
-      }
-      state.statedata[fullpath].open = !state.statedata[fullpath].open
+      let val = _.get(state, ['statedata', fullpath, 'open'], false)
+      _.set(state, ['statedata', fullpath, 'open'], !val)
       return state
     })
   }

@@ -1,7 +1,7 @@
 import React from 'react'
 import File from './FileTreeView/File.js'
 
-export default class ApplicationFileComponent extends React.Component {
+export default class FileNavigatorFileComponent extends React.Component {
   componentDidMount () {
     this.props.glContainer.layoutManager.createDragSource(ReactDOM.findDOMNode(this), {
       type:'react-component',
