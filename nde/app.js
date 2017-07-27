@@ -21,6 +21,7 @@ import path from 'path'
 
 // Application code
 import './app.css'
+import TryComponent from './TryCatchHOC.js'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
@@ -80,9 +81,9 @@ if (module) {
   });
 }
 
-MotherLayout.registerComponent('MarkdownViewer', MarkdownViewer);
-MotherLayout.registerComponent('EditableTextFile', EditableTextFile);
-MotherLayout.registerComponent('FileNavigator', FileNavigator);
+MotherLayout.registerComponent('MarkdownViewer', TryComponent(MarkdownViewer));
+MotherLayout.registerComponent('EditableTextFile', TryComponent(EditableTextFile));
+MotherLayout.registerComponent('FileNavigator', TryComponent(FileNavigator));
 
 fsReady.then(() => {
   MotherLayout.init();
