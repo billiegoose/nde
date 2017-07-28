@@ -39,7 +39,8 @@ export default class EditableTextFile extends React.Component {
         this.setState({mode: mode})
       })
     }
-    this.state = {
+    let glState = glContainer.getState()
+    this.state = glState ? glState : {
       content: 'Loading...',
       unsavedContent: null,
       cuid: cuid(),
@@ -49,6 +50,9 @@ export default class EditableTextFile extends React.Component {
     glContainer.on('resize', (foo) => {
       this.ace.editor.resize()
     })
+  }
+  componentDidUpdate (oldprops, oldstate) {
+    this.props.glContainer.setState(this.state)
   }
   componentDidMount () {
     fs.readFile(this.props.filepath, 'utf8', (err, text) => {

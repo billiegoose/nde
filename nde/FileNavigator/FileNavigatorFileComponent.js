@@ -5,15 +5,15 @@ export default class FileNavigatorFileComponent extends React.Component {
   componentDidMount () {
     this.props.glContainer.layoutManager.createDragSource(ReactDOM.findDOMNode(this), {
       type:'react-component',
-      component: 'EditableTextFile',
-      props: { filepath: this.props.filepath }
+      component: 'TryComponent',
+      props: { tryComponentFilepath: './nde/EditableTextFile.js', filepath: this.props.filepath }
     })
   }
   doubleclick () {
     this.props.glContainer.layoutManager.root.getItemsByType('stack')[0].addChild({
       type:'react-component',
-      component: 'EditableTextFile',
-      props: { filepath: this.props.filepath }
+      component: 'TryComponent',
+      props: { tryComponentFilepath: './nde/EditableTextFile.js', filepath: this.props.filepath }
     })
   }
   render () {

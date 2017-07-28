@@ -7,7 +7,9 @@ import cuid from 'cuid'
 export default class MarkdownViewer extends React.Component {
   constructor ({filepath, glContainer}) {
     super()
-    this.state = {
+    let glState = glContainer.getState()
+    console.log(glState)
+    this.state = glState ? glState : {
       content: '',
       cuid: cuid()
     }
@@ -19,6 +21,9 @@ export default class MarkdownViewer extends React.Component {
     if (glContainer) {
       glContainer.setTitle(filepath)
     }
+  }
+  componentDidUpdate (oldprops, oldstate) {
+    this.props.glContainer.setState(this.state)
   }
   render () {
     return <article dangerouslySetInnerHTML={{__html: markyMarkdown(this.state.content)}}></article>;

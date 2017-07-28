@@ -21,12 +21,10 @@ import path from 'path'
 
 // Application code
 import './app.css'
-import TryComponent from './TryCatchHOC.js'
-import MarkdownViewer from './MarkdownViewer.js'
-import EditableTextFile from './EditableTextFile.js'
-import FileNavigator from './FileNavigator/FileNavigator.js'
-// import starterData from '../index.json'
-// import FileNavigator from './FileNavigator/FileTreeView/BasicFileTree.js'
+import TryComponent from './TryComponent.js'
+// import MarkdownViewer from './MarkdownViewer.js'
+// import EditableTextFile from './EditableTextFile.js'
+// import FileNavigator from './FileNavigator/FileNavigator.js'
 
 let MotherLayout = null
 
@@ -41,49 +39,30 @@ if (module) {
       type: 'row',
       content: [{
         type:'react-component',
-        component: 'FileNavigator',
-        props: {  }
+        component: 'TryComponent',
+        props: {
+          tryComponentFilepath: './nde/FileNavigator/FileNavigator.js'
+        }
       },{
-        type: 'column',
-        content:[{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'nde/app.js' }
-        },{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'nde/EditableTextFile.js' }
-        }]
-      }, {
-        type: 'column',
-        content:[{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'README.md' }
-        },{
-          type:'react-component',
-          component: 'MarkdownViewer',
-          props: { filepath: 'README.md' }
-        }]
+        type:'react-component',
+        component: 'TryComponent',
+        props: {
+          tryComponentFilepath: './nde/EditableTextFile.js',
+          filepath: 'nde/MarkdownViewer.js'
+        }
       },{
-        type: 'column',
-        content:[{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'nde/README.md' }
-        },{
-          type:'react-component',
-          component: 'MarkdownViewer',
-          props: { filepath: 'nde/README.md' }
-        }]
+        type:'react-component',
+        component: 'TryComponent',
+        props: {
+          tryComponentFilepath: './nde/MarkdownViewer.js',
+          filepath: 'nde/README.md'
+        }
       }]
     }]
   });
 }
 
-MotherLayout.registerComponent('MarkdownViewer', TryComponent(MarkdownViewer));
-MotherLayout.registerComponent('EditableTextFile', TryComponent(EditableTextFile));
-MotherLayout.registerComponent('FileNavigator', TryComponent(FileNavigator));
+MotherLayout.registerComponent('TryComponent', TryComponent);
 
 fsReady.then(() => {
   MotherLayout.init();
