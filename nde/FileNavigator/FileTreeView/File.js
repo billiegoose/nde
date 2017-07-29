@@ -3,8 +3,9 @@ import icons from 'file-icons-js'
 
 export default function File ({filename, ...props}) {
   let className = 'icon ' + icons.getClassWithColor(filename);
+  let {filepath, root, statedata, FolderComponent, FileComponent, glEventHub, glContainer, ...props2} = props
   return (
-    <label {...props}>
+    <label {...props2}>
       <a target="#">
         <i className={className}></i>
         {filename}

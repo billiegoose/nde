@@ -26,7 +26,7 @@ export default function FileList ({root, data, statedata, FolderComponent, FileC
         )
       }
       folders.push(
-        <li>
+        <li key={fullpath}>
           <FolderComponent
             filename={key}
             filepath={fullpath}
@@ -42,7 +42,7 @@ export default function FileList ({root, data, statedata, FolderComponent, FileC
       )
     } else {
       files.push(
-        <li>
+        <li key={fullpath}>
           <FileComponent
             filename={key}
             filepath={fullpath}
