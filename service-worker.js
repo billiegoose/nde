@@ -1,5 +1,5 @@
 global = self
-importScripts('https://unpkg.com/browserfs@1.4.2')
+importScripts('/nde/builtins/browserfs.js')
 importScripts('https://wzrd.in/standalone/mime')
 importScripts('https://wzrd.in/standalone/omnipath')
 
@@ -8,12 +8,26 @@ console.log('renderIndex =', renderIndex)
 console.log('BrowserFS =', BrowserFS)
 
 const Files = new Promise(function(resolve, reject) {
-  BrowserFS.FileSystem.IndexedDB.Create({}, (err, idbfs) => {
-    if (err) return reject(err)
-    BrowserFS.initialize(idbfs)
-    let fs = BrowserFS.BFSRequire('fs')
-    resolve(fs)
-  })
+  BrowserFS.configure({
+    fs: "MountableFileSystem",
+    options: {
+      "/": {
+        fs: "OverlayFS",
+        options: {
+          writable: {
+            fs: "IndexedDB",
+            options: {}
+          },
+          readable: {
+            fs: "XmlHttpRequest",
+            options: {
+              index: {"index.html":null,"index.json":null,"LICENSE":null,"nde":{"app.css":null,"app.js":null,"builtins":{"fs.js":null},"ContextMenu.js":null,"EditableTextFile.js":null,"FileNavigator":{"FileNavigator.js":null,"FileNavigatorFileComponent.js":null,"FileNavigatorFolderComponent.js":null,"FileTreeView":{"BasicFileTree.js":null,"File.js":null,"FileList.js":null,"Folder.js":null,"FolderIcon.js":null,"index.js":null,"style.css":null}},"MarkdownViewer.js":null,"react-contextmenu.css":null,"README.md":null},"now.json":null,"README.md":null,"service-worker.js":null}
+            }
+          }
+        }
+      }
+    }
+  }, (err) => err ? reject(err) : resolve(BrowserFS.BFSRequire('fs')))
 })
 
 toPaths = (dirname) => {
