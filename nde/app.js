@@ -25,6 +25,9 @@ import TryComponent from './TryCatchHOC.js'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
+import git from 'esgit'
+window.git = git
+console.log('git =', git)
 // import starterData from '../index.json'
 // import FileNavigator from './FileNavigator/FileTreeView/BasicFileTree.js'
 

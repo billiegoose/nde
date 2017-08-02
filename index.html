@@ -2,6 +2,8 @@
 <title>Nde</title>
 <script src="https://unpkg.com/getlibs"></script>
 <script>
+  process = {}
+  process.umask = () => 0
   // Global shims needs to be configured before loading app.js apparently.
   System.config({
     meta: {
@@ -10,11 +12,16 @@
     map: {
       'react': 'https://unpkg.com/react@16.0.0-beta.2/umd/react.development.js',
       'react-dom': 'https://unpkg.com/react-dom@16.0.0-beta.2/umd/react-dom.development.js',
-      '@hot': '@empty'
+      '@hot': '@empty',
+      'esgit': 'https://rawgit.com/wmhilton/esgit/master/src/index.js'
     },
     paths: {
       'fs': './nde/builtins/fs.js',
-      'path': 'https://wzrd.in/standalone/omnipath'
+      'path': 'https://wzrd.in/standalone/omnipath',
+      'url': 'https://wzrd.in/standalone/omnipath',
+      'querystring': 'https://wzrd.in/standalone/querystring', // parse-link-header -> querystring -> './decode'
+      'jsonify': 'https://wzrd.in/bundle/jsonify', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
+      'crypto': 'https://wzrd.in/bundle/crypto-browserify', // shasum -> crypto
     }
   })
   System.import('systemjs-hmr').then(() => {

@@ -38,7 +38,7 @@ fs.writeFile = function (file, data, options, callback) {
   console.log('file =', file)
   fs._origWriteFile(file, data, options, (err) => {
     if (!err) {
-      this.Events.emit('change', {
+      fs.Events.emit('change', {
         eventType: 'change',
         filename: file
       })
@@ -51,7 +51,7 @@ fs.writeFileSync = function (file, ...args) {
   console.log('file =', file)
   results = fs._origWriteFileSync(file, ...args)
   setTimeout( () => {
-    this.Events.emit('change', {
+    fs.Events.emit('change', {
       eventType: 'change',
       filename: file
     })
