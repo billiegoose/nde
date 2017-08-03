@@ -12095,46 +12095,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Contains utility methods for performing a variety of tasks with
 	 * XmlHttpRequest across browsers.
 	 */
-	function asyncDownloadFileFetch(p, type, cb) {
-	    self.fetch(p)
-	        .then(function (res) {
-	        if (!res.ok) {
-	            return cb(new ApiError(res.status, "fetch error."));
-	        }
-	        else {
-	            switch (type) {
-	                case 'buffer':
-	                    res.arrayBuffer()
-	                        .then(function (buf) { return cb(null, Buffer.from(buf)); })
-	                        .catch(function (err) { return cb(new ApiError(0, err.message)); });
-	                    break;
-	                case 'json':
-	                    res.json()
-	                        .then(function (json) { return cb(null, json); })
-	                        .catch(function (err) { return cb(new ApiError(0, err.message)); });
-	                    break;
-	                default:
-	                    throw new ApiError(ErrorCode.EINVAL, "Invalid download type: " + type);
-	            }
-	        }
-	    })
-	        .catch(function (err) { return cb(new ApiError(0, err.message)); });
-	}
-	/**
-	 * @hidden
-	 */
-	function getFileSizeFetch(p, cb) {
-	    self.fetch(p, { method: 'HEAD' })
-	        .then(function (res) {
-	        if (!res.ok) {
-	            return cb(new ApiError(res.status, "fetch HEAD error."));
-	        }
-	        else {
-	            return cb(null, parseInt(res.headers.get('Content-Length') || '-1', 10));
-	        }
-	    })
-	        .catch(function (err) { return cb(new ApiError(0, err.message)); });
-	}
+	var xhrIsAvailable = (typeof (XMLHttpRequest) !== "undefined" && XMLHttpRequest !== null);
 	function asyncDownloadFileModern(p, type, cb) {
 	    var req = new XMLHttpRequest();
 	    req.open('GET', p, true);
@@ -12175,7 +12136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            else {
-	                return cb(new ApiError(req.status, "XHR error."));
+	                return cb(new ApiError(ErrorCode.EIO, ("XHR error: response returned code " + (req.status))));
 	            }
 	        }
 	    };
@@ -12211,7 +12172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            else {
-	                err = new ApiError(req.status, "XHR error.");
+	                err = new ApiError(ErrorCode.EIO, ("XHR error: response returned code " + (req.status)));
 	                return;
 	            }
 	        }
@@ -12250,7 +12211,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            else {
-	                err = new ApiError(req.status, "XHR error.");
+	                err = new ApiError(ErrorCode.EIO, ("XHR error: response returned code " + (req.status)));
 	            }
 	        }
 	    };
@@ -12278,7 +12239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            else {
-	                return cb(new ApiError(req.status, "XHR HEAD error."));
+	                return cb(new ApiError(ErrorCode.EIO, ("XHR HEAD error: response returned code " + (req.status))));
 	            }
 	        }
 	    };
@@ -12291,7 +12252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * constants.
 	 * @hidden
 	 */
-	var asyncDownloadFile = (self.fetch) ? asyncDownloadFileFetch : asyncDownloadFileModern;
+	var asyncDownloadFile = asyncDownloadFileModern;
 	/**
 	 * Synchronously download a file as a buffer or a JSON object.
 	 * Note that the third function signature with a non-specialized type is
@@ -12319,12 +12280,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @hidden
 	 */
 	function getFileSizeAsync(p, cb) {
-	    if (self.fetch) {
-	        getFileSizeFetch(p, cb);
+	    getFileSize(true, p, cb);
+	}
+	
+	/**
+	 * Contains utility methods using 'fetch'.
+	 */
+	var fetchIsAvailable = (typeof (fetch) !== "undefined" && fetch !== null);
+	function fetchFileAsync(p, type, cb) {
+	    var request;
+	    try {
+	        request = fetch(p);
 	    }
-	    else {
-	        getFileSize(true, p, cb);
+	    catch (e) {
+	        // XXX: fetch will throw a TypeError if the URL has credentials in it
+	        return cb(new ApiError(ErrorCode.EINVAL, e.message));
 	    }
+	    request
+	        .then(function (res) {
+	        if (!res.ok) {
+	            return cb(new ApiError(ErrorCode.EIO, ("fetch error: response returned code " + (res.status))));
+	        }
+	        else {
+	            switch (type) {
+	                case 'buffer':
+	                    res.arrayBuffer()
+	                        .then(function (buf) { return cb(null, Buffer.from(buf)); })
+	                        .catch(function (err) { return cb(new ApiError(ErrorCode.EIO, err.message)); });
+	                    break;
+	                case 'json':
+	                    res.json()
+	                        .then(function (json) { return cb(null, json); })
+	                        .catch(function (err) { return cb(new ApiError(ErrorCode.EIO, err.message)); });
+	                    break;
+	                default:
+	                    cb(new ApiError(ErrorCode.EINVAL, "Invalid download type: " + type));
+	            }
+	        }
+	    })
+	        .catch(function (err) { return cb(new ApiError(ErrorCode.EIO, err.message)); });
+	}
+	/**
+	 * Asynchronously retrieves the size of the given file in bytes.
+	 * @hidden
+	 */
+	function fetchFileSizeAsync(p, cb) {
+	    fetch(p, { method: 'HEAD' })
+	        .then(function (res) {
+	        if (!res.ok) {
+	            return cb(new ApiError(ErrorCode.EIO, ("fetch HEAD error: response returned code " + (res.status))));
+	        }
+	        else {
+	            return cb(null, parseInt(res.headers.get('Content-Length') || '-1', 10));
+	        }
+	    })
+	        .catch(function (err) { return cb(new ApiError(ErrorCode.EIO, err.message)); });
 	}
 	
 	/**
@@ -12684,9 +12694,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * *This example has the folder `/home/jvilk` with subfile `someFile.txt` and subfolder `someDir`.*
 	 */
 	var XmlHttpRequest = (function (BaseFileSystem$$1) {
-	    function XmlHttpRequest(listingUrlOrObj, prefixUrl, deprecateMsg) {
+	    function XmlHttpRequest(listingUrlOrObj, prefixUrl, deprecateMsg, preferXHR) {
 	        if ( prefixUrl === void 0 ) prefixUrl = '';
 	        if ( deprecateMsg === void 0 ) deprecateMsg = true;
+	        if ( preferXHR === void 0 ) preferXHR = false;
 	
 	        BaseFileSystem$$1.call(this);
 	        if (!listingUrlOrObj) {
@@ -12697,6 +12708,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            prefixUrl = prefixUrl + '/';
 	        }
 	        this.prefixUrl = prefixUrl;
+	        this._getXhrPath = function (filePath) {
+	            if (filePath.charAt(0) === '/') {
+	                filePath = filePath.slice(1);
+	            }
+	            return this.prefixUrl + filePath;
+	        };
+	        this._requestFileAsync = (fetchIsAvailable && !preferXHR || !xhrIsAvailable)
+	            ? function (p, type, cb) { fetchFileAsync(this._getXhrPath(p), type, cb); }
+	            : function (p, type, cb) { asyncDownloadFile(this._getXhrPath(p), type, cb); };
+	        this._requestFileSizeAsync = (fetchIsAvailable && !preferXHR || !xhrIsAvailable)
+	            ? function (p, cb) { fetchFileSizeAsync(this._getXhrPath(p), cb); }
+	            : function (p, cb) { getFileSizeAsync(this._getXhrPath(p), cb); };
+	        this._requestFileSync = xhrIsAvailable
+	            ? function (p, type) { return syncDownloadFile(this._getXhrPath(p), type); }
+	            : function (p, type) { throw new ApiError(ErrorCode.ENOTSUP); };
+	        this._requestFileSizeSync = xhrIsAvailable
+	            ? function (path$$1) { return getFileSizeSync(this._getXhrPath(path$$1)); }
+	            : function (path$$1) { return new ApiError(ErrorCode.ENOTSUP); };
 	        var listing = null;
 	        if (typeof (listingUrlOrObj) === "string") {
 	            listing = this._requestFileSync(listingUrlOrObj, 'json');
@@ -12719,11 +12748,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            XmlHttpRequest.FromURL(opts.index, cb, opts.baseUrl, false);
 	        }
 	        else {
-	            cb(null, new XmlHttpRequest(opts.index, opts.baseUrl, false));
+	            var xfs;
+	            try {
+	                xfs = new XmlHttpRequest(opts.index, opts.baseUrl, false, opts.preferXHR);
+	            }
+	            catch (e) {
+	                return cb(e);
+	            }
+	            return cb(null, xfs);
 	        }
 	    };
 	    XmlHttpRequest.isAvailable = function isAvailable () {
-	        return typeof (XMLHttpRequest) !== "undefined" && XMLHttpRequest !== null;
+	        return xhrIsAvailable || fetchIsAvailable;
 	    };
 	    /**
 	     * **Deprecated. Please use XmlHttpRequest.Create() method instead to construct XmlHttpRequest objects.**
@@ -12741,10 +12777,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        asyncDownloadFile(url, "json", function (e, data) {
 	            if (e) {
-	                cb(e);
+	                return cb(e);
 	            }
 	            else {
-	                cb(null, new XmlHttpRequest(data, baseUrl, false));
+	                var xfs;
+	                try {
+	                    xfs = new XmlHttpRequest(data, baseUrl, false);
+	                }
+	                catch (e) {
+	                    return cb(e);
+	                }
+	                return cb(null, xfs);
 	            }
 	        });
 	    };
@@ -12772,7 +12815,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return false;
 	    };
 	    XmlHttpRequest.prototype.supportsSynch = function supportsSynch () {
-	        return true;
+	        return xhrIsAvailable;
 	    };
 	    /**
 	     * Special XHR function: Preload the given file into the index.
@@ -12989,27 +13032,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        finally {
 	            fd.closeSync();
 	        }
-	    };
-	    XmlHttpRequest.prototype.getXhrPath = function getXhrPath (filePath) {
-	        if (filePath.charAt(0) === '/') {
-	            filePath = filePath.slice(1);
-	        }
-	        return this.prefixUrl + filePath;
-	    };
-	    XmlHttpRequest.prototype._requestFileAsync = function _requestFileAsync (p, type, cb) {
-	        asyncDownloadFile(this.getXhrPath(p), type, cb);
-	    };
-	    XmlHttpRequest.prototype._requestFileSync = function _requestFileSync (p, type) {
-	        return syncDownloadFile(this.getXhrPath(p), type);
-	    };
-	    /**
-	     * Only requests the HEAD content, for the file size.
-	     */
-	    XmlHttpRequest.prototype._requestFileSizeAsync = function _requestFileSizeAsync (path$$1, cb) {
-	        getFileSizeAsync(this.getXhrPath(path$$1), cb);
-	    };
-	    XmlHttpRequest.prototype._requestFileSizeSync = function _requestFileSizeSync (path$$1) {
-	        return getFileSizeSync(this.getXhrPath(path$$1));
 	    };
 	
 	    return XmlHttpRequest;

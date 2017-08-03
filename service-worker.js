@@ -240,8 +240,15 @@ function pathFromURL (url) {
 
 self.addEventListener('fetch', (event) => {
   let request = event.request
-  // If it's not a GET request, we can't help you.
-  if (request.method !== 'GET') return
+  // We need to cache GET (readFile) and HEAD (getFileSize) requests for proper offline support.
+  if (request.method !== 'GET' && request.method !== 'HEAD') return
+  // Is it for a package CDN?
+  const requestHost = omnipath.parse(request.url).hostname
+  if (requestHost === 'unpkg.com') return event.respondWith(permaCache(request, 'unpkg'))
+  if (requestHost === 'wzrd.in') return event.respondWith(permaCache(request, 'wzrd'))
+  if (requestHost === 'cdnjs.cloudflare.com') return event.respondWith(permaCache(request, 'cdnjs'))
+  if (requestHost === 'api.cdnjs.com') return event.respondWith(permaCache(request, 'cdnjs'))
+  if (requestHost === 'rawgit.com') return event.respondWith(permaCache(request, 'rawgit'))
   // For now, ignore other domains. We might very well want to cache them later though.
   if (!request.url.startsWith(self.location.origin)) return
   // Turn URL into a file path
@@ -252,6 +259,36 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(tryFsFirst(path))
 })
 
+async function permaCache (request, name) {
+  let betterRequest = new Request(request.url, {
+    mode: 'cors',
+    credentials: 'omit',
+    redirect: 'follow'
+  })
+  let cache = await caches.open(name)
+  let response = await cache.match(betterRequest.url)
+  console.log('request.url =', betterRequest.url)
+  if (response) {
+    console.log('yay!', betterRequest.url)
+    return response
+  }
+  response = fetch(betterRequest)
+  response.then(res => {
+    console.log('Y U NOT CACHED?', betterRequest)
+    console.log(res.status, betterRequest.url, res.url)
+    // Note: It is important that we use the response URL,
+    // not the request URL, unless you want to permanently
+    // resolve redirects. I only want to permanently resolve
+    // exact versions.
+    if (res.status === 200) cache.put(request.url, res.clone())
+    // Changed my mind. Let's just cache the redirected result,
+    // because that gives us true offline support, version pinning
+    // be damned.
+    // if (res.status === 302) cache.put(betterRequest.url, res.clone())
+  })
+  return response
+}
+
 async function tryFsFirst (path) {
   return new Promise(function(resolve, reject) {
     Files.then(fs => {
@@ -259,7 +296,18 @@ async function tryFsFirst (path) {
         if (err) {
           if (err.code === 'ENOENT') console.log(path + ' ain\'t there')
           else console.log('A more interesting error occurred!', err)
-          return resolve(fetch(path))
+          let response = fetch(path)
+          response
+          .then(res => {
+            console.log('---HEYHEY')
+            if (!res.ok) return
+            res.clone().text().then(content => {
+              console.log('---Saving results')
+              fs.writeFile(path, content, 'utf8')
+            })
+          })
+          .catch(console.log)
+          return resolve(response)
         } else if (stats.isDirectory()) {
           console.log(path + ' is a Directory!')
           console.log('fs =', fs)

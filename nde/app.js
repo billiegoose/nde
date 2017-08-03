@@ -4,8 +4,8 @@ import { module } from '@hot'
 // import { AppContainer } from 'react-hot-loader'
 
 // Global CSS
-import 'https://golden-layout.com/assets/css/goldenlayout-base.css'
-import 'https://golden-layout.com/assets/css/goldenlayout-dark-theme.css'
+import 'golden-layout/css/goldenlayout-base.css'
+import 'golden-layout/css/goldenlayout-dark-theme.css'
 import './react-contextmenu.css'
 
 // Libraries
