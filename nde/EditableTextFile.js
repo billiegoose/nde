@@ -3,9 +3,12 @@ import AceEditor from 'react-ace'
 import 'brace/theme/monokai'
 import fs from 'fs'
 import path from 'path'
-import { MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
-import ContextMenu from './ContextMenu.js'
+import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import cuid from 'cuid'
+
+const hotReload = () => {
+  System.reload('./nde/app.js')
+}
 
 // This function is a total mess. I must be sleep deprived.
 const mkdirs = (filename) => {
@@ -112,12 +115,21 @@ export default class EditableTextFile extends React.Component {
             editorProps={{$blockScrolling: true}}
           />
         </ContextMenuTrigger>
-        <ContextMenu
-          id={this.state.cuid}
-          onSave={() => this.saveFile()}
-          onReset={() => this.reloadSavedFile()}
-          onRestore={() => this.restoreOriginalFile()}
-        >
+        <ContextMenu id={this.state.cuid}>
+          <MenuItem onClick={hotReload}>
+            Hot Reload Page
+          </MenuItem>
+          <MenuItem divider />
+          <MenuItem onClick={() => this.saveFile()}>
+            Save File
+          </MenuItem>
+          <MenuItem onClick={() => this.reloadSavedFile()}>
+            Reload Saved File
+          </MenuItem>
+          <MenuItem onClick={() => this.restoreOriginalFile()}>
+            Restore Original File
+          </MenuItem>
+          <MenuItem divider />
           <MenuItem onClick={() => this.runCommand()}>
             Run ▶️
           </MenuItem>

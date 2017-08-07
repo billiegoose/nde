@@ -66,7 +66,8 @@
 }
 
 .react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item:after {
-    content: "▶";
+    content: "▶"; /*"◀ ▶ ▲ ▼";*/
+    font-family: "Arial", "Liberation Sans", sans-serif; /* Needed to avoid Segoe UI Emoji used by navigation tree */
     display: inline-block;
     position: absolute;
     right: 7px;
