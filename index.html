@@ -17,11 +17,11 @@
     },
     paths: {
       'fs': './nde/builtins/fs.js',
-      'path': 'https://wzrd.in/standalone/omnipath',
-      'url': 'https://wzrd.in/standalone/omnipath',
-      'querystring': 'https://wzrd.in/standalone/querystring', // parse-link-header -> querystring -> './decode'
-      'jsonify': 'https://wzrd.in/bundle/jsonify', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
-      'crypto': 'https://wzrd.in/bundle/crypto-browserify', // shasum -> crypto
+      'path': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
+      'url': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
+      'querystring': './nde/deps/querystring/index.js', // parse-link-header -> querystring -> './decode'
+      'jsonify': './nde/deps/jsonify/index.js', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
+      'crypto': './nde/deps/crypto-browserify/bundle.js', // shasum -> crypto
     }
   })
   System.import('systemjs-hmr').then(() => {

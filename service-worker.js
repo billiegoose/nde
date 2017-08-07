@@ -1,9 +1,9 @@
 global = self
 importScripts('/nde/builtins/browserfs.js')
-importScripts('https://wzrd.in/standalone/mime')
-importScripts('https://wzrd.in/standalone/omnipath')
+importScripts('/nde/deps/mime/bundle.js')
+importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 
-console.log('omnipath =', omnipath)
+console.log('OmniPath =', OmniPath)
 console.log('renderIndex =', renderIndex)
 console.log('BrowserFS =', BrowserFS)
 
@@ -45,10 +45,10 @@ toPaths = (dirname) => {
 }
 
 toFiles = (dirname, files) => files.map(filename => ({
-  ext: omnipath.ext(filename).replace(/^\./, ''),
-  base: omnipath.base(filename),
-  relative: omnipath.join(dirname, filename),
-  title: omnipath.base(filename),
+  ext: OmniPath.ext(filename).replace(/^\./, ''),
+  base: OmniPath.base(filename),
+  relative: OmniPath.join(dirname, filename),
+  title: OmniPath.base(filename),
   size: '? mb'
 }))
 
@@ -243,7 +243,7 @@ self.addEventListener('fetch', (event) => {
   // We need to cache GET (readFile) and HEAD (getFileSize) requests for proper offline support.
   if (request.method !== 'GET' && request.method !== 'HEAD') return
   // Is it for a package CDN?
-  const requestHost = omnipath.parse(request.url).hostname
+  const requestHost = OmniPath.parse(request.url).hostname
   if (requestHost === 'unpkg.com') return event.respondWith(permaCache(request, 'unpkg'))
   if (requestHost === 'wzrd.in') return event.respondWith(permaCache(request, 'wzrd'))
   if (requestHost === 'cdnjs.cloudflare.com') return event.respondWith(permaCache(request, 'cdnjs'))
