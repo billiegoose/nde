@@ -30,6 +30,10 @@
     border: 0;
 	cursor: pointer;
 }
+.react-contextmenu-item .icon {
+    position: absolute;
+    right: 0;
+}
 
 .react-contextmenu-item.react-contextmenu-item--active,
 .react-contextmenu-item.react-contextmenu-item--selected {

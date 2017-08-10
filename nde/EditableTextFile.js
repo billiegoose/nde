@@ -131,7 +131,7 @@ export default class EditableTextFile extends React.Component {
           </MenuItem>
           <MenuItem divider />
           <MenuItem onClick={() => this.runCommand()}>
-            Run ▶️
+            Run <span className="icon">▶️</span>
           </MenuItem>
         </ContextMenu>
       </article>

@@ -37,15 +37,15 @@ export default class FileNavigatorFolderComponent extends React.Component {
         >
           <SubMenu title="Git" hoverDelay={50}>
             <MenuItem onClick={() => this.gitInit()}>
-              Init <span style={{ right: 0, position: 'absolute' }}><FileIcon filename=".git"></FileIcon></span>
+              Init <FileIcon filename=".git"></FileIcon>
             </MenuItem>
           </SubMenu>
 
           <MenuItem onClick={() => this.newFile()}>
-            New File <span style={{ right: 0, position: 'absolute' }}><i className="icon text-icon"></i></span>
+            New File <i className="icon text-icon"></i>
           </MenuItem>
           <MenuItem onClick={() => this.newFolder()}>
-            New Folder <span style={{ right: 0, position: 'absolute' }}><FolderIcon></FolderIcon></span>
+            New Folder <FolderIcon></FolderIcon>
           </MenuItem>
         </ContextMenu>
       </ContextMenuTrigger>
