@@ -1,6 +1,6 @@
 .react-contextmenu {
     min-width: 160px;
-    padding: 5px 0;
+    padding: 0;
     margin: 2px 0 0;
     font-size: 16px;
     color: #373a3c;
@@ -8,7 +8,6 @@
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid rgba(0,0,0,.15);
-    border-radius: .25rem;
     outline: none;
     opacity: 0;
     pointer-events: none;
@@ -34,9 +33,8 @@
 
 .react-contextmenu-item.react-contextmenu-item--active,
 .react-contextmenu-item.react-contextmenu-item--selected {
-    color: #fff;
-    background-color: #20a0ff;
-    border-color: #20a0ff;
+    background-color: #DDD;
+    outline: solid 1px #20a0ff;
     text-decoration: none;
 }
 
@@ -62,11 +60,8 @@
 	padding: 0;
 }
 
-.react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item {
-}
-
 .react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item:after {
-    content: "▶"; /*"◀ ▶ ▲ ▼";*/
+    content: "\0025B6"; /*"◀ ▶ ▲ ▼";*/
     font-family: "Arial", "Liberation Sans", sans-serif; /* Needed to avoid Segoe UI Emoji used by navigation tree */
     display: inline-block;
     position: absolute;

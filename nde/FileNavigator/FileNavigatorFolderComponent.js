@@ -35,7 +35,7 @@ export default class FileNavigatorFolderComponent extends React.Component {
         <ContextMenu
           id={this.state.cuid}
         >
-          <SubMenu title="Git">
+          <SubMenu title="Git" hoverDelay={50}>
             <MenuItem onClick={() => this.gitInit()}>
               Init <span style={{ right: 0, position: 'absolute' }}><FileIcon filename=".git"></FileIcon></span>
             </MenuItem>
