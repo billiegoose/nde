@@ -59,12 +59,23 @@ class FileNavigator extends React.Component {
     super()
     this.state = {
       data: {},
-      statedata: {}
+      statedata: {},
+      disableContextMenu: false,
     }
   }
   componentDidMount () {
-    this.props.glEventHub.on('toggleFolder', this.toggleFolder.bind(this))
     this.props.glContainer.setTitle('File Navigator')
+    const fn = `MotherLayout.eventHub.emit('DISABLE_CONTEXTMENU')`
+    let button = $(`<li title="disable right-click menu"><input type="checkbox" onclick="${fn}"></li>`)
+    this.props.glContainer.parent.container.tab.header.controlsContainer.prepend(button)
+
+    this.props.glEventHub.on('toggleFolder', this.toggleFolder.bind(this))
+    this.props.glEventHub.on('DISABLE_CONTEXTMENU', () => {
+      this.setState((state, props) => ({
+        state,
+        disableContextMenu: !state.disableContextMenu
+      }))
+    })
     // TODO: Combine this call with the statDir call below so they share code for a general solution
     statDir('/').then(result => {
       console.log('result =', result)
@@ -99,6 +110,7 @@ class FileNavigator extends React.Component {
     return (
       <nav className="_tree">
         <FileList
+          disableContextMenu={this.state.disableContextMenu}
           root={[]}
           data={this.state.data}
           statedata={this.state.statedata}

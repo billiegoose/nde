@@ -12,7 +12,7 @@ export default class FileNavigatorFolderComponent extends React.Component {
   constructor () {
     super()
     this.state = {
-      cuid: cuid()
+      cuid: cuid(),
     }
   }
   click () {
@@ -28,13 +28,12 @@ export default class FileNavigatorFolderComponent extends React.Component {
     git(this.props.filepath).init()
   }
   render() {
+    let {disableContextMenu, ...passedProps} = this.props
     return (
-      <ContextMenuTrigger id={this.state.cuid}>
-        <Folder onClick={this.click.bind(this)} {...this.props}></Folder>
+      <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
+        <Folder onClick={this.click.bind(this)} {...passedProps}></Folder>
 
-        <ContextMenu
-          id={this.state.cuid}
-        >
+        <ContextMenu id={this.state.cuid}>
           <SubMenu title="Git" hoverDelay={50}>
             <MenuItem onClick={() => this.gitInit()}>
               Init <FileIcon filename=".git"></FileIcon>

@@ -17,8 +17,9 @@ export default class FileNavigatorFileComponent extends React.Component {
     })
   }
   render () {
+    let {disableContextMenu, ...passedProps} = this.props
     return (
-      <File onDoubleClick={this.doubleclick.bind(this)} {...this.props}></File>
+      <File onDoubleClick={this.doubleclick.bind(this)} {...passedProps}></File>
     )
   }
 }
