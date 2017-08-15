@@ -18,25 +18,41 @@ export default class FileNavigatorFolderComponent extends React.Component {
   click () {
     this.props.glEventHub.emit('toggleFolder', this.props.filepath)
   }
+  setFolderStateData (key, value) {
+    this.props.glEventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
+  }
   newFile () {
-    fs.writeFile(path.join(this.props.filepath, 'NewFile.txt'))
+    fs.writeFile(path.join(this.props.filepath, prompt('Enter filename:')))
   }
   newFolder () {
-    fs.mkdir(path.join(this.props.filepath, 'NewFolder'))
+    fs.mkdir(path.join(this.props.filepath, prompt('Enter foldername:')))
   }
   gitInit () {
     git(this.props.filepath).init()
   }
+  gitClone () {
+    this.setFolderStateData('busy', true)
+    git(this.props.filepath).githubToken(prompt('Github API token to use')).clone(prompt('Github URL to clone'))
+    .then(() => this.setFolderStateData('busy', false))
+  }
   render() {
     let {disableContextMenu, ...passedProps} = this.props
+    let busyIcon = passedProps.statedata && passedProps.statedata.busy
+             ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
+             : ''
     return (
       <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
-        <Folder onClick={this.click.bind(this)} {...passedProps}></Folder>
+        <Folder onClick={this.click.bind(this)} {...passedProps}>
+          {busyIcon}
+        </Folder>
 
         <ContextMenu id={this.state.cuid}>
           <SubMenu title="Git" hoverDelay={50}>
             <MenuItem onClick={() => this.gitInit()}>
               Init <FileIcon filename=".git"></FileIcon>
+            </MenuItem>
+            <MenuItem onClick={() => this.gitClone()}>
+              Clone <FileIcon filename=".git"></FileIcon>
             </MenuItem>
           </SubMenu>
 

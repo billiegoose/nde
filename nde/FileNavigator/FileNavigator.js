@@ -54,6 +54,12 @@ async function statDir (fullpath) {
   })
 }
 
+function toDirStructure (fullpath, result) {
+  let tmp = {}
+  _.set(tmp, ['data', ...fullpath.split('/').filter(x => x !== '')], result)
+  return tmp
+}
+
 class FileNavigator extends React.Component {
   constructor () {
     super()
@@ -70,21 +76,32 @@ class FileNavigator extends React.Component {
     this.props.glContainer.parent.container.tab.header.controlsContainer.prepend(button)
 
     this.props.glEventHub.on('toggleFolder', this.toggleFolder.bind(this))
+    this.props.glEventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
     this.props.glEventHub.on('DISABLE_CONTEXTMENU', () => {
       this.setState((state, props) => ({
         state,
         disableContextMenu: !state.disableContextMenu
       }))
     })
-    // TODO: Combine this call with the statDir call below so they share code for a general solution
-    statDir('/').then(result => {
-      console.log('result =', result)
+    this.refreshDir('/')
+    fs.Events.on('change', ({eventType, filename}) => this.refreshDir(filename))
+  }
+  refreshDir (fullpath) {
+    statDir(fullpath).then(result => {
       this.setState((state, props) => {
-        let foo = {}
-        _.set(foo, ['data'], result)
-        _.merge(state, foo)
+        _.merge(state, toDirStructure(fullpath, result))
         return state
       })
+    }).catch(err => {
+      if (err.code === 'ENOTDIR') {
+        // Must be a file!
+        this.setState((state, props) => {
+          _.merge(state, toDirStructure(fullpath, null))
+          return state
+        })
+        return
+      }
+      throw err
     })
   }
   toggleFolder (fullpath) {
@@ -93,16 +110,14 @@ class FileNavigator extends React.Component {
       let nowOpen = !wasOpen
       _.set(state, ['statedata', fullpath, 'open'], nowOpen)
       if (nowOpen) {
-        statDir(fullpath).then(result => {
-          console.log('result =', result)
-          this.setState((state, props) => {
-            let foo = {}
-            _.set(foo, ['data', ...fullpath.split('/')], result)
-            _.merge(state, foo)
-            return state
-          })
-        })
+        this.refreshDir(fullpath)
       }
+      return state
+    })
+  }
+  setFolderStateData ({fullpath, key, value}) {
+    this.setState((state, props) => {
+      _.set(state, ['statedata', fullpath, key], value)
       return state
     })
   }

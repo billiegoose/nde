@@ -35,7 +35,7 @@ fs.writeFile = function (file, data, options, callback) {
     callback = options
     options = {}
   }
-  console.log('file =', file)
+  console.log('writeFile', file)
   fs._origWriteFile(file, data, options, (err) => {
     if (!err) {
       fs.Events.emit('change', {
@@ -48,7 +48,7 @@ fs.writeFile = function (file, data, options, callback) {
 }
 fs._origWriteFileSync = fs.writeFileSync
 fs.writeFileSync = function (file, ...args) {
-  console.log('file =', file)
+  console.log('writeFileSync', file)
   results = fs._origWriteFileSync(file, ...args)
   setTimeout( () => {
     fs.Events.emit('change', {
@@ -58,6 +58,36 @@ fs.writeFileSync = function (file, ...args) {
   }, 0)
   return results
 }
+fs._origMkdir = fs.mkdir
+fs._origMkdirSync = fs.mkdirSync
+fs.mkdir = function (path, mode, callback) {
+  console.log('mkdir', path)
+  if (typeof mode === 'function') {
+    callback = mode
+    mode = 0o777
+  }
+  fs._origMkdir(path, mode, (err) => {
+    if (!err) {
+      fs.Events.emit('change', {
+        eventType: 'change',
+        filename: path
+      })
+    }
+    if (callback) return callback(err)
+  })
+}
+fs.mkdirSync = function (path, ...args) {
+  console.log('mkdirSync', path)
+  let results = fs._origMkdirSync(file, ...args)
+  setTimeout( () => {
+    fs.Events.emit('change', {
+      eventType: 'change',
+      filename: path
+    })
+  }, 0)
+  return results
+}
+
 
 window.fs = fs
 export default fs
