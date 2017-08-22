@@ -1,5 +1,6 @@
 import React from 'react'
 import File from './FileTreeView/File.js'
+import StatusIcon from './FileTreeView/StatusIcon.js'
 
 export default class FileNavigatorFileComponent extends React.Component {
   componentDidMount () {
@@ -19,7 +20,9 @@ export default class FileNavigatorFileComponent extends React.Component {
   render () {
     let {disableContextMenu, filename} = this.props
     return (
-      <File filename={filename} domProps={{onDoubleClick: this.doubleclick.bind(this)}}></File>
+      <File filename={filename} domProps={{onDoubleClick: this.doubleclick.bind(this)}}>
+        &nbsp;<StatusIcon status='untracked' />
+      </File>
     )
   }
 }
