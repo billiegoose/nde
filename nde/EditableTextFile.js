@@ -5,6 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import cuid from 'cuid'
+import download from 'downloadjs'
 
 const hotReload = () => {
   System.reload('./nde/app.js')
@@ -98,6 +99,9 @@ export default class EditableTextFile extends React.Component {
       this.setState({content: text, unsavedContent: text})
     }).catch(console.log)
   }
+  downloadFile () {
+    download(this.state.content, path.basename(this.props.filepath), 'text/plain')
+  }
   render () {
     let onChange = this.onChange.bind(this)
     return (
@@ -122,6 +126,9 @@ export default class EditableTextFile extends React.Component {
           <MenuItem divider />
           <MenuItem onClick={() => this.saveFile()}>
             Save File
+          </MenuItem>
+          <MenuItem onClick={() => this.downloadFile()}>
+            Download File
           </MenuItem>
           <MenuItem onClick={() => this.reloadSavedFile()}>
             Reload Saved File
