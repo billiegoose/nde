@@ -1,12 +1,12 @@
 import FileIcon from './FileIcon.js'
 
-export default function File ({filename, ...props}) {
-  let {filepath, root, statedata, FolderComponent, FileComponent, glEventHub, glContainer, ...passedProps} = props
+export default function File ({filename, domProps, children}) {
   return (
-    <label {...passedProps}>
+    <label {...domProps}>
       <a target="#">
         <FileIcon filename={filename}></FileIcon>
         {filename}
+        {children}
       </a>
     </label>
   )

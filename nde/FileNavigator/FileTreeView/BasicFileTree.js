@@ -7,7 +7,7 @@ import './style.css'
 import _ from 'lodash'
 
 const BasicFolder = ({filename, open, ClickCallback, filepath}) => (
-  <Folder filename={filename} open={open} onClick={() => ClickCallback(filepath)} />
+  <Folder filename={filename} open={open} domProps={{onClick:() => ClickCallback(filepath)}} />
 )
 
 class BasicFileTree extends React.Component {

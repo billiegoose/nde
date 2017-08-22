@@ -36,13 +36,13 @@ export default class FileNavigatorFolderComponent extends React.Component {
     .then(() => this.setFolderStateData('busy', false))
   }
   render() {
-    let {disableContextMenu, ...passedProps} = this.props
+    let {disableContextMenu, filename, open, ...passedProps} = this.props
     let busyIcon = passedProps.statedata && passedProps.statedata.busy
              ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
              : ''
     return (
       <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
-        <Folder onClick={this.click.bind(this)} {...passedProps}>
+        <Folder filename={filename} open={open} domProps={{onClick:this.click.bind(this)}}>
           {busyIcon}
         </Folder>
 

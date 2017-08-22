@@ -28,8 +28,8 @@ import FileNavigator from './FileNavigator/FileNavigator.js'
 import git from 'esgit'
 window.git = git
 console.log('git =', git)
-// import starterData from '../index.json'
-// import FileNavigator from './FileNavigator/FileTreeView/BasicFileTree.js'
+import starterData from '../index.json'
+import BasicFileTree from './FileNavigator/FileTreeView/BasicFileTree.js'
 
 let MotherLayout = null
 
@@ -46,6 +46,10 @@ if (module) {
         type:'react-component',
         component: 'FileNavigator',
         props: {  }
+      },{
+        type:'react-component',
+        component: 'BasicFileTree',
+        props: { data: starterData }
       },{
         type: 'column',
         content:[{
@@ -87,6 +91,7 @@ if (module) {
 MotherLayout.registerComponent('MarkdownViewer', TryComponent(MarkdownViewer));
 MotherLayout.registerComponent('EditableTextFile', TryComponent(EditableTextFile));
 MotherLayout.registerComponent('FileNavigator', TryComponent(FileNavigator));
+MotherLayout.registerComponent('BasicFileTree', TryComponent(BasicFileTree));
 
 fsReady.then(() => {
   MotherLayout.init();
