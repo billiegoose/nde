@@ -32,15 +32,11 @@
   process.umask = () => 0
   // Global shims needs to be configured before loading app.js apparently.
   System.config({
-    meta: {
-      'react': { loader: 'js' }
-    },
     map: {
-      'react': 'https://unpkg.com/react@16.0.0-beta.2/umd/react.development.js',
-      'react-dom': 'https://unpkg.com/react-dom@16.0.0-beta.2/umd/react-dom.development.js',
       '@hot': '@empty',
       'esgit': 'https://rawgit.com/wmhilton/esgit/master/src/index.js',
-      'buffer': './nde/builtins/buffer.js'
+      'buffer': './nde/builtins/buffer.js',
+      'buffercursor': 'https://rawgit.com/wmhilton/node-buffercursor/master/buffercursor.js',
     },
     paths: {
       'fs': './nde/builtins/fs.js',
