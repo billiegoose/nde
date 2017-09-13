@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import fs from 'fs'
 import path from 'path'
 
-import FileList from './FileTreeView/FileList.js'
-import FileNavigatorFileComponent from './FileNavigatorFileComponent.js'
-import FileNavigatorFolderComponent from './FileNavigatorFolderComponent.js'
+import {FileList} from 'react-file-browser'
+import FileNavigatorFileComponent from './FileNavigatorFileComponent'
+import FileNavigatorFolderComponent from './FileNavigatorFolderComponent'
 
 import starterData from '../../index.json'
 

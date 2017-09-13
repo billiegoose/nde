@@ -29,7 +29,7 @@ import git from 'esgit'
 window.git = git
 console.log('git =', git)
 import starterData from '../index.json'
-import BasicFileTree from './FileNavigator/FileTreeView/BasicFileTree.js'
+import {Example as BasicFileTree} from 'react-file-browser'
 
 let MotherLayout = null
 

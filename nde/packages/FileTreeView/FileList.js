@@ -1,9 +1,6 @@
 import React from 'react'
 import path from 'path'
 
-// Import component styles
-import './style.css'
-
 export default function FileList ({root, data, statedata, FolderComponent, FileComponent, ...props}) {
   root = root || []
   let folders = []
@@ -33,8 +30,6 @@ export default function FileList ({root, data, statedata, FolderComponent, FileC
             root={[...root, key]}
             open={open}
             statedata={statedata[fullpath]}
-            FolderComponent={FolderComponent}
-            FileComponent={FileComponent}
             {...props}>
           </FolderComponent>
           {filelist}

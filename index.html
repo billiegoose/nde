@@ -45,6 +45,8 @@
       'querystring': './nde/deps/querystring/index.js', // parse-link-header -> querystring -> './decode'
       'jsonify': './nde/deps/jsonify/index.js', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
       'crypto': './nde/deps/crypto-browserify/bundle.js', // shasum -> crypto
+      'async-lock': 'https://unpkg.com/async-lock/lib/index.js',
+      'react-file-browser': './nde/packages/FileTreeView/index.js',
     }
   })
   System.import('systemjs-hmr').then(() => {

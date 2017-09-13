@@ -1,7 +1,6 @@
 import React from 'react'
-import File from './FileTreeView/File.js'
-import FileIcon from './FileTreeView/FileIcon.js'
-import StatusIcon from './FileTreeView/StatusIcon.js'
+import {File, FileIcon} from 'react-file-browser'
+import StatusIcon from './StatusIcon'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import fs from 'fs'
 import cuid from 'cuid'

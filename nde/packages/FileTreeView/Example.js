@@ -1,10 +1,7 @@
 import React from 'react'
-import FileList from './FileList'
-import File from './File'
-import Folder from './Folder'
-// Import component styles
-import './style.css'
 import _ from 'lodash'
+
+import {FileList, File, Folder, AtomStyles} from 'react-file-browser'
 
 const BasicFolder = ({filename, open, ClickCallback, filepath}) => (
   <Folder filename={filename} open={open} domProps={{onClick:() => ClickCallback(filepath)}} />

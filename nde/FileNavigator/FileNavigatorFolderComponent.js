@@ -1,7 +1,5 @@
 import React from 'react'
-import Folder from './FileTreeView/Folder.js'
-import FileIcon from './FileTreeView/FileIcon.js'
-import FolderIcon from './FileTreeView/FolderIcon.js'
+import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import cuid from 'cuid'
 import fs from 'fs'
