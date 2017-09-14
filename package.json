@@ -1,0 +1,19 @@
+{
+  "name": "nde",
+  "version": "0.0.0",
+  "description": "The IDE of the future, today!",
+  "scripts": {
+    "build": "npx browserfs index.json",
+    "start": "npx browser-sync start --server --files"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmhilton/nde.git"
+  },
+  "author": "William Hilton <wmhilton@gmail.com>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/wmhilton/nde/issues"
+  },
+  "homepage": "https://nde.now.sh"
+}

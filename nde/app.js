@@ -72,17 +72,6 @@ if (module) {
           component: 'MarkdownViewer',
           props: { filepath: 'README.md' }
         }]
-      },{
-        type: 'column',
-        content:[{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'nde/README.md' }
-        },{
-          type:'react-component',
-          component: 'MarkdownViewer',
-          props: { filepath: 'nde/README.md' }
-        }]
       }]
     }]
   });
