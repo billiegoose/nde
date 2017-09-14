@@ -1,22 +1,25 @@
-The IDE of the future, today!
+# The IDE of the future, today! https://nde.now.sh
 
 It is a next-generation development environment for modern JavaScript developers: editor, bundler, and browser all in one.
 
-The most rapid development tool ever features:
+## Features
 
  - zero install - works completely in the browser
  - works offline
- - imports modules directly from https://unpkg.com without installing
+ - imports modules directly from https://unpkg.com without installing (kind of works?)
  - built in Babel code compiler with JSX support
- - hot module reloading on file save
- - save your work directly to Github
+ - hot module reloading
+ - save your work directly to Github (work in progress)
 
-The IDE is written using itself as a collection of React components.
+## Status
 
-Most of the work currently focuses on the file browser component. Once that has
-fully working git workflow, attention can be paid to the text editor component.
+The IDE can be used to edit itself! It is a collection of React components.
 
-Next steps:
+Most of my work currently focuses on the git integration and file browser component.
+Once that is done, meaning you can meaningfully save your work, then I will
+actually start using it to develop itself and pay more attention to the text editor component.
+
+## Next steps:
 
 - [x] Add a service worker to proxy file requests through BrowserFS.
   - [ ] Use the index.json file to cache all the files on initial page load
@@ -36,5 +39,3 @@ Next steps:
   - [ ] Trigger Hot Module reload on file save.
 - [ ] Build in a Getting Started or walkthrough tutorial.
 
-## Note
-I used 'npx browserfs index.json' to generate the directory indexes.
