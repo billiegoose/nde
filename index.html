@@ -43,21 +43,35 @@ paceOptions = {
   process.umask = () => 0
   // Global shims needs to be configured before loading app.js apparently.
   System.config({
+    meta: {
+      'react': {
+        loader: 'js'
+      },
+      'react-dom': {
+        loader: 'js'
+      }
+    },
     map: {
       '@hot': '@empty',
       'esgit': 'https://rawgit.com/wmhilton/esgit/master/src/index.js',
       'buffer': './nde/builtins/buffer.js',
       'buffercursor': 'https://rawgit.com/wmhilton/node-buffercursor/master/buffercursor.js',
+      'react': 'https://unpkg.com/react@16.0.0-beta.5/umd/react.development.js',
+      'react-dom': 'https://unpkg.com/react-dom@16.0.0-beta.5/umd/react-dom.development.js',
     },
     paths: {
       'fs': './nde/builtins/fs.js',
       'path': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
       'url': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
+      'util': './nde/deps/util/index.js',
+      'stream': './nde/deps/stream/bundle.js',
+      'assert': './nde/deps/assert/assert.js',
       'querystring': './nde/deps/querystring/index.js', // parse-link-header -> querystring -> './decode'
       'jsonify': './nde/deps/jsonify/index.js', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
       'crypto': './nde/deps/crypto-browserify/bundle.js', // shasum -> crypto
       'async-lock': 'https://unpkg.com/async-lock/lib/index.js',
       'react-file-browser': './nde/packages/FileTreeView/index.js',
+      'simple-get': './nde/deps/simple-get/bundle.js',
     }
   })
   System.import('systemjs-hmr').then(() => {

@@ -46,8 +46,7 @@ export default class EditableTextFile extends React.Component {
     this.state = {
       content: 'Loading...',
       unsavedContent: null,
-      cuid: cuid(),
-      mode: 'none'
+      cuid: cuid()
     }
     glContainer.setTitle(filepath)
     glContainer.on('resize', (foo) => {
