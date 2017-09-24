@@ -49,11 +49,14 @@ paceOptions = {
       },
       'react-dom': {
         loader: 'js'
+      },
+      '*.json': {
+        loader: 'json'
       }
     },
     map: {
       '@hot': '@empty',
-      'esgit': 'https://cdn.rawgit.com/wmhilton/esgit/master/src/index.js',
+      'esgit': 'https://cdn.rawgit.com/wmhilton/esgit/dist/dist/for-future.js',
       'buffer': './nde/builtins/buffer.js',
       'buffercursor': 'https://rawgit.com/wmhilton/node-buffercursor/master/buffercursor.js',
       'react': 'https://unpkg.com/react@16.0.0-beta.5/umd/react.development.js',
@@ -61,11 +64,10 @@ paceOptions = {
     },
     paths: {
       'fs': './nde/builtins/fs.js',
-      'path': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
+      'path': 'https://unpkg.com/path-browserify',
+      'omnipath': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
       'url': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
-      'util': './nde/deps/util/index.js',
       'stream': './nde/deps/stream/bundle.js',
-      'assert': './nde/deps/assert/assert.js',
       'querystring': './nde/deps/querystring/index.js', // parse-link-header -> querystring -> './decode'
       'jsonify': './nde/deps/jsonify/index.js', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
       'crypto': './nde/deps/crypto-browserify/bundle.js', // shasum -> crypto
