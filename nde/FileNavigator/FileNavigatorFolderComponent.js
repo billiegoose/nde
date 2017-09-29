@@ -4,7 +4,7 @@ import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contex
 import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
-import git from 'esgit'
+import git from 'isomorphic-git'
 
 export default class FileNavigatorFolderComponent extends React.Component {
   constructor () {
