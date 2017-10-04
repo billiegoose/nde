@@ -1,5 +1,6 @@
 {
   "type": "static",
   "name": "nde",
-  "alias": "nde"
+  "alias": "nde",
+  "public": true
 }
