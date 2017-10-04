@@ -5,6 +5,8 @@ import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
 import git from 'isomorphic-git'
+import { prompt } from '../SweetAlert'
+import swal from 'sweetalert2'
 
 export default class FileNavigatorFolderComponent extends React.Component {
   constructor () {
@@ -19,19 +21,47 @@ export default class FileNavigatorFolderComponent extends React.Component {
   setFolderStateData (key, value) {
     this.props.glEventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
   }
-  newFile () {
-    fs.writeFile(path.join(this.props.filepath, prompt('Enter filename:')))
+  async newFile () {
+    let filename = await prompt('Enter filename:')
+    fs.writeFile(path.join(this.props.filepath, filename))
   }
-  newFolder () {
-    fs.mkdir(path.join(this.props.filepath, prompt('Enter foldername:')))
+  async newFolder () {
+    fs.mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
   }
   gitInit () {
     git(this.props.filepath).init()
   }
-  gitClone () {
-    this.setFolderStateData('busy', true)
-    git(this.props.filepath).githubToken(prompt('Github API token to use')).clone(prompt('Github URL to clone'))
-    .then(() => this.setFolderStateData('busy', false))
+  async gitClone () {
+    let steps = [
+      {
+        text: 'Github API token to use',
+        input: 'password',
+        confirmButtonText: 'Next &rarr;',
+        progressSteps: ['1', '2']
+      },{
+        text: 'Github repo to clone',
+        input: 'text',
+        placeholder: 'user/repo',
+        confirmButtonText: 'Clone Now',
+        progressSteps: ['1', '2']
+      }
+    ]
+    try {
+        let result = await swal.queue(steps)
+        let token = result[0]
+        let url = result[1]
+        this.setFolderStateData('busy', true)
+        await git(this.props.filepath)
+            .githubToken(token)
+            .depth(1)
+            .clone(`https://cors-buster-jfpactjnem.now.sh/github.com/${url}`)
+        
+    } catch (err) {
+        console.log(err)
+    } finally {
+        swal.resetDefaults()
+        this.setFolderStateData('busy', false)
+    }
   }
   render() {
     let {disableContextMenu, filename, open, ...passedProps} = this.props
