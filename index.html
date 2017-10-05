@@ -6,24 +6,7 @@
 </head>
 <body>
 <!-- Loading Bar -->
-<style>
-.pace {
-  pointer-events: none;
-  user-select: none;
-}
-.pace-inactive {
-  display: none;
-}
-.pace .pace-progress {
-  background: #29d;
-  position: fixed;
-  z-index: 2000;
-  top: 0;
-  right: 100%;
-  width: 100%;
-  height: 2px;
-}
-</style>
+<style>.pace{pointer-events:none;user-select:none;}.pace-inactive{display:none;}.pace .pace-progress{background:#29d;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px;}</style>
 <script>
 paceOptions = {
   elements: {
@@ -39,44 +22,36 @@ paceOptions = {
 
 <script src="https://unpkg.com/getlibs"></script>
 <script>
-  // Global shims needs to be configured before loading app.js apparently.
-  System.config({
-    meta: {
-      'react': {
-        loader: 'js'
-      },
-      'react-dom': {
-        loader: 'js'
-      },
-      '*.json': {
-        loader: 'json'
-      }
+System.config({
+  meta: {
+    'react': {
+      loader: 'js'
     },
-    map: {
-      '@hot': '@empty',
-      'isomorphic-git': 'https://unpkg.com/isomorphic-git@0.0.10/dist/bundle.umd.min.js',
-      'buffer': './nde/builtins/buffer.js',
-      'buffercursor': 'https://rawgit.com/wmhilton/node-buffercursor/master/buffercursor.js',
-      'react': 'https://unpkg.com/react@16.0.0-beta.5/umd/react.development.js',
-      'react-dom': 'https://unpkg.com/react-dom@16.0.0-beta.5/umd/react-dom.development.js',
+    'react-dom': {
+      loader: 'js'
     },
-    paths: {
-      'fs': './nde/builtins/fs.js',
-      'path': 'https://unpkg.com/path-browserify',
-      'omnipath': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
-      'url': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
-      'stream': './nde/deps/stream/bundle.js',
-      'querystring': './nde/deps/querystring/index.js', // parse-link-header -> querystring -> './decode'
-      'jsonify': './nde/deps/jsonify/index.js', // shasum -> json-stable-stringify -> jsonify -> './lib/*'
-      'crypto': './nde/deps/crypto-browserify/bundle.js', // shasum -> crypto
-      'async-lock': 'https://unpkg.com/async-lock/lib/index.js',
-      'react-file-browser': './nde/packages/FileTreeView/index.js',
-      'simple-get': './nde/deps/simple-get/bundle.js',
+    '*.json': {
+      loader: 'json'
     }
-  })
-  System.import('systemjs-hmr').then(() => {
-    System.import('./nde/app.js')
-  })
+  },
+  map: {
+    '@hot': '@empty',
+    'isomorphic-git': 'https://unpkg.com/isomorphic-git@0.0.10/dist/bundle.umd.min.js',
+    'buffer': './nde/builtins/buffer.js',
+    'react': 'https://unpkg.com/react@16.0.0-beta.5/umd/react.development.js',
+    'react-dom': 'https://unpkg.com/react-dom@16.0.0-beta.5/umd/react-dom.development.js',
+  },
+  paths: {
+    'fs': './nde/builtins/fs.js',
+    'path': 'https://unpkg.com/path-browserify',
+    'omnipath': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
+    'url': 'https://unpkg.com/omnipath/dist/omnipath.min.js',
+    'react-file-browser': './nde/packages/FileTreeView/index.js',
+  }
+})
+System.import('systemjs-hmr').then(() => {
+  System.import('./nde/app.js')
+})
 </script>
 </body>
 </html>
