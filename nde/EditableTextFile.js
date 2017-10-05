@@ -30,46 +30,65 @@ export default class EditableTextFile extends React.Component {
   constructor ({filepath, glContainer}) {
     super()
     this.state = {
-      content: 'Loading...',
-      unsavedContent: null
+      content: null,
+      unsavedContent: null,
+      language: null
     }
     glContainer.setTitle(filepath)
   }
   
   editorDidMount(editor, monaco) {
-    console.log('editorDidMount', editor);
+    // Set language
+    let ext = path.extname(this.props.filepath)
+    for (let l of monaco.languages.getLanguages()) {
+      if (l.extensions.includes(ext)) {
+        this.setState({language: l.id})
+        break
+      }
+    }
+    // Extend context menu
     editor.addAction({
       id: 'saveFile',
       label: 'Save File',
       keybindings: [ monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S ],
-      contextMenuGroupId: 'navigation',
-      contextMenuOrder: 1.5,
+      contextMenuGroupId: '2_custom',
+      contextMenuOrder: 0,
       run: (ed) => this.saveFile()
-    })
-    editor.addAction({
-      id: 'hotReload',
-      label: 'Hot Reload Page',
-      run: (ed) => this.hotReload()
     })
     editor.addAction({
       id: 'downloadFile',
       label: 'Download File',
+      contextMenuGroupId: '2_custom',
+      contextMenuOrder: 1,
       run: (ed) => this.downloadFile()
     })
     editor.addAction({
       id: 'reloadSavedFile',
       label: 'Reload Saved File',
+      contextMenuGroupId: '2_custom',
+      contextMenuOrder: 2,
       run: (ed) => this.reloadSavedFile()
     })
     editor.addAction({
       id: 'restoreOriginalFile',
       label: 'Restore Original File',
+      contextMenuGroupId: '2_custom',
+      contextMenuOrder: 3,
       run: (ed) => this.restoreOriginalFile()
     })
     editor.addAction({
-      id: 'runCommand',
-      label: 'Run',
-      run: (ed) => this.runCommand()
+      id: 'preview',
+      label: 'Preview',
+      contextMenuGroupId: '2_custom',
+      contextMenuOrder: 4,
+      run: (ed) => this.preview()
+    })
+    editor.addAction({
+      id: 'hotReload',
+      label: 'Hot Reload Page',
+      contextMenuGroupId: '2_custom',
+      contextMenuOrder: 5,
+      run: (ed) => hotReload()
     })
   }
   componentDidMount () {
@@ -88,6 +107,16 @@ export default class EditableTextFile extends React.Component {
     // TODO... what to do with file?
     this.setState({
       unsavedContent: newValue
+    })
+  }
+  preview () {
+    this.props.glContainer.layoutManager.root.contentItems[0].addChild({
+      type: 'column',
+      content:[{
+        type:'react-component',
+        component: 'MarkdownViewer',
+        props: { filepath: this.props.filepath }
+      }]
     })
   }
   saveFile () {
@@ -123,8 +152,8 @@ export default class EditableTextFile extends React.Component {
     };
     return (
       <MonacoEditor
-        language="javascript"
         theme="vs-dark"
+        language={this.state.language}
         value={this.state.unsavedContent || this.state.content}
         options={options}
         onChange={onChange}

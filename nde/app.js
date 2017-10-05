@@ -45,29 +45,23 @@ if (module) {
       content: [{
         type:'react-component',
         component: 'FileNavigator',
-        props: {  }
+        props: {  },
+        width: 15
       },{
         type:'react-component',
         component: 'BasicFileTree',
-        props: { data: starterData }
+        props: { data: starterData },
+        width: 15
       },{
         type: 'column',
         content:[{
           type:'react-component',
           component: 'EditableTextFile',
           props: { filepath: 'nde/app.js' }
-        },{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'nde/EditableTextFile.js' }
         }]
       }, {
         type: 'column',
         content:[{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'README.md' }
-        },{
           type:'react-component',
           component: 'MarkdownViewer',
           props: { filepath: 'README.md' }
