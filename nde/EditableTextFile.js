@@ -1,10 +1,7 @@
 import React from 'react'
-import AceEditor from 'react-ace'
-import 'brace/theme/monokai'
+import MonacoEditor from 'react-monaco-editor'
 import fs from 'fs'
 import path from 'path'
-import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
-import cuid from 'cuid'
 import download from 'downloadjs'
 
 const hotReload = () => {
@@ -32,43 +29,53 @@ const mkdirs = (filename) => {
 export default class EditableTextFile extends React.Component {
   constructor ({filepath, glContainer}) {
     super()
-    let mode = null
-    if (filepath.endsWith('.md')) {
-      mode = 'markdown'
-    } else if (filepath.endsWith('.js')) {
-      mode = 'javascript'
-    }
-    if (mode) {
-      System.import('brace/mode/' + mode).then( () => {
-        this.setState({mode: mode})
-      })
-    }
     this.state = {
       content: 'Loading...',
-      unsavedContent: null,
-      cuid: cuid()
+      unsavedContent: null
     }
     glContainer.setTitle(filepath)
-    glContainer.on('resize', (foo) => {
-      this.ace.editor.resize()
+  }
+  
+  editorDidMount(editor, monaco) {
+    console.log('editorDidMount', editor);
+    editor.addAction({
+      id: 'saveFile',
+      label: 'Save File',
+      keybindings: [ monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S ],
+      contextMenuGroupId: 'navigation',
+      contextMenuOrder: 1.5,
+      run: (ed) => this.saveFile()
+    })
+    editor.addAction({
+      id: 'hotReload',
+      label: 'Hot Reload Page',
+      run: (ed) => this.hotReload()
+    })
+    editor.addAction({
+      id: 'downloadFile',
+      label: 'Download File',
+      run: (ed) => this.downloadFile()
+    })
+    editor.addAction({
+      id: 'reloadSavedFile',
+      label: 'Reload Saved File',
+      run: (ed) => this.reloadSavedFile()
+    })
+    editor.addAction({
+      id: 'restoreOriginalFile',
+      label: 'Restore Original File',
+      run: (ed) => this.restoreOriginalFile()
+    })
+    editor.addAction({
+      id: 'runCommand',
+      label: 'Run',
+      run: (ed) => this.runCommand()
     })
   }
   componentDidMount () {
     fs.readFile(this.props.filepath, 'utf8', (err, text) => {
       if (err) return console.log(err)
       this.setState({content: text, unsavedContent: text})
-    })
-    // Thanks https://github.com/joemccann/dillinger/issues/66
-    this.ace.editor.commands.addCommand({
-      name: 'saveFile',
-      bindKey: {
-        win: 'Ctrl-S',
-        mac: 'Command-S',
-        sender: 'editor|cli'
-      },
-      exec: (env, args, request) => {
-       this.saveFile()
-      }
     })
   }
   runCommand () {
@@ -103,44 +110,27 @@ export default class EditableTextFile extends React.Component {
   }
   render () {
     let onChange = this.onChange.bind(this)
+    let editorDidMount = this.editorDidMount.bind(this)
+    const requireConfig = {
+      url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.min.js',
+      paths: {
+        'vs': '/nde/deps/monaco/dev/vs'
+      }
+    };
+    const options = {
+      automaticLayout: true,
+      selectOnLineNumbers: true
+    };
     return (
-      <article>
-        <ContextMenuTrigger id={this.state.cuid}>
-          <AceEditor
-            ref={(ace) => { this.ace = ace; }}
-            mode={this.state.mode}
-            theme="monokai"
-            width="100%"
-            height="100%"
-            value={this.state.unsavedContent || this.state.content}
-            onChange={onChange}
-            style={{fontFamily: 'Fira Code'}}
-            editorProps={{$blockScrolling: true}}
-          />
-        </ContextMenuTrigger>
-        <ContextMenu id={this.state.cuid}>
-          <MenuItem onClick={hotReload}>
-            Hot Reload Page
-          </MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.saveFile()}>
-            Save File
-          </MenuItem>
-          <MenuItem onClick={() => this.downloadFile()}>
-            Download File
-          </MenuItem>
-          <MenuItem onClick={() => this.reloadSavedFile()}>
-            Reload Saved File
-          </MenuItem>
-          <MenuItem onClick={() => this.restoreOriginalFile()}>
-            Restore Original File
-          </MenuItem>
-          <MenuItem divider />
-          <MenuItem onClick={() => this.runCommand()}>
-            Run <span className="icon">▶️</span>
-          </MenuItem>
-        </ContextMenu>
-      </article>
+      <MonacoEditor
+        language="javascript"
+        theme="vs-dark"
+        value={this.state.unsavedContent || this.state.content}
+        options={options}
+        onChange={onChange}
+        editorDidMount={editorDidMount}
+        requireConfig={requireConfig}
+      />
     );
   }
 }
