@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/wmhilton/nde/issues"
   },
-  "homepage": "https://nde.now.sh"
+  "homepage": "https://nde.now.sh",
+  "now": {
+    "type": "static",
+    "name": "nde",
+    "alias": "nde",
+    "public": true
+  }
 }
