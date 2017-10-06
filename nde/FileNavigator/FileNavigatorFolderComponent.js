@@ -1,5 +1,6 @@
 import React from 'react'
 import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
+import Octicon from 'react-octicons-modular'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import cuid from 'cuid'
 import fs from 'fs'
@@ -7,6 +8,7 @@ import path from 'path'
 import git from 'isomorphic-git'
 import { prompt } from '../SweetAlert'
 import swal from 'sweetalert2'
+import ghparse from 'parse-github-url'
 
 export default class FileNavigatorFolderComponent extends React.Component {
   constructor () {
@@ -32,35 +34,43 @@ export default class FileNavigatorFolderComponent extends React.Component {
     git(this.props.filepath).init()
   }
   async gitClone () {
-    let steps = [
-      {
-        text: 'Github API token to use',
-        input: 'password',
-        confirmButtonText: 'Next &rarr;',
-        progressSteps: ['1', '2']
-      },{
-        text: 'Github repo to clone',
-        input: 'text',
-        placeholder: 'user/repo',
-        confirmButtonText: 'Clone Now',
-        progressSteps: ['1', '2']
-      }
-    ]
+    let url = await prompt({
+      text: 'Github repo to clone',
+      input: 'text',
+      placeholder: 'user/repo',
+      confirmButtonText: 'Clone Now'
+    })
+    let {branch, repo, name, owner} = ghparse(url)
+    this.setFolderStateData('busy', true)
+    let dir = path.join(this.props.filepath, name)
+    this.props.glEventHub.emit('setFolderStateData', {fullpath: dir, key: 'busy', value: true})
     try {
-        let result = await swal.queue(steps)
-        let token = result[0]
-        let url = result[1]
-        this.setFolderStateData('busy', true)
-        await git(this.props.filepath)
-            .githubToken(token)
-            .depth(1)
-            .clone(`https://cors-buster-jfpactjnem.now.sh/github.com/${url}`)
-        
+      await git(dir)
+        .depth(1)
+        .branch(branch)
+        .clone(`https://cors-buster-jfpactjnem.now.sh/github.com/${repo}`)
     } catch (err) {
-        console.log(err)
+      console.log('err =', err)
     } finally {
-        swal.resetDefaults()
-        this.setFolderStateData('busy', false)
+      this.props.glEventHub.emit('setFolderStateData', {fullpath: dir, key: 'busy', value: false})
+      this.setFolderStateData('busy', false)
+    }
+  }
+  async gitPush () {
+    let token = await prompt({
+      text: 'Github API token to use',
+      input: 'password'
+    })
+    this.setFolderStateData('busy', true)
+    try {
+      await git(this.props.filepath)
+        .githubToken(token)
+        .remote('origin')
+        .push('refs/heads/master')
+    } catch (err) {
+      console.log('err =', err)
+    } finally {
+      this.setFolderStateData('busy', false)
     }
   }
   render() {
@@ -77,18 +87,20 @@ export default class FileNavigatorFolderComponent extends React.Component {
         <ContextMenu id={this.state.cuid}>
           <SubMenu title="Git" hoverDelay={50}>
             <MenuItem onClick={() => this.gitInit()}>
-              Init <FileIcon filename=".git"></FileIcon>
+              Init <Octicon name="repo"/>
             </MenuItem>
             <MenuItem onClick={() => this.gitClone()}>
-              Clone <FileIcon filename=".git"></FileIcon>
+              Clone <Octicon name="repo-clone"/>
+            </MenuItem>
+            <MenuItem disabled onClick={() => this.gitPush()}>
+              Push <Octicon name="repo-push"/>
             </MenuItem>
           </SubMenu>
-
           <MenuItem onClick={() => this.newFile()}>
             New File <i className="icon text-icon"></i>
           </MenuItem>
           <MenuItem onClick={() => this.newFolder()}>
-            New Folder <FolderIcon></FolderIcon>
+            New Folder <span style={{paddingTop: '3px', position: 'absolute', right: 0}}><FolderIcon></FolderIcon></span>
           </MenuItem>
         </ContextMenu>
       </ContextMenuTrigger>

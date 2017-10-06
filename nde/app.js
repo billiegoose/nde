@@ -47,11 +47,11 @@ if (module) {
         component: 'FileNavigator',
         props: {  },
         width: 15
-      },{
-        type:'react-component',
-        component: 'BasicFileTree',
-        props: { data: starterData },
-        width: 15
+      // },{
+      //   type:'react-component',
+      //   component: 'BasicFileTree',
+      //   props: { data: starterData },
+      //   width: 15
       },{
         type: 'column',
         content:[{

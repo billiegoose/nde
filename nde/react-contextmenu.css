@@ -28,7 +28,11 @@
     white-space: nowrap;
     background: 0 0;
     border: 0;
-	cursor: pointer;
+    border-bottom: 1px solid rgba(0,0,0,.15);
+	  cursor: pointer;
+}
+.react-contextmenu-item:last-child {
+  border-bottom: none;
 }
 .react-contextmenu-item .icon {
     position: absolute;
@@ -40,6 +44,7 @@
     background-color: #DDD;
     outline: solid 1px #20a0ff;
     text-decoration: none;
+    border-bottom-color: transparent;
 }
 
 .react-contextmenu-item.react-contextmenu-item--disabled,
@@ -47,6 +52,8 @@
     color: #878a8c;
     background-color: transparent;
     border-color: rgba(0,0,0,.15);
+    text-decoration: line-through;
+    outline: none;
 }
 
 .react-contextmenu-item--divider {
@@ -62,6 +69,7 @@
 
 .react-contextmenu-item.react-contextmenu-submenu {
 	padding: 0;
+  border-bottom: none;
 }
 
 .react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item:after {
