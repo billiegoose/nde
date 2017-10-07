@@ -6,8 +6,14 @@ import path from 'path'
 import {FileList} from 'react-file-browser'
 import FileNavigatorFileComponent from './FileNavigatorFileComponent'
 import FileNavigatorFolderComponent from './FileNavigatorFolderComponent'
-
-import starterData from '../../index.json'
+import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
+import Octicon from 'react-octicons-modular'
+import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
+import cuid from 'cuid'
+import git from 'isomorphic-git'
+import { prompt } from '../SweetAlert'
+import swal from 'sweetalert2'
+import ghparse from 'parse-github-url'
 
 import _ from 'lodash'
 
@@ -71,9 +77,9 @@ class FileNavigator extends React.Component {
   }
   componentDidMount () {
     this.props.glContainer.setTitle('File Navigator')
-    const fn = `MotherLayout.eventHub.emit('DISABLE_CONTEXTMENU')`
-    let button = $(`<li title="disable right-click menu"><input type="checkbox" onclick="${fn}"></li>`)
-    this.props.glContainer.parent.container.tab.header.controlsContainer.prepend(button)
+    // const fn = `MotherLayout.eventHub.emit('DISABLE_CONTEXTMENU')`
+    // let button = $(`<li title="disable right-click menu"><input type="checkbox" onclick="${fn}"></li>`)
+    // this.props.glContainer.parent.container.tab.header.controlsContainer.prepend(button)
 
     this.props.glEventHub.on('toggleFolder', this.toggleFolder.bind(this))
     this.props.glEventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
@@ -87,22 +93,28 @@ class FileNavigator extends React.Component {
     fs.Events.on('change', ({eventType, filename}) => this.refreshDir(filename))
   }
   refreshDir (fullpath) {
-    statDir(fullpath).then(result => {
-      this.setState((state, props) => {
-        _.merge(state, toDirStructure(fullpath, result))
-        return state
-      })
-    }).catch(err => {
-      if (err.code === 'ENOTDIR') {
-        // Must be a file!
+    isFile(fullpath)
+    .then(is_file => {
+      // File deleted case
+      if (is_file === null) {
+        this.setState((state, props) => {
+          _.unset(state, ['data', ...fullpath.split('/').filter(x => x !== '')])
+          return state
+        })
+      } else if (is_file === true) {
         this.setState((state, props) => {
           _.merge(state, toDirStructure(fullpath, null))
           return state
         })
-        return
+      } else {
+        statDir(fullpath).then(result => {
+          this.setState((state, props) => {
+            _.merge(state, toDirStructure(fullpath, result))
+            return state
+          })
+        }).catch(console.log)
       }
-      throw err
-    })
+    }).catch(console.log)
   }
   toggleFolder (fullpath) {
     this.setState((state, props) => {
@@ -121,19 +133,97 @@ class FileNavigator extends React.Component {
       return state
     })
   }
+  async newFile () {
+    let filename = await prompt('Enter filename:')
+    fs.writeFile(path.join(this.props.root, filename), '')
+  }
+  async newFolder () {
+    fs.mkdir(path.join(this.props.root, await prompt('Enter foldername:')))
+  }
+  async deleteFolder () {
+    fs.rmdir(this.props.root)
+  }
+  gitInit () {
+    git(this.props.root).init()
+  }
+  async gitClone () {
+    let url = await prompt({
+      text: 'Github repo to clone',
+      input: 'text',
+      placeholder: 'user/repo',
+      confirmButtonText: 'Clone Now'
+    })
+    let {branch, repo, name, owner} = ghparse(url)
+    this.setFolderStateData('busy', true)
+    let dir = path.join(this.props.root, name)
+    this.props.glEventHub.emit('setFolderStateData', {fullpath: dir, key: 'busy', value: true})
+    try {
+      await git(dir)
+        .depth(1)
+        .branch(branch)
+        .clone(`https://cors-buster-jfpactjnem.now.sh/github.com/${repo}`)
+    } catch (err) {
+      console.log('err =', err)
+    } finally {
+      this.props.glEventHub.emit('setFolderStateData', {fullpath: dir, key: 'busy', value: false})
+      this.setFolderStateData('busy', false)
+    }
+  }
+  async gitPush () {
+    let token = await prompt({
+      text: 'Github API token to use',
+      input: 'password'
+    })
+    this.setFolderStateData('busy', true)
+    try {
+      await git(this.props.root)
+        .githubToken(token)
+        .remote('origin')
+        .push('refs/heads/master')
+    } catch (err) {
+      console.log('err =', err)
+    } finally {
+      this.setFolderStateData('busy', false)
+    }
+  }
   render () {
     return (
-      <nav className="_tree">
-        <FileList
-          disableContextMenu={this.state.disableContextMenu}
-          root={[]}
-          data={this.state.data}
-          statedata={this.state.statedata}
-          FileComponent={FileNavigatorFileComponent}
-          FolderComponent={FileNavigatorFolderComponent}
-          {...this.props}
-        />
-      </nav>
+      <ContextMenuTrigger id={this.state.cuid} disable={this.state.disableContextMenu}>
+        <nav className="_tree">
+          <FileList
+            disableContextMenu={this.state.disableContextMenu}
+            root={[]}
+            data={this.state.data}
+            statedata={this.state.statedata}
+            FileComponent={FileNavigatorFileComponent}
+            FolderComponent={FileNavigatorFolderComponent}
+            {...this.props}
+          />
+        </nav>
+
+        <ContextMenu id={this.state.cuid}>
+          <SubMenu title="Git" hoverDelay={50}>
+            <MenuItem onClick={() => this.gitInit()}>
+              Init <Octicon name="repo"/>
+            </MenuItem>
+            <MenuItem onClick={() => this.gitClone()}>
+              Clone <Octicon name="repo-clone"/>
+            </MenuItem>
+            <MenuItem disabled onClick={() => this.gitPush()}>
+              Push <Octicon name="repo-push"/>
+            </MenuItem>
+          </SubMenu>
+          <MenuItem onClick={() => this.newFile()}>
+            New File <i className="icon text-icon"></i>
+          </MenuItem>
+          <MenuItem onClick={() => this.newFolder()}>
+            New Folder <span style={{paddingTop: '3px', position: 'absolute', right: 0}}><FolderIcon></FolderIcon></span>
+          </MenuItem>
+          <MenuItem onClick={() => this.deleteFolder()}>
+            Delete Folder <i className="icon trash-icon"></i>
+          </MenuItem>
+        </ContextMenu>
+      </ContextMenuTrigger>
     )
   }
 }

@@ -20,7 +20,8 @@ export default class FileNavigatorFileComponent extends React.Component {
     })
   }
   doubleclick () {
-    this.props.glContainer.layoutManager.root.getItemsByType('stack')[0].addChild({
+    let stack = this.props.glContainer.layoutManager.root.getItemsById('MainEditor')[0]
+    stack.addChild({
       type:'react-component',
       component: 'EditableTextFile',
       props: { filepath: this.props.filepath }

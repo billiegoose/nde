@@ -42,29 +42,50 @@ if (module) {
   MotherLayout = new GoldenLayout({
     content: [{
       type: 'row',
-      content: [{
-        type:'react-component',
-        component: 'FileNavigator',
-        props: {  },
-        width: 15
+      content: [
+      {
+        type: 'column',
+        id: 'FileNavigator',
+        width: 15,
+        content:[{
+          type:'react-component',
+          isClosable: false,
+          showPopoutIcon: false,
+          showMaximiseIcon: false,
+          id: 'FileNavigator',
+          component: 'FileNavigator',
+          props: {
+            root: '/'
+          },
       // },{
       //   type:'react-component',
       //   component: 'BasicFileTree',
       //   props: { data: starterData },
       //   width: 15
+        }]
       },{
         type: 'column',
         content:[{
-          type:'react-component',
-          component: 'EditableTextFile',
-          props: { filepath: 'nde/app.js' }
+          type: 'stack',
+          id: 'MainEditor',
+          isClosable: false,
+          content:[{
+            type:'react-component',
+            component: 'EditableTextFile',
+            props: { filepath: 'nde/app.js' }
+          }]
         }]
       }, {
         type: 'column',
         content:[{
-          type:'react-component',
-          component: 'MarkdownViewer',
-          props: { filepath: 'README.md' }
+          type: 'stack',
+          id: 'MainPreview',
+          isClosable: false,
+          content:[{
+            type:'react-component',
+            component: 'MarkdownViewer',
+            props: { filepath: 'README.md' }
+          }]
         }]
       }]
     }]

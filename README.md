@@ -28,7 +28,6 @@ Milestone reached! The IDE can be used to edit itself!
 
 ## Next steps:
 
-- [ ] Fix bug where new files don't appear until page refresh
 - [ ] Visually indicate the git status of files in the tree
 - [ ] Add menu item for adding / removing a file from the git index
 - [ ] Add a menu item to view the file diff with Monaco

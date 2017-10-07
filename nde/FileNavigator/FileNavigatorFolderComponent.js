@@ -25,10 +25,13 @@ export default class FileNavigatorFolderComponent extends React.Component {
   }
   async newFile () {
     let filename = await prompt('Enter filename:')
-    fs.writeFile(path.join(this.props.filepath, filename))
+    fs.writeFile(path.join(this.props.filepath, filename), '')
   }
   async newFolder () {
     fs.mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
+  }
+  async deleteFolder () {
+    fs.rmdir(this.props.filepath)
   }
   gitInit () {
     git(this.props.filepath).init()
@@ -101,6 +104,9 @@ export default class FileNavigatorFolderComponent extends React.Component {
           </MenuItem>
           <MenuItem onClick={() => this.newFolder()}>
             New Folder <span style={{paddingTop: '3px', position: 'absolute', right: 0}}><FolderIcon></FolderIcon></span>
+          </MenuItem>
+          <MenuItem onClick={() => this.deleteFolder()}>
+            Delete Folder <i className="icon trash-icon"></i>
           </MenuItem>
         </ContextMenu>
       </ContextMenuTrigger>

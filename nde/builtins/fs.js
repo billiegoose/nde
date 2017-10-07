@@ -87,7 +87,56 @@ fs.mkdirSync = function (path, ...args) {
   }, 0)
   return results
 }
-
+fs._origUnlink = fs.unlink
+fs.unlink = function (path, callback) {
+  console.log('unlink', path)
+  fs._origUnlink(path, (err) => {
+    if (!err) {
+      fs.Events.emit('change', {
+        eventType: 'change',
+        filename: path
+      })
+    }
+    if (callback) return callback(err)
+  })
+}
+fs._origUnlinkSync = fs.unlinkSync
+fs.unlinkSync = function (path) {
+  console.log('unlink', path)
+  fs._origUnlinkSync(path)
+  setTimeout( () => {
+    fs.Events.emit('change', {
+      eventType: 'change',
+      filename: path
+    })
+  }, 0)
+  return undefined
+}
+fs._origRmdir = fs.rmdir
+fs.rmdir = function (path, callback) {
+  console.log('rmdir', path)
+  fs._origRmdir(path, (err) => {
+    if (!err) {
+      fs.Events.emit('change', {
+        eventType: 'change',
+        filename: path
+      })
+    }
+    if (callback) return callback(err)
+  })
+}
+fs._origRmdirSync = fs.rmdirSync
+fs.rmdirSync = function (path) {
+  console.log('rmdir', path)
+  fs._origRmdirSync(path)
+  setTimeout( () => {
+    fs.Events.emit('change', {
+      eventType: 'change',
+      filename: path
+    })
+  }, 0)
+  return undefined
+}
 
 window.fs = fs
 export default fs
