@@ -82,6 +82,7 @@ class FileNavigator extends React.Component {
     // this.props.glContainer.parent.container.tab.header.controlsContainer.prepend(button)
 
     this.props.glEventHub.on('toggleFolder', this.toggleFolder.bind(this))
+    this.props.glEventHub.on('refreshGitStatus', this.refreshDir.bind(this))
     this.props.glEventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
     this.props.glEventHub.on('DISABLE_CONTEXTMENU', () => {
       this.setState((state, props) => ({
@@ -106,6 +107,11 @@ class FileNavigator extends React.Component {
           _.merge(state, toDirStructure(fullpath, null))
           return state
         })
+        git().findRoot(fullpath).then(dir =>
+          git(dir).status(path.relative(dir, fullpath)).then(status =>
+            this.props.glEventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+          )
+        ).catch(() => null)
       } else {
         statDir(fullpath).then(result => {
           this.setState((state, props) => {
@@ -113,6 +119,20 @@ class FileNavigator extends React.Component {
             return state
           })
         }).catch(console.log)
+        git().findRoot(fullpath).then(dir => {
+          console.log('dir =', dir)
+          // This is stupid. Stupid stupid data structure choices.
+          fs.readdir(fullpath, (err, files) => {
+            for (let file of files) {
+              console.log('file =', file)
+              let rpath = path.relative(dir, path.join(fullpath, file))
+              console.log('rpath =', rpath)
+              git(dir).status(rpath).then(status =>
+                this.props.glEventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
+              ).catch(() => null)
+            }
+          })
+        }).catch(() => null)
       }
     }).catch(console.log)
   }
