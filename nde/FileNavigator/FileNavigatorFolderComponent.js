@@ -61,18 +61,45 @@ export default class FileNavigatorFolderComponent extends React.Component {
   }
   async gitPush () {
     let token = await prompt({
-      text: 'Github API token to use',
+      text: 'Enter a Github Personal Access Token to use',
       input: 'password'
     })
     this.setFolderStateData('busy', true)
     try {
       await git(this.props.filepath)
-        .githubToken(token)
+        .auth(token)
         .remote('origin')
         .push('refs/heads/master')
     } catch (err) {
       console.log('err =', err)
     } finally {
+      this.props.glEventHub.emit('refreshGitStatus', this.props.filepath)
+      this.setFolderStateData('busy', false)
+    }
+  }
+  async gitCommit () {
+    let author = await prompt({
+      text: 'Author Name',
+      input: 'text'
+    })
+    let email = await prompt({
+      text: 'Author Email',
+      input: 'text'
+    })
+    let msg = await prompt({
+      text: 'Commit Message',
+      input: 'text'
+    })
+    try {
+      this.setFolderStateData('busy', true)
+      await git(this.props.filepath)
+        .author(author)
+        .email(email)
+        .commit(msg)
+    } catch (err) {
+      console.log('err =', err)
+    } finally {
+      this.props.glEventHub.emit('refreshGitStatus', this.props.filepath)
       this.setFolderStateData('busy', false)
     }
   }
@@ -90,13 +117,16 @@ export default class FileNavigatorFolderComponent extends React.Component {
         <ContextMenu id={this.state.cuid}>
           <SubMenu title="Git" hoverDelay={50}>
             <MenuItem onClick={() => this.gitInit()}>
-              Init <Octicon name="repo"/>
+              Init <Octicon name="repo" style={{color: 'black'}}/>
             </MenuItem>
             <MenuItem onClick={() => this.gitClone()}>
-              Clone <Octicon name="repo-clone"/>
+              Clone <Octicon name="repo-clone" style={{color: 'black'}}/>
             </MenuItem>
-            <MenuItem disabled onClick={() => this.gitPush()}>
-              Push <Octicon name="repo-push"/>
+            <MenuItem onClick={() => this.gitCommit()}>
+              Commit <Octicon name="git-commit" style={{color: 'black'}}/>
+            </MenuItem>
+            <MenuItem onClick={() => this.gitPush()}>
+              Push <Octicon name="repo-push" style={{color: 'black'}}/>
             </MenuItem>
           </SubMenu>
           <MenuItem onClick={() => this.newFile()}>

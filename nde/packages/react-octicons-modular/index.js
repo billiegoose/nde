@@ -12,6 +12,6 @@ export default class Octicon extends React.Component {
     })
   }
   render () {
-    return (<span className="icon" dangerouslySetInnerHTML={{__html: this.state.svg}} />)
+    return (<span className={'icon ' + this.props.className} dangerouslySetInnerHTML={{__html: this.state.svg}} style={this.props.style}/>)
   }
 }

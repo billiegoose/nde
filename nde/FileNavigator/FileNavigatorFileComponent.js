@@ -46,11 +46,11 @@ export default class FileNavigatorFileComponent extends React.Component {
         </File>
 
         <ContextMenu id={this.state.cuid}>
+          <MenuItem onClick={() => this.addToIndex()}>
+            Add to Stage <i className="icon git-icon medium-red"></i>
+          </MenuItem>
           <MenuItem onClick={() => this.deleteFile()}>
             Delete File <i className="icon trash-icon"></i>
-          </MenuItem>
-          <MenuItem onClick={() => this.addToIndex()}>
-            Add to Stage <i className="icon git-icon"></i>
           </MenuItem>
         </ContextMenu>
       </ContextMenuTrigger>
