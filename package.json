@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "description": "The IDE of the future, today!",
   "scripts": {
-    "build": "cp service-worker.js .. && cd .. && npx browserfs nde/index.json",
-    "now": "cp now.json .. && cd .. && now && now alias",
+    "build": " cd .. && cp nde/service-worker.js . && rm -f index.html && rm -f now.json && npx browserfs nde/index.json && cp nde/default-redirect.html index.html",
+    "now": "cd .. && cp nde/now.json . && now && now alias",
     "start": "cd .. && npx browser-sync start --server --files"
   },
   "repository": {
