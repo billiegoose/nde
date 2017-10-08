@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "description": "The IDE of the future, today!",
   "scripts": {
-    "build": "npx browserfs index.json",
-    "start": "npx browser-sync start --server --files"
+    "build": "cp service-worker.js .. && cd .. && npx browserfs nde/index.json",
+    "now": "cp now.json .. && cd .. && now && now alias",
+    "start": "cd .. && npx browser-sync start --server --files"
   },
   "repository": {
     "type": "git",
@@ -15,11 +16,5 @@
   "bugs": {
     "url": "https://github.com/wmhilton/nde/issues"
   },
-  "homepage": "https://nde.now.sh",
-  "now": {
-    "type": "static",
-    "name": "nde",
-    "alias": "nde",
-    "public": true
-  }
+  "homepage": "https://nde.now.sh"
 }

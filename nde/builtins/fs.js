@@ -1,6 +1,6 @@
 // Step 1. Setup BrowserFS
 import BrowserFS from './browserfs'
-import index from '/index.json'
+import index from '../../index.json'
 
 export const fsReady = new Promise(function(resolve, reject) {
   BrowserFS.configure({
@@ -16,7 +16,8 @@ export const fsReady = new Promise(function(resolve, reject) {
           readable: {
             fs: "XmlHttpRequest",
             options: {
-              index: index
+              index: index,
+              baseUrl: '..'
             }
           }
         }

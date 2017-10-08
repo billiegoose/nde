@@ -1,6 +1,6 @@
 global = self
-importScripts('/nde/builtins/browserfs.js')
-importScripts('/nde/deps/mime/bundle.js')
+importScripts('nde/nde/builtins/browserfs.js')
+importScripts('nde/nde/deps/mime/bundle.js')
 importScripts('https://unpkg.com/omnipath@1.1.5/dist/omnipath.min.js')
 
 console.log('OmniPath =', OmniPath)
@@ -21,7 +21,7 @@ const Files = new Promise(function(resolve, reject) {
           readable: {
             fs: "XmlHttpRequest",
             options: {
-              index:{"index.html":null,"index.json":null,"LICENSE":null,"nde":{"app.css":null,"app.js":null,"builtins":{"browserfs.js":null,"browserfs.js.map":null,"buffer.js":null,"fs.js":null},"deps":{"mime":{"bundle.js":null},"monaco":{"CHANGELOG.md":null,"dev":{"bundleInfo.json":null,"nls.metadata.json":null,"vs":{"base":{"worker":{"workerMain.js":null,"workerMain.js.map":null}},"basic-languages":{"src":{"bat.js":null,"coffee.js":null,"cpp.js":null,"csharp.js":null,"css.js":null,"dockerfile.js":null,"fsharp.js":null,"go.js":null,"handlebars.js":null,"html.js":null,"ini.js":null,"java.js":null,"less.js":null,"lua.js":null,"markdown.js":null,"msdax.js":null,"objective-c.js":null,"php.js":null,"postiats.js":null,"powershell.js":null,"pug.js":null,"python.js":null,"r.js":null,"razor.js":null,"ruby.js":null,"sb.js":null,"scss.js":null,"solidity.js":null,"sql.js":null,"swift.js":null,"vb.js":null,"xml.js":null,"yaml.js":null}},"editor":{"contrib":{"suggest":{"browser":{"media":{"String_16x.svg":null,"String_inverse_16x.svg":null}}}},"editor.main.css":null,"editor.main.js":null,"editor.main.js.map":null,"editor.main.nls.de.js":null,"editor.main.nls.es.js":null,"editor.main.nls.fr.js":null,"editor.main.nls.hu.js":null,"editor.main.nls.it.js":null,"editor.main.nls.ja.js":null,"editor.main.nls.js":null,"editor.main.nls.ko.js":null,"editor.main.nls.pt-br.js":null,"editor.main.nls.ru.js":null,"editor.main.nls.tr.js":null,"editor.main.nls.zh-cn.js":null,"editor.main.nls.zh-tw.js":null,"standalone":{"browser":{"quickOpen":{"symbol-sprite.svg":null}}}},"language":{"css":{"cssMode.js":null,"cssWorker.js":null},"html":{"htmlMode.js":null,"htmlWorker.js":null},"json":{"jsonMode.js":null,"jsonWorker.js":null},"typescript":{"lib":{"typescriptServices.js":null},"src":{"mode.js":null,"worker.js":null}}},"loader.js":null,"loader.js.map":null}},"LICENSE":null,"min":{"vs":{"base":{"worker":{"workerMain.js":null}},"basic-languages":{"src":{"bat.js":null,"coffee.js":null,"cpp.js":null,"csharp.js":null,"css.js":null,"dockerfile.js":null,"fsharp.js":null,"go.js":null,"handlebars.js":null,"html.js":null,"ini.js":null,"java.js":null,"less.js":null,"lua.js":null,"markdown.js":null,"msdax.js":null,"objective-c.js":null,"php.js":null,"postiats.js":null,"powershell.js":null,"pug.js":null,"python.js":null,"r.js":null,"razor.js":null,"ruby.js":null,"sb.js":null,"scss.js":null,"solidity.js":null,"sql.js":null,"swift.js":null,"vb.js":null,"xml.js":null,"yaml.js":null}},"editor":{"contrib":{"suggest":{"browser":{"media":{"String_16x.svg":null,"String_inverse_16x.svg":null}}}},"editor.main.css":null,"editor.main.js":null,"editor.main.nls.de.js":null,"editor.main.nls.es.js":null,"editor.main.nls.fr.js":null,"editor.main.nls.hu.js":null,"editor.main.nls.it.js":null,"editor.main.nls.ja.js":null,"editor.main.nls.js":null,"editor.main.nls.ko.js":null,"editor.main.nls.pt-br.js":null,"editor.main.nls.ru.js":null,"editor.main.nls.tr.js":null,"editor.main.nls.zh-cn.js":null,"editor.main.nls.zh-tw.js":null,"standalone":{"browser":{"quickOpen":{"symbol-sprite.svg":null}}}},"language":{"css":{"cssMode.js":null,"cssWorker.js":null},"html":{"htmlMode.js":null,"htmlWorker.js":null},"json":{"jsonMode.js":null,"jsonWorker.js":null},"typescript":{"lib":{"typescriptServices.js":null},"src":{"mode.js":null,"worker.js":null}}},"loader.js":null}},"min-maps":{"vs":{"base":{"worker":{"workerMain.js.map":null}},"editor":{"editor.main.js.map":null,"editor.main.nls.de.js.map":null,"editor.main.nls.es.js.map":null,"editor.main.nls.fr.js.map":null,"editor.main.nls.hu.js.map":null,"editor.main.nls.it.js.map":null,"editor.main.nls.ja.js.map":null,"editor.main.nls.js.map":null,"editor.main.nls.ko.js.map":null,"editor.main.nls.pt-br.js.map":null,"editor.main.nls.ru.js.map":null,"editor.main.nls.tr.js.map":null,"editor.main.nls.zh-cn.js.map":null,"editor.main.nls.zh-tw.js.map":null},"loader.js.map":null}},"monaco.d.ts":null,"package.json":null,"README.md":null,"ThirdPartyNotices.txt":null}},"EditableTextFile.js":null,"FileNavigator":{"FileNavigator.js":null,"FileNavigatorFileComponent.js":null,"FileNavigatorFolderComponent.js":null,"StatusIcon.js":null},"MarkdownViewer.js":null,"packages":{"FileTreeView":{"atom-styles.css":null,"Example.js":null,"File.js":null,"FileIcon.js":null,"FileList.js":null,"Folder.js":null,"FolderIcon.js":null,"index.js":null},"react-octicons-modular":{"index.js":null}},"react-contextmenu.css":null,"SweetAlert.js":null,"TryCatchHOC.js":null},"package.json":null,"README.md":null,"service-worker.js":null}
+              index: {"nde":{"index.html":null,"index.json":null,"LICENSE":null,"nde":{"app.css":null,"app.js":null,"builtins":{"browserfs.js":null,"browserfs.js.map":null,"buffer.js":null,"fs.js":null},"deps":{"mime":{"bundle.js":null},"monaco":{"CHANGELOG.md":null,"dev":{"bundleInfo.json":null,"nls.metadata.json":null,"vs":{"base":{"worker":{"workerMain.js":null,"workerMain.js.map":null}},"basic-languages":{"src":{"bat.js":null,"coffee.js":null,"cpp.js":null,"csharp.js":null,"css.js":null,"dockerfile.js":null,"fsharp.js":null,"go.js":null,"handlebars.js":null,"html.js":null,"ini.js":null,"java.js":null,"less.js":null,"lua.js":null,"markdown.js":null,"msdax.js":null,"objective-c.js":null,"php.js":null,"postiats.js":null,"powershell.js":null,"pug.js":null,"python.js":null,"r.js":null,"razor.js":null,"ruby.js":null,"sb.js":null,"scss.js":null,"solidity.js":null,"sql.js":null,"swift.js":null,"vb.js":null,"xml.js":null,"yaml.js":null}},"editor":{"contrib":{"suggest":{"browser":{"media":{"String_16x.svg":null,"String_inverse_16x.svg":null}}}},"editor.main.css":null,"editor.main.js":null,"editor.main.js.map":null,"editor.main.nls.de.js":null,"editor.main.nls.es.js":null,"editor.main.nls.fr.js":null,"editor.main.nls.hu.js":null,"editor.main.nls.it.js":null,"editor.main.nls.ja.js":null,"editor.main.nls.js":null,"editor.main.nls.ko.js":null,"editor.main.nls.pt-br.js":null,"editor.main.nls.ru.js":null,"editor.main.nls.tr.js":null,"editor.main.nls.zh-cn.js":null,"editor.main.nls.zh-tw.js":null,"standalone":{"browser":{"quickOpen":{"symbol-sprite.svg":null}}}},"language":{"css":{"cssMode.js":null,"cssWorker.js":null},"html":{"htmlMode.js":null,"htmlWorker.js":null},"json":{"jsonMode.js":null,"jsonWorker.js":null},"typescript":{"lib":{"typescriptServices.js":null},"src":{"mode.js":null,"worker.js":null}}},"loader.js":null,"loader.js.map":null}},"LICENSE":null,"min":{"vs":{"base":{"worker":{"workerMain.js":null}},"basic-languages":{"src":{"bat.js":null,"coffee.js":null,"cpp.js":null,"csharp.js":null,"css.js":null,"dockerfile.js":null,"fsharp.js":null,"go.js":null,"handlebars.js":null,"html.js":null,"ini.js":null,"java.js":null,"less.js":null,"lua.js":null,"markdown.js":null,"msdax.js":null,"objective-c.js":null,"php.js":null,"postiats.js":null,"powershell.js":null,"pug.js":null,"python.js":null,"r.js":null,"razor.js":null,"ruby.js":null,"sb.js":null,"scss.js":null,"solidity.js":null,"sql.js":null,"swift.js":null,"vb.js":null,"xml.js":null,"yaml.js":null}},"editor":{"contrib":{"suggest":{"browser":{"media":{"String_16x.svg":null,"String_inverse_16x.svg":null}}}},"editor.main.css":null,"editor.main.js":null,"editor.main.nls.de.js":null,"editor.main.nls.es.js":null,"editor.main.nls.fr.js":null,"editor.main.nls.hu.js":null,"editor.main.nls.it.js":null,"editor.main.nls.ja.js":null,"editor.main.nls.js":null,"editor.main.nls.ko.js":null,"editor.main.nls.pt-br.js":null,"editor.main.nls.ru.js":null,"editor.main.nls.tr.js":null,"editor.main.nls.zh-cn.js":null,"editor.main.nls.zh-tw.js":null,"standalone":{"browser":{"quickOpen":{"symbol-sprite.svg":null}}}},"language":{"css":{"cssMode.js":null,"cssWorker.js":null},"html":{"htmlMode.js":null,"htmlWorker.js":null},"json":{"jsonMode.js":null,"jsonWorker.js":null},"typescript":{"lib":{"typescriptServices.js":null},"src":{"mode.js":null,"worker.js":null}}},"loader.js":null}},"min-maps":{"vs":{"base":{"worker":{"workerMain.js.map":null}},"editor":{"editor.main.js.map":null,"editor.main.nls.de.js.map":null,"editor.main.nls.es.js.map":null,"editor.main.nls.fr.js.map":null,"editor.main.nls.hu.js.map":null,"editor.main.nls.it.js.map":null,"editor.main.nls.ja.js.map":null,"editor.main.nls.js.map":null,"editor.main.nls.ko.js.map":null,"editor.main.nls.pt-br.js.map":null,"editor.main.nls.ru.js.map":null,"editor.main.nls.tr.js.map":null,"editor.main.nls.zh-cn.js.map":null,"editor.main.nls.zh-tw.js.map":null},"loader.js.map":null}},"monaco.d.ts":null,"package.json":null,"README.md":null,"ThirdPartyNotices.txt":null}},"EditableTextFile.js":null,"FileNavigator":{"FileNavigator.js":null,"FileNavigatorFileComponent.js":null,"FileNavigatorFolderComponent.js":null,"StatusIcon.js":null},"MarkdownViewer.js":null,"packages":{"FileTreeView":{"atom-styles.css":null,"Example.js":null,"File.js":null,"FileIcon.js":null,"FileList.js":null,"Folder.js":null,"FolderIcon.js":null,"index.js":null},"react-octicons-modular":{"index.js":null}},"react-contextmenu.css":null,"SweetAlert.js":null,"TryCatchHOC.js":null},"package.json":null,"README.md":null,"service-worker.js":null},"service-worker.js":null}
             }
           }
         }
@@ -31,7 +31,8 @@ const Files = new Promise(function(resolve, reject) {
 })
 
 toPaths = (dirname) => {
-  let pieces = dirname.split('/').filter(x => x !== '')
+  let pieces = dirname.replace(/^\//, '').split('/').filter(x => x !== '')
+  pieces.unshift('')
   let paths = []
   let fullpath = ''
   for (let piece of pieces) {
@@ -53,7 +54,7 @@ toFiles = (dirname, files) => files.map(filename => ({
 }))
 
 function renderIndex (dirname, dirlist) {
-  let directory = dirname.replace(/^\//, '')
+  let directory = dirname
   let paths = toPaths(directory)
   let files = toFiles(directory, dirlist)
   return (
@@ -100,6 +101,10 @@ function renderIndex (dirname, dirlist) {
   
   h1 a::after {
     content: '/';
+  }
+  
+  h1 a:last-of-type::after {
+    content: '';
   }
   
   h1 a:hover {
@@ -210,7 +215,7 @@ function renderIndex (dirname, dirlist) {
 ${
 paths.map(
   ({url, name}) => `
-        <a href="/${url}">${name}</a>`
+        <a href="${url}/">${name}</a>`
 ).join('')
 }
     </h1>
@@ -220,7 +225,7 @@ ${
 files.map(
   ({relative, title, ext, base, size}) => `
       <li>
-        <a href="/${relative}" title="${title}" class="${ext}">${base}</a>
+        <a href="${relative}${ext ? '' : '/'}" title="${title}" class="${ext}">${base}</a>
         <i>${size}</i>
       </li>`
 ).join('')
@@ -254,7 +259,7 @@ self.addEventListener('fetch', (event) => {
   // Turn URL into a file path
   let path = pathFromURL(request.url)
   // Sanity check
-  if (path === '/') path = '/index.html' // TODO: Do I have to do all the path normalization logic normally handled by the server?
+  if (path === '') path = '/'
   // Otherwise, try fetching from the "file system".
   event.respondWith(tryFsFirst(path))
 })
@@ -310,25 +315,40 @@ async function tryFsFirst (path) {
           return resolve(response)
         } else if (stats.isDirectory()) {
           console.log(path + ' is a Directory!')
+          // If the directory doesn't end in a slash, redirect it
+          // because otherwise relative URLs will have trouble.
+          if (!path.endsWith('/')) return resolve(Response.redirect(path + '/', 302))
           console.log('fs =', fs)
           fs.readdir(path, (err, data) => {
             if (err) return reject(err)
             // data = JSON.stringify(data, null, 2)
             console.log('data =', data)
-            try {
-              data = renderIndex(path, data)
-            } catch (e) {
-              console.log('e =', e)
-            }
-            console.log('data =', data)
-            return resolve(new Response(data, {
-              headers: {
-                'Content-Type': 'text/html'
+            // Serve directory/index.html if it exists
+            if (data.includes('index.html')) {
+              fs.readFile(`${path}/index.html`, 'utf8', (err, data) => {
+                if (err) return reject(err)
+                return resolve(new Response(data, {
+                  headers: {
+                    'Content-Type': 'text/html'
+                  }
+                }))
+              })
+            } else {
+              // If it doesn't exist, generate a directory index
+              try {
+                data = renderIndex(path, data)
+              } catch (e) {
+                console.log('e =', e)
               }
-            }))
+              console.log('data =', data)
+              return resolve(new Response(data, {
+                headers: {
+                  'Content-Type': 'text/html'
+                }
+              }))
+            }
           })
         } else {
-          console.log('Holy crap we found ' + path + ' in the file system')
           fs.readFile(path, 'utf8', (err, data) => {
             if (err) return reject(err)
             return resolve(new Response(data, {

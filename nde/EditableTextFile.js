@@ -143,7 +143,7 @@ export default class EditableTextFile extends React.Component {
     const requireConfig = {
       url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.min.js',
       paths: {
-        'vs': '/nde/deps/monaco/dev/vs'
+        'vs': './nde/deps/monaco/dev/vs'
       }
     };
     const options = {

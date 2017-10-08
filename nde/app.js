@@ -72,7 +72,7 @@ if (module) {
           content:[{
             type:'react-component',
             component: 'EditableTextFile',
-            props: { filepath: 'nde/app.js' }
+            props: { filepath: 'nde/nde/app.js' }
           }]
         }]
       }, {
@@ -84,7 +84,7 @@ if (module) {
           content:[{
             type:'react-component',
             component: 'MarkdownViewer',
-            props: { filepath: 'README.md' }
+            props: { filepath: 'nde/README.md' }
           }]
         }]
       }]
@@ -130,5 +130,5 @@ fs.Events.on('change', onChange)
 
 
 if (navigator.serviceWorker) {
-  navigator.serviceWorker.register('/service-worker.js')
+  navigator.serviceWorker.register('../service-worker.js', { scope: '/' })
 }
