@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "The IDE of the future, today!",
   "scripts": {
-    "build": " cd .. && cp nde/service-worker.js . && rm -f index.html && rm -f now.json && npx browserfs nde/index.json && cp nde/default-redirect.html index.html",
+    "build": " cd .. && rm -f index.html indexjson.js service-worker.js now.json && npx browserfs nde/index.json && cp nde/service-worker.js . && cp nde/first-time-install.html index.html && echo global.XmlHttpRequestIndexJSON = > indexjson.js && cat nde/index.json >> indexjson.js",
     "now": "cd .. && cp nde/now.json . && now && now alias",
     "start": "cd .. && npx browser-sync start --server --files"
   },

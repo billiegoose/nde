@@ -1,0 +1,25 @@
+<h1>Hello!</h1>
+<h2>It appears this is your first visit to <a href="https://nde.now.sh">https://nde.now.sh</a></h2>
+<h3>Please wait a moment while the application is downloaded from Github and installed in your local cache.</h3>
+
+
+<script>
+if (!navigator.serviceWorker) {
+    var div = document.createElement('div')
+    div.innerHTML = "Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser."
+    document.body.append(div)
+} else {
+    var div = document.createElement('h4')
+    div.innerHTML = "While you wait here is some cat gifs to keep you entertained."
+    document.body.append(div)
+    const img = new Image()
+    document.body.append(img)
+    img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
+    setInterval(function () {
+        img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
+    }, 5000)
+    navigator.serviceWorker
+      .register('service-worker.js', { scope: '/' })
+      .then(() => window.location = '/nde/')
+}
+</script>
