@@ -28,7 +28,9 @@ Milestone reached! The IDE can be used to edit itself!
 
 ## Next steps:
 
-- [ ] Visually indicate the git status of files in the tree
+- [ ] Add a menu action to rename a folder
+  - [ ] To do this, we need to stop using a layered XmlHttpRequest FS with `index.json`
+    - [ ] To do this we need to fully download and install all the files during a serviceworker 'install' lifecycle event.
 - [ ] Add menu item for adding / removing a file from the git index
 - [ ] Add a menu item to view the file diff with Monaco
 - [ ] Add a UI for making commits

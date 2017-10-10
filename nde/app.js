@@ -28,7 +28,6 @@ import FileNavigator from './FileNavigator/FileNavigator.js'
 import git from 'isomorphic-git'
 window.git = git
 console.log('git =', git)
-import starterData from '../index.json'
 import {Example as BasicFileTree} from 'react-file-browser'
 
 let MotherLayout = null

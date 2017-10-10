@@ -1,7 +1,8 @@
 // Step 1. Setup BrowserFS
-import BrowserFS from './browserfs'
+importScripts('nde/nde/builtins/browserfs.js')
+importScripts('https://cdnjs.cloudflare.com/ajax/libs/eventemitter3/2.0.3/index.min.js')
 
-export const fsReady = new Promise(function(resolve, reject) {
+const fsReady = new Promise(function(resolve, reject) {
   BrowserFS.configure({
     fs: "MountableFileSystem",
     options: {
@@ -15,8 +16,7 @@ export const fsReady = new Promise(function(resolve, reject) {
 // Step 2. Export fs
 const fs = BrowserFS.BFSRequire('fs')
 // Cheap hack to get file monitoring in
-import EventEmitter from 'eventemitter2'
-fs.Events = new EventEmitter()
+fs.Events = new window.EventEmitter()
 fs._origWriteFile = fs.writeFile
 fs.writeFile = function (file, data, options, callback) {
   if (typeof options === 'function') {
@@ -126,13 +126,5 @@ fs.rmdirSync = function (path) {
   return undefined
 }
 
-window.fs = fs
-export default fs
-
-// (Failing) Attempt to prevent "RangeError: Maximum call stack size exceeded"
-import {module} from '@hot'
-export const __unload = () => {
-  // Detach all event listeners
-  fs.Events.removeAllListeners()
-  // fs.umount('/');
-}
+global.fs = fs
+global.fsReady = fsReady

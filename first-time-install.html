@@ -20,6 +20,16 @@ if (!navigator.serviceWorker) {
     }, 5000)
     navigator.serviceWorker
       .register('service-worker.js', { scope: '/' })
-      .then(() => window.location = '/nde/')
+      .then((reg) => {
+        reg.addEventListener('updatefound', () => {
+          let newWorker = reg.installing
+          newWorker.addEventListener('statechange', () => {
+            console.log('reg.installing.state =', newWorker.state)
+            if (newWorker.state === 'installed') {
+              window.location = '/nde/'
+            }
+          })
+        })
+      })
 }
 </script>

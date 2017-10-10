@@ -5,6 +5,7 @@ import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contex
 import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
+import pify from 'pify'
 import git from 'isomorphic-git'
 import { prompt } from '../SweetAlert'
 import swal from 'sweetalert2'
@@ -25,16 +26,20 @@ export default class FileNavigatorFolderComponent extends React.Component {
   }
   async newFile () {
     let filename = await prompt('Enter filename:')
-    fs.writeFile(path.join(this.props.filepath, filename), '')
+    return pify(fs.writeFile)(path.join(this.props.filepath, filename), '')
   }
   async newFolder () {
-    fs.mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
+    return pify(fs.mkdir)(path.join(this.props.filepath, await prompt('Enter foldername:')))
   }
   async deleteFolder () {
-    fs.rmdir(this.props.filepath)
+    return pify(fs.rmdir)(this.props.filepath)
   }
-  gitInit () {
-    git(this.props.filepath).init()
+  async renameFolder () {
+    let name = await prompt('New folder name')
+    return pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), name))
+  }
+  async gitInit () {
+    return git(this.props.filepath).init()
   }
   async gitClone () {
     let url = await prompt({
@@ -134,6 +139,9 @@ export default class FileNavigatorFolderComponent extends React.Component {
           </MenuItem>
           <MenuItem onClick={() => this.newFolder()}>
             New Folder <span style={{paddingTop: '3px', position: 'absolute', right: 0}}><FolderIcon></FolderIcon></span>
+          </MenuItem>
+          <MenuItem onClick={() => this.renameFolder()}>
+            Rename Folder <span style={{paddingTop: '3px', position: 'absolute', right: 0}}><FolderIcon></FolderIcon></span>
           </MenuItem>
           <MenuItem onClick={() => this.deleteFolder()}>
             Delete Folder <i className="icon trash-icon"></i>
