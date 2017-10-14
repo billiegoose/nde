@@ -9,7 +9,7 @@ import pify from 'pify'
 import git from 'isomorphic-git'
 import { prompt } from '../SweetAlert'
 import swal from 'sweetalert2'
-import { clone, push } from './GitActions'
+import { clone, commit, push } from './GitActions'
 
 export default class ContextMenuFolder extends React.Component {
   constructor () {
@@ -54,30 +54,10 @@ export default class ContextMenuFolder extends React.Component {
     })
   }
   async gitCommit () {
-    let author = await prompt({
-      text: 'Author Name',
-      input: 'text'
+    await commit({
+      filepath: this.props.filepath,
+      glEventHub: this.props.glEventHub
     })
-    let email = await prompt({
-      text: 'Author Email',
-      input: 'text'
-    })
-    let msg = await prompt({
-      text: 'Commit Message',
-      input: 'text'
-    })
-    try {
-      this.setFolderStateData('busy', true)
-      await git(this.props.filepath)
-        .author(author)
-        .email(email)
-        .commit(msg)
-    } catch (err) {
-      console.log('err =', err)
-    } finally {
-      this.props.glEventHub.emit('refreshGitStatus', this.props.filepath)
-      this.setFolderStateData('busy', false)
-    }
   }
   render() {
     let {disableContextMenu, filename, open, ...passedProps} = this.props

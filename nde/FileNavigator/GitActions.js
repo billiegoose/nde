@@ -52,7 +52,7 @@ export async function push ({filepath, glEventHub}) {
     }
 }
 
-export async function gitCommit ({filepath, glEventHub}) {
+export async function commit ({filepath, glEventHub}) {
   let author = await prompt({
     text: 'Author Name',
     input: 'text'
