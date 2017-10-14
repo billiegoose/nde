@@ -9,6 +9,9 @@ import FileNavigatorFolderComponent from './FileNavigatorFolderComponent'
 import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
 import ContextMenuFolder from './ContextMenuFolder'
+// Drag and drop support
+import HTML5Backend from 'react-dnd-html5-backend'
+import { DragDropContext } from 'react-dnd'
 
 import _ from 'lodash'
 
@@ -166,4 +169,4 @@ class FileNavigator extends React.Component {
     )
   }
 }
-export default FileNavigator
+export default DragDropContext(HTML5Backend)(FileNavigator)

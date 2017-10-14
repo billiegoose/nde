@@ -1,12 +1,57 @@
 import React from 'react'
 import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
-import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
+import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js"
+import fs from 'fs'
 import path from 'path'
 import pify from 'pify'
 import ContextMenuFolder from './ContextMenuFolder'
+import { DragSource, DropTarget } from 'react-dnd'
 
-export default class FileNavigatorFolderComponent extends React.Component {
+const ItemTypes = {
+    FILE: 'file',
+    FOLDER: 'folder'
+}
+const folderSource = {
+  beginDrag(props) {
+    return {
+      filename: props.filename,
+      filepath: props.filepath
+    }
+  }
+}
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    isDragging: monitor.isDragging()
+  }
+}
+const folderTarget = {
+  drop(props, monitor) {
+    const oldPath = monitor.getItem().filepath
+    const oldName = monitor.getItem().filename
+    const parentPath = props.filepath
+    const newPath = path.join(parentPath, oldName)
+    console.log(`I will move ${oldPath} to ${newPath}`)
+    console.log(props)
+    props.glEventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: true})
+    fs.rename(oldPath, newPath, (err) => {
+      console.log(err)
+      props.glEventHub.emit('refreshGitStatus', oldPath)
+      props.glEventHub.emit('refreshGitStatus', newPath)
+      props.glEventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: false})
+    })
+  }
+}
+function targetCollect(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget(),
+        isDraggingOver: monitor.isOver()
+    }
+}
+
+class FileNavigatorFolderComponent extends React.Component {
   constructor () {
     super()
   }
@@ -17,16 +62,29 @@ export default class FileNavigatorFolderComponent extends React.Component {
     this.props.glEventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
   }
   render() {
-    let {disableContextMenu, filename, open, ...passedProps} = this.props
+    let {disableContextMenu, filename, open, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
     let busyIcon = passedProps.statedata && passedProps.statedata.busy
              ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
              : ''
-    return (
-      <ContextMenuFolder filepath={this.props.filepath} disableContextMenu={this.props.disableContextMenu} glEventHub={this.props.glEventHub}>
+    let folder = connectDragPreview(
+      <div>
         <Folder filename={filename} open={open} domProps={{onClick:this.click.bind(this)}}>
           {busyIcon}
         </Folder>
-      </ContextMenuFolder>
+      </div>
     )
+    return connectDropTarget(connectDragSource(
+      <div>
+        <ContextMenuFolder filepath={this.props.filepath} disableContextMenu={this.props.disableContextMenu} glEventHub={this.props.glEventHub}>
+          {folder}
+        </ContextMenuFolder>
+      </div>
+    ))
   }
 }
+
+export default DragSource(ItemTypes.FOLDER, folderSource, collect)(
+    DropTarget(ItemTypes.FOLDER, folderTarget, targetCollect)(
+        FileNavigatorFolderComponent
+    )
+)
