@@ -46,6 +46,8 @@ export default class EditableTextFile extends React.Component {
         break
       }
     }
+    // Correct tab size
+    editor.getModel().updateOptions({ tabSize: 2 })
     // Extend context menu
     editor.addAction({
       id: 'saveFile',
