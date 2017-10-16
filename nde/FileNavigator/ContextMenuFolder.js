@@ -9,7 +9,7 @@ import pify from 'pify'
 import git from 'isomorphic-git'
 import { prompt } from '../SweetAlert'
 import swal from 'sweetalert2'
-import { clone, commit, push } from './GitActions'
+import { clone, commit, push, checkout, fetch } from './GitActions'
 
 export default class ContextMenuFolder extends React.Component {
   constructor () {
@@ -59,6 +59,18 @@ export default class ContextMenuFolder extends React.Component {
       glEventHub: this.props.glEventHub
     })
   }
+  async gitCheckout () {
+    await checkout({
+      filepath: this.props.filepath,
+      glEventHub: this.props.glEventHub
+    })
+  }
+  async gitFetch () {
+    await fetch({
+      filepath: this.props.filepath,
+      glEventHub: this.props.glEventHub
+    })
+  }
   render() {
     let {disableContextMenu, filename, open, ...passedProps} = this.props
     let busyIcon = passedProps.statedata && passedProps.statedata.busy
@@ -69,18 +81,31 @@ export default class ContextMenuFolder extends React.Component {
         {this.props.children}
         <ContextMenu id={this.state.cuid}>
           <SubMenu title="Git" hoverDelay={50}>
-            <MenuItem onClick={() => this.gitInit()}>
-              Init <Octicon name="repo" style={{color: 'black'}}/>
-            </MenuItem>
-            <MenuItem onClick={() => this.gitClone()}>
-              Clone <Octicon name="repo-clone" style={{color: 'black'}}/>
-            </MenuItem>
             <MenuItem onClick={() => this.gitCommit()}>
               Commit <Octicon name="git-commit" style={{color: 'black'}}/>
             </MenuItem>
-            <MenuItem onClick={() => this.gitPush()}>
-              Push <Octicon name="repo-push" style={{color: 'black'}}/>
-            </MenuItem>
+            <SubMenu title="Repo" hoverDelay={50}>
+              <MenuItem onClick={() => this.gitClone()}>
+                Clone <Octicon name="repo-clone" style={{color: 'black'}}/>
+              </MenuItem>
+              <MenuItem onClick={() => this.gitInit()}>
+                Init <Octicon name="repo" style={{color: 'black'}}/>
+              </MenuItem>
+            </SubMenu>
+            <SubMenu title="Branch" hoverDelay={50}>
+              <MenuItem disabled onClick={() => this.gitCheckout()}>
+                New Branch <Octicon name="git-branch" style={{color: 'black'}}/>
+              </MenuItem>
+              <MenuItem onClick={() => this.gitCheckout()}>
+                Checkout <Octicon name="git-commit" style={{color: 'black'}}/>
+              </MenuItem>
+              <MenuItem onClick={() => this.gitFetch()}>
+                Fetch <Octicon name="cloud-download" style={{color: 'black'}}/>
+              </MenuItem>
+              <MenuItem onClick={() => this.gitPush()}>
+                Push <Octicon name="cloud-upload" style={{color: 'black'}}/>
+              </MenuItem>
+            </SubMenu>
           </SubMenu>
           <MenuItem onClick={() => this.newFile()}>
             New File <i className="icon text-icon"></i>

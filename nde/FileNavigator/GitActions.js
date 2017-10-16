@@ -79,3 +79,49 @@ export async function commit ({filepath, glEventHub}) {
   }
 }
 
+export async function checkout ({filepath, glEventHub}) {
+    let branches = await git(filepath).listBranches()
+    let branchesObject = {}
+    for (let b of branches) {
+      branchesObject[b] = b
+    }
+    let ref = await prompt({
+      title: 'Checkout branch',
+      text: 'Select branch',
+      input: 'select',
+      inputOptions: branchesObject,
+      confirmButtonText: 'Checkout',
+      showCancelButton: true
+    })
+    glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: true })
+    try {
+      await git(filepath)
+        .checkout(ref)
+    } catch (err) {
+      console.log('err =', err)
+    } finally {
+      glEventHub.emit('refreshGitStatus', filepath)
+      glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: false })
+    }
+}
+
+export async function fetch ({filepath, glEventHub}) {
+    let ref = await prompt({
+        title: 'Fetch branch',
+        text: 'Name of remote branch',
+        input: 'text',
+        confirmButtonText: 'Fetch',
+        showCancelButton: true
+    })
+    glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: true })
+    try {
+        await git(filepath)
+            .remote('origin')
+            //.depth(1)
+            .fetch(ref)
+    } catch (err) {
+        console.log('err =', err)
+    } finally {
+        glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: false })
+    }
+}
