@@ -66,9 +66,28 @@ class FileNavigatorFolderComponent extends React.Component {
     let busyIcon = passedProps.statedata && passedProps.statedata.busy
              ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
              : ''
+    // let progressBar = <div style={{
+    //   position: 'absolute',
+    //   left: '0',
+    //   top: '0',
+    //   bottom: '0',
+    //   width: '50%',
+    //   backgroundColor: 'navy'
+    // }}></div>
+    let progressPercent = 0.50
+    let style = (passedProps.statedata && passedProps.statedata.progress !== undefined)
+      ? {
+          backgroundRepeat: 'no-repeat',
+          backgroundImage: 'linear-gradient(to right, transparent, cyan 75%, transparent)',
+          backgroundSize: `${passedProps.statedata.progress * 100}% 100%`
+        }
+      : {}
     let folder = connectDragPreview(
       <div>
-        <Folder filename={filename} open={open} domProps={{onClick:this.click.bind(this)}}>
+        <Folder filename={filename} open={open} domProps={{
+          onClick:this.click.bind(this),
+          style
+          }}>
           {busyIcon}
         </Folder>
       </div>

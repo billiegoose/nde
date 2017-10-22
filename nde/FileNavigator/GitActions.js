@@ -21,9 +21,14 @@ export async function clone ({filepath, glEventHub}) {
     let dir = path.join(filepath, path.basename(url))
     let proxyurl = url.replace(/^https?:\/\//, '')
     glEventHub.emit('setFolderStateData', { fullpath: dir, key: 'busy', value: true })
+    const updateProgressBar = (e) => {
+      let value = e.loaded === e.total ? undefined : e.loaded / e.total
+      glEventHub.emit('setFolderStateData', { fullpath: dir, key: 'progress', value })
+    }
     try {
         await git(dir)
             .depth(1)
+            .onprogress(updateProgressBar)
             .clone(`https://cors-buster-jfpactjnem.now.sh/${proxyurl}`)
     } catch (err) {
         console.log('err =', err)
