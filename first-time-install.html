@@ -1,35 +1,64 @@
-<h1>Hello!</h1>
-<h2>It appears this is your first visit to <a href="https://nde.now.sh">https://nde.now.sh</a></h2>
-<h3>Please wait a moment while the application is downloaded from Github and installed in your local cache.</h3>
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic@6.4.0/picnic.min.css">
+<body style="text-align: center">
+<h1>Hello! It appears this is your first visit.</h1>
+<h2>Please wait while the application installs.</h2>
+<div style="width: 100%; height: 100px; background: #f3f3f3">
+  <div id="loader" style="height: 100px; text-align: center; font-size: 24pt; line-height: 100px; width: 100%">Installing&nbsp;ServiceWorker...</div>
+</div>
 
 <script>
 if (!navigator.serviceWorker) {
-    var div = document.createElement('div')
-    div.innerHTML = "Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser."
-    document.body.append(div)
+  var div = document.createElement('div')
+  div.innerHTML = "Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser."
+  document.body.append(div)
 } else {
-    var div = document.createElement('h4')
-    div.innerHTML = "While you wait here is some cat gifs to keep you entertained."
-    document.body.append(div)
-    const img = new Image()
-    document.body.append(img)
+  var div = document.createElement('h4')
+  div.innerHTML = "Sorry about the wait. Here are some cat gifs though!"
+  document.body.append(div)
+  const img = new Image()
+  document.body.append(img)
+  img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
+  setInterval(function () {
     img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
-    setInterval(function () {
-        img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
-    }, 5000)
-    navigator.serviceWorker
-      .register('service-worker.js', { scope: '/' })
-      .then((reg) => {
-        reg.addEventListener('updatefound', () => {
-          let newWorker = reg.installing
-          newWorker.addEventListener('statechange', () => {
-            console.log('reg.installing.state =', newWorker.state)
-            if (newWorker.state === 'installed') {
-              window.location = '/nde/'
+  }, 5000)
+  navigator.serviceWorker
+  .register('service-worker.js', { scope: '/' })
+  .then((reg) => {
+    reg.addEventListener('updatefound', () => {
+      let newWorker = reg.installing
+      document.getElementById('loader').innerHTML = 'Starting&nbsp;git&nbsp;clone...'
+      newWorker.addEventListener('statechange', () => {
+        console.log('reg.installing.state =', newWorker.state)
+        if (newWorker.state === 'activated') {
+          console.log('Begin cloning...')
+          let msg = {
+            type: "clone",
+            repo: 'wmhilton/nde',
+            ref: 'master',
+            name: 'nde'
+          }
+          navigator.serviceWorker.controller.postMessage(msg)
+          navigator.serviceWorker.addEventListener('message', event => {
+            let data = event.data
+            console.log('data =', data)
+            if (data.type === 'status') {
+              if (data.status === 'complete') {
+                window.location = '/nde/'
+              } else if (data.status === 'progress') {
+                console.log(data.progress)
+                let loader = document.getElementById('loader')
+                loader.style.color = '#FFF'
+                loader.style.background = '#3498db'
+                loader.style.width = Math.floor(data.progress * 100) + '%'
+                loader.innerHTML = (loader.style.width === '100%' ? 'Checking out master branch...' : loader.style.width)
+              } else if (data.status === 'error') {
+                alert('Error! ' + data.error.message)
+              }
             }
           })
-        })
+        }
       })
+    })
+  })
 }
 </script>

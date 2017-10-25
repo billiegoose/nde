@@ -126,8 +126,3 @@ const onChange = ({filename}) => {
   }
 }
 fs.Events.on('change', onChange)
-
-
-if (navigator.serviceWorker) {
-  navigator.serviceWorker.register('../service-worker.js', { scope: '/' })
-}

@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "description": "The IDE of the future, today!",
   "scripts": {
-    "build": " cd .. && rm -f index.html indexjson.js service-worker.js now.json && cp nde/service-worker.js . && cp nde/first-time-install.html index.html",
     "now": "cd .. && cp nde/now.json . && now && now alias",
-    "start": "cd .. && npx browser-sync start --server --files"
+    "start": "cd .. && cp nde/first-time-install.html index.html && npx browser-sync start --server --files"
   },
   "repository": {
     "type": "git",
