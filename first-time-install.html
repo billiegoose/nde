@@ -37,7 +37,7 @@ if (!navigator.serviceWorker) {
             ref: 'master',
             name: 'nde'
           }
-          navigator.serviceWorker.controller.postMessage(msg)
+          newWorker.postMessage(msg)
           navigator.serviceWorker.addEventListener('message', event => {
             let data = event.data
             console.log('data =', data)
