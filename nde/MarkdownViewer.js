@@ -16,7 +16,7 @@ export default class MarkdownViewer extends React.Component {
     }
   }
   componentDidMount () {
-    fs.readFile(filepath, 'utf8', (err, text) => {
+    fs.readFile(this.props.filepath, 'utf8', (err, text) => {
       if (err) return console.log(err)
       this.setState(state => ({...state, content: text}))
     })
