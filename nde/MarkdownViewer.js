@@ -11,11 +11,11 @@ export default class MarkdownViewer extends React.Component {
       content: '',
       cuid: cuid()
     }
-  }
-  componentDidMount () {
     if (glContainer) {
       glContainer.setTitle(filepath)
     }
+  }
+  componentDidMount () {
     fs.readFile(filepath, 'utf8', (err, text) => {
       if (err) return console.log(err)
       this.setState(state => ({...state, content: text}))
