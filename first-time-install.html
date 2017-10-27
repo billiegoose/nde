@@ -10,13 +10,13 @@
 if (!navigator.serviceWorker) {
   var div = document.createElement('div')
   div.innerHTML = "Oh no! Your browser doesn't support a feature needed to run this app (navigator.serviceWorker). Try using a different browser."
-  document.body.append(div)
+  document.body.appendChild(div)
 } else {
   var div = document.createElement('h4')
   div.innerHTML = "Sorry about the wait. Here are some cat gifs though!"
-  document.body.append(div)
+  document.body.appendChild(div)
   const img = new Image()
-  document.body.append(img)
+  document.body.appendChild(img)
   img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
   setInterval(function () {
     img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
