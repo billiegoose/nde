@@ -1,6 +1,7 @@
 import React from 'react'
 import {File, FileIcon} from 'react-file-browser'
 import StatusIcon from './StatusIcon'
+import Octicon from 'react-octicons-modular'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import fs from 'fs'
 import path from 'path'
@@ -31,6 +32,15 @@ export default class FileNavigatorFileComponent extends React.Component {
   deleteFile () {
     fs.unlink(this.props.filepath)
   }
+  async copyFile () {
+    let name = await prompt('Copy file as')
+    let newfile = path.resolve(path.dirname(this.props.filepath), name)
+    fs.readFile(this.props.filepath, (err, buf) =>
+      fs.writeFile(newfile, buf, () =>
+        this.props.glEventHub.emit('refreshGitStatus', newfile)
+      )
+    )
+  }
   async addToIndex () {
     let dir = await git().findRoot(this.props.filepath)
     let rpath = path.relative(dir, this.props.filepath)
@@ -49,8 +59,11 @@ export default class FileNavigatorFileComponent extends React.Component {
           <MenuItem onClick={() => this.addToIndex()}>
             Add to Stage <i className="icon git-icon medium-red"></i>
           </MenuItem>
+          <MenuItem onClick={() => this.copyFile()}>
+            Copy File <i className="icon fa fa-clone"></i>
+          </MenuItem>
           <MenuItem onClick={() => this.deleteFile()}>
-            Delete File <i className="icon trash-icon"></i>
+            Delete File <i className="icon fa fa-trash"></i>
           </MenuItem>
         </ContextMenu>
       </ContextMenuTrigger>
