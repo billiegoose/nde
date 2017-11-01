@@ -7,7 +7,7 @@ import path from 'path'
 import pify from 'pify'
 import ContextMenuFolder from './ContextMenuFolder'
 import { DragSource, DropTarget } from 'react-dnd'
-
+ 
 const ItemTypes = {
     FILE: 'file',
     FOLDER: 'folder'
