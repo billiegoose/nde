@@ -21,7 +21,7 @@ export default function wrapWithErrorBoundary (WrappedComponent) {
       if (this.state.errorInfo) {
         return (
           <div style={{ color: 'red', border: '1px dashed red', padding: '1em' }}>
-            <details style={{ whiteSpace: 'pre-wrap' }}>
+            <details style={{ whiteSpace: 'pre' }}>
               <summary>
               {this.state.error && this.state.error.toString()}
               </summary>

@@ -15,19 +15,23 @@ export default class FileNavigatorFileComponent extends React.Component {
     }
   }
   componentDidMount () {
-    this.props.glContainer.layoutManager.createDragSource(ReactDOM.findDOMNode(this), {
-      type:'react-component',
-      component: 'EditableTextFile',
-      props: { filepath: this.props.filepath }
-    })
+    if (this.props.glContainer) {
+      this.props.glContainer.layoutManager.createDragSource(ReactDOM.findDOMNode(this), {
+        type:'react-component',
+        component: 'EditableTextFile',
+        props: { filepath: this.props.filepath }
+      })
+    }
   }
   doubleclick () {
-    let stack = this.props.glContainer.layoutManager.root.getItemsById('MainEditor')[0]
-    stack.addChild({
-      type:'react-component',
-      component: 'EditableTextFile',
-      props: { filepath: this.props.filepath }
-    })
+    if (this.props.glContainer) {
+      let stack = this.props.glContainer.layoutManager.root.getItemsById('MainEditor')[0]
+      stack.addChild({
+        type:'react-component',
+        component: 'EditableTextFile',
+        props: { filepath: this.props.filepath }
+      })
+    }
   }
   deleteFile () {
     fs.unlink(this.props.filepath)
@@ -37,7 +41,7 @@ export default class FileNavigatorFileComponent extends React.Component {
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
     fs.readFile(this.props.filepath, (err, buf) =>
       fs.writeFile(newfile, buf, () =>
-        this.props.glEventHub.emit('refreshGitStatus', newfile)
+        MotherLayout.eventHub.emit('refreshGitStatus', newfile)
       )
     )
   }
@@ -45,7 +49,7 @@ export default class FileNavigatorFileComponent extends React.Component {
     let dir = await git().findRoot(this.props.filepath)
     let rpath = path.relative(dir, this.props.filepath)
     await git(dir).add(rpath)
-    this.props.glEventHub.emit('refreshGitStatus', this.props.filepath)
+    MotherLayout.eventHub.emit('refreshGitStatus', this.props.filepath)
   }
   render () {
     let {disableContextMenu, filename} = this.props

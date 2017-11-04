@@ -35,12 +35,12 @@ const folderTarget = {
     const newPath = path.join(parentPath, oldName)
     console.log(`I will move ${oldPath} to ${newPath}`)
     console.log(props)
-    props.glEventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: true})
+    MotherLayout.eventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: true})
     fs.rename(oldPath, newPath, (err) => {
       console.log(err)
-      props.glEventHub.emit('refreshGitStatus', oldPath)
-      props.glEventHub.emit('refreshGitStatus', newPath)
-      props.glEventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: false})
+      MotherLayout.eventHub.emit('refreshGitStatus', oldPath)
+      MotherLayout.eventHub.emit('refreshGitStatus', newPath)
+      MotherLayout.eventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: false})
     })
   }
 }
@@ -56,10 +56,10 @@ class FileNavigatorFolderComponent extends React.Component {
     super()
   }
   click () {
-    this.props.glEventHub.emit('toggleFolder', this.props.filepath)
+    MotherLayout.eventHub.emit('toggleFolder', this.props.filepath)
   }
   setFolderStateData (key, value) {
-    this.props.glEventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
+    MotherLayout.eventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
   }
   render() {
     let {disableContextMenu, filename, open, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
@@ -94,7 +94,7 @@ class FileNavigatorFolderComponent extends React.Component {
     )
     return connectDropTarget(connectDragSource(
       <div>
-        <ContextMenuFolder filepath={this.props.filepath} disableContextMenu={this.props.disableContextMenu} glEventHub={this.props.glEventHub}>
+        <ContextMenuFolder filepath={this.props.filepath} disableContextMenu={this.props.disableContextMenu} glEventHub={MotherLayout.eventHub}>
           {folder}
         </ContextMenuFolder>
       </div>

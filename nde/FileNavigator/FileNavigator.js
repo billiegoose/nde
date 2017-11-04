@@ -74,15 +74,13 @@ class FileNavigator extends React.Component {
     }
   }
   componentDidMount () {
-    this.props.glContainer.setTitle('File Navigator')
-    // const fn = `MotherLayout.eventHub.emit('DISABLE_CONTEXTMENU')`
-    // let button = $(`<li title="disable right-click menu"><input type="checkbox" onclick="${fn}"></li>`)
-    // this.props.glContainer.parent.container.tab.header.controlsContainer.prepend(button)
-
-    this.props.glEventHub.on('toggleFolder', this.toggleFolder.bind(this))
-    this.props.glEventHub.on('refreshGitStatus', this.refreshDir.bind(this))
-    this.props.glEventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
-    this.props.glEventHub.on('DISABLE_CONTEXTMENU', () => {
+    if (this.props.glContainer) {
+      this.props.glContainer.setTitle('File Navigator')
+    }
+    MotherLayout.eventHub.on('toggleFolder', this.toggleFolder.bind(this))
+    MotherLayout.eventHub.on('refreshGitStatus', this.refreshDir.bind(this))
+    MotherLayout.eventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
+    MotherLayout.eventHub.on('DISABLE_CONTEXTMENU', () => {
       this.setState((state, props) => ({
         state,
         disableContextMenu: !state.disableContextMenu
@@ -107,7 +105,7 @@ class FileNavigator extends React.Component {
         })
         git().findRoot(fullpath).then(dir =>
           git(dir).status(path.relative(dir, fullpath)).then(status =>
-            this.props.glEventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+            MotherLayout.eventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
           )
         ).catch(() => null)
       } else {
@@ -126,7 +124,7 @@ class FileNavigator extends React.Component {
               let rpath = path.relative(dir, path.join(fullpath, file))
               console.log('rpath =', rpath)
               git(dir).status(rpath).then(status =>
-                this.props.glEventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
+                MotherLayout.eventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
               ).catch(() => null)
             }
           })
@@ -153,7 +151,7 @@ class FileNavigator extends React.Component {
   }
   render () {
     return (
-      <ContextMenuFolder filepath={this.props.root} disableContextMenu={this.props.disableContextMenu} glEventHub={this.props.glEventHub}>
+      <ContextMenuFolder filepath={this.props.root} disableContextMenu={this.props.disableContextMenu} glEventHub={MotherLayout.eventHub}>
         <nav className="_tree">
           <FileList
             disableContextMenu={this.state.disableContextMenu}

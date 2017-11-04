@@ -25,6 +25,7 @@ import TryComponent from './TryCatchHOC.js'
 import MarkdownViewer from './MarkdownViewer.js'
 import EditableTextFile from './EditableTextFile.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
+import LayoutCodePreview from './LayoutCodePreview.js'
 import git from 'isomorphic-git'
 window.git = git
 console.log('git =', git)
@@ -82,7 +83,7 @@ if (module) {
           isClosable: false,
           content:[{
             type:'react-component',
-            component: 'MarkdownViewer',
+            component: 'LayoutCodePreview',
             props: { filepath: 'nde/README.md' }
           }]
         }]
@@ -94,6 +95,7 @@ if (module) {
 MotherLayout.registerComponent('MarkdownViewer', TryComponent(MarkdownViewer));
 MotherLayout.registerComponent('EditableTextFile', TryComponent(EditableTextFile));
 MotherLayout.registerComponent('FileNavigator', TryComponent(FileNavigator));
+MotherLayout.registerComponent('LayoutCodePreview', TryComponent(LayoutCodePreview));
 MotherLayout.registerComponent('BasicFileTree', TryComponent(BasicFileTree));
 
 fsReady.then(() => {
