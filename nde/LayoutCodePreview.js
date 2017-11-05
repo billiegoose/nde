@@ -2,7 +2,7 @@ import React from 'react'
 import SplitterLayout from 'react-splitter-layout';
 
 import TryComponent from './TryCatchHOC.js'
-import MarkdownViewer from './MarkdownViewer.js'
+import FileViewer from './FileViewer.js'
 import EditableTextFile from './EditableTextFile.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
 
@@ -15,6 +15,7 @@ export default class LayoutCodePreview extends React.Component {
   render () {
     const TryFileNavigator = TryComponent(FileNavigator)
     const TryEditableTextFile = TryComponent(EditableTextFile)
+    const TryFileViewer = TryComponent(FileViewer)
     return (
     <article>
       <style>{`
@@ -26,7 +27,7 @@ export default class LayoutCodePreview extends React.Component {
         <TryFileNavigator root="/"/>
         <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
           <TryEditableTextFile filepath={this.props.filepath}/>
-          <div>Preview</div>
+          <TryFileViewer filepath={this.props.filepath}/>
         </SplitterLayout>
       </SplitterLayout>
     </article>
