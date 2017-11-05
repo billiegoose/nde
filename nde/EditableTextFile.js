@@ -34,7 +34,9 @@ export default class EditableTextFile extends React.Component {
       unsavedContent: null,
       language: null
     }
-    glContainer.setTitle(filepath)
+    if (glContainer) {
+      glContainer.setTitle(filepath)
+    }
   }
   
   editorDidMount(editor, monaco) {
@@ -103,7 +105,9 @@ export default class EditableTextFile extends React.Component {
     return
   }
   setContainerTitle (title) {
-    this.props.glContainer.setTitle(title)
+    if (this.props.glContainer) {
+      this.props.glContainer.setTitle(title)
+    }
   }
   onChange (newValue) {
     // TODO... what to do with file?
@@ -112,14 +116,16 @@ export default class EditableTextFile extends React.Component {
     })
   }
   preview () {
-    this.props.glContainer.layoutManager.root.contentItems[0].addChild({
-      type: 'column',
-      content:[{
-        type:'react-component',
-        component: 'MarkdownViewer',
-        props: { filepath: this.props.filepath }
-      }]
-    })
+    if (this.props.glContainer) {
+      this.props.glContainer.layoutManager.root.contentItems[0].addChild({
+        type: 'column',
+        content:[{
+          type:'react-component',
+          component: 'MarkdownViewer',
+          props: { filepath: this.props.filepath }
+        }]
+      })
+    }
   }
   saveFile () {
     fs.writeFile(this.props.filepath, this.state.unsavedContent, 'utf8', err => console.log)

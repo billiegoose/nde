@@ -14,12 +14,18 @@ export default class LayoutCodePreview extends React.Component {
   }
   render () {
     const TryFileNavigator = TryComponent(FileNavigator)
+    const TryEditableTextFile = TryComponent(EditableTextFile)
     return (
     <article>
+      <style>{`
+      .splitter-layout .layout-pane {
+        overflow: unset;
+      }`}
+      </style>
       <SplitterLayout primaryIndex={1} secondaryInitialSize={250}>
         <TryFileNavigator root="/"/>
         <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
-          <div>Source Code</div>
+          <TryEditableTextFile filepath={this.props.filepath}/>
           <div>Preview</div>
         </SplitterLayout>
       </SplitterLayout>
