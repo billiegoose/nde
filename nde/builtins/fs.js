@@ -6,17 +6,8 @@ export const fsReady = new Promise(function(resolve, reject) {
     fs: "MountableFileSystem",
     options: {
       "/": {
-        fs: "AsyncMirror",
-        options: {
-          sync: {
-            fs: "InMemory",
-            options: {}
-          },
-          async: {
-            fs: "IndexedDB",
-            options: {}
-          }
-        }
+        fs: "IndexedDB",
+        options: {}
       }
     }
   }, (err) => err ? reject(err) : resolve())

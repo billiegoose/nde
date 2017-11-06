@@ -4,7 +4,7 @@
   "description": "The IDE of the future, today!",
   "scripts": {
     "now": "cd .. && cp nde/now.json . && now && now alias",
-    "start": "cd .. && cp nde/first-time-install.html index.html && npx browser-sync start --server --files"
+    "start": "cd .. && cp nde/first-time-install.html index.html && cp nde/favicon.ico favicon.ico && npx browser-sync start --server --files"
   },
   "repository": {
     "type": "git",
