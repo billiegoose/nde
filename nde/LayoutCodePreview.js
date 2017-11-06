@@ -1,3 +1,4 @@
+import path from 'path'
 import React from 'react'
 import SplitterLayout from 'react-splitter-layout'
 import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
@@ -17,16 +18,15 @@ const inactiveTabStyle = {color: '#6d6d6d', background: '#000000', border: '1px 
 const Tab = SortableElement(
   ({currentIndex: index, filepath, active, onTabClick, onTabClose}) => <li style={{
       display: 'inline-block',
-      padding: "5px 10px",
+      padding: "5px",
       whiteSpace: 'nowrap',
-      width: '100px',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       ...(active ? activeTabStyle : inactiveTabStyle)
     }}
+    title={filepath}
     onClick={() => onTabClick({index, filepath})}>
-      <i className="fa fa-window-close" onClick={(e) => { e.stopPropagation(); onTabClose({index}) }}></i> {filepath}
+      <i className="fa fa-window-close" onClick={(e) => { e.stopPropagation(); onTabClose({index}) }}></i>
+      {' ' + path.basename(filepath)}
     </li>
 )
 
