@@ -101,6 +101,22 @@ export default class EditableTextFile extends React.Component {
       this.setState({content: text, unsavedContent: text})
     })
   }
+  componentWillReceiveProps ({filepath}) {
+    if (filepath !== this.props.filepath) {
+      fs.readFile(filepath, 'utf8', (err, text) => {
+        if (err) return console.log(err)
+        this.setState({content: text, unsavedContent: text})
+        // Set language
+        let ext = path.extname(filepath)
+        for (let l of monaco.languages.getLanguages()) {
+          if (l.extensions.includes(ext)) {
+            this.setState({language: l.id})
+            break
+          }
+        }
+      })
+    }
+  }
   runCommand () {
     return
   }
