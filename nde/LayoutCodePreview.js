@@ -3,6 +3,8 @@ import React from 'react'
 import SplitterLayout from 'react-splitter-layout'
 import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 
+import {FileIcon} from 'react-file-browser'
+
 import TryComponent from './TryCatchHOC.js'
 import FileViewer from './FileViewer.js'
 import EditableTextFile from './EditableTextFile.js'
@@ -12,22 +14,39 @@ const TryFileNavigator = TryComponent(FileNavigator)
 const TryEditableTextFile = TryComponent(EditableTextFile)
 const TryFileViewer = TryComponent(FileViewer)
 
-const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
+const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'} 
 const inactiveTabStyle = {color: '#6d6d6d', background: '#000000', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
 
 const Tab = SortableElement(
-  ({currentIndex: index, filepath, active, onTabClick, onTabClose}) => <li style={{
-      display: 'inline-block',
-      padding: "5px",
-      whiteSpace: 'nowrap',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-      ...(active ? activeTabStyle : inactiveTabStyle)
-    }}
-    title={filepath}
-    onClick={() => onTabClick({index, filepath})}>
-      <i className="fa fa-window-close" onClick={(e) => { e.stopPropagation(); onTabClose({index}) }}></i>
-      {' ' + path.basename(filepath)}
-    </li>
+  ({currentIndex: index, filepath, active, onTabClick, onTabClose}) => {
+    if (active) {
+      return <li style={{
+        display: 'inline-block',
+        padding: "5px",
+        whiteSpace: 'nowrap',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        ...activeTabStyle
+      }}
+      title={filepath}
+      onClick={() => onTabClick({index, filepath})}>
+        <i className="fa fa-window-close" onClick={(e) => { e.stopPropagation(); onTabClose({index}) }}></i>
+        {' ' + path.basename(filepath)}
+      </li>
+    } else {
+      return <li style={{
+        display: 'inline-block',
+        padding: "5px",
+        whiteSpace: 'nowrap',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        ...inactiveTabStyle
+      }}
+      title={filepath}
+      onClick={() => onTabClick({index, filepath})}>
+        <FileIcon style={{verticalAlign: 'unset'}} filename={filepath} />
+        {path.basename(filepath)}
+      </li>
+    }
+  }
 )
 
 const TabList = SortableContainer(
