@@ -11,8 +11,8 @@ const TryFileNavigator = TryComponent(FileNavigator)
 const TryEditableTextFile = TryComponent(EditableTextFile)
 const TryFileViewer = TryComponent(FileViewer)
 
-const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '5px'}
-const inactiveTabStyle = {color: '#6d6d6d', background: '#000000'}
+const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
+const inactiveTabStyle = {color: '#6d6d6d', background: '#000000', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
 
 const Tab = SortableElement(
   ({currentIndex: index, filepath, active, onTabClick, onTabClose}) => <li style={{
@@ -32,7 +32,7 @@ const Tab = SortableElement(
 
 const TabList = SortableContainer(
   ({items, onTabClick, onTabClose}) => (
-    <ul style={{display: 'block', padding: 0, margin: 0, lineHeight: 0, color: '#4078c0', background: '#d9dbde', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'}}>
+    <ul style={{display: 'block', padding: 0, margin: 0, lineHeight: 0, color: '#4078c0', background: 'black', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'}}>
     {
       items.map(
         (item, index) => 
