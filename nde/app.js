@@ -65,6 +65,7 @@ if (module) {
         }]
       },{
         type: 'column',
+        width: 30,
         content:[{
           type: 'stack',
           id: 'MainEditor',
