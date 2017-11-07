@@ -34,6 +34,10 @@ Milestone reached! The IDE can be used to edit itself!
 
 ## Next steps:
 
+- [ ] Move state into a Redux store
+  - [ ] Add "undo" functionality via redux-undo
+  - [ ] Add state serialization
+  - [ ] Perfect hot module reloading
 - [ ] Add menu item for removing a file from the git index
 - [ ] Add a menu item to view the file diff with Monaco
 - [ ] Add a UI for signing in with Github and creating an OpenPGP key

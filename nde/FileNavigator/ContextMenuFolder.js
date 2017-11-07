@@ -19,10 +19,10 @@ export default class ContextMenuFolder extends React.Component {
     }
   }
   click () {
-    this.props.glEventHub.emit('toggleFolder', this.props.filepath)
+    EventHub.emit('toggleFolder', this.props.filepath)
   }
   setFolderStateData (key, value) {
-    this.props.glEventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
+    EventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
   }
   async newFile () {
     let filename = await prompt('Enter filename:')
@@ -44,31 +44,31 @@ export default class ContextMenuFolder extends React.Component {
   async gitClone () {
     await clone({
       filepath: this.props.filepath,
-      glEventHub: this.props.glEventHub
+      glEventHub: EventHub
     })
   }
   async gitPush () {
     await push({
       filepath: this.props.filepath,
-      glEventHub: this.props.glEventHub
+      glEventHub: EventHub
     })
   }
   async gitCommit () {
     await commit({
       filepath: this.props.filepath,
-      glEventHub: this.props.glEventHub
+      glEventHub: EventHub
     })
   }
   async gitCheckout () {
     await checkout({
       filepath: this.props.filepath,
-      glEventHub: this.props.glEventHub
+      glEventHub: EventHub
     })
   }
   async gitFetch () {
     await fetch({
       filepath: this.props.filepath,
-      glEventHub: this.props.glEventHub
+      glEventHub: EventHub
     })
   }
   render() {

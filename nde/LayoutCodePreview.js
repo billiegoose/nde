@@ -106,7 +106,7 @@ export default class LayoutCodePreview extends React.Component {
     if (this.props.glContainer) {
       this.props.glContainer.setTitle('Preview')
     }
-    MotherLayout.eventHub.on('openFile', (filepath) => {
+    EventHub.on('openFile', (filepath) => {
       this.setState(state => {
         // Don't open multiple instances of the same file.
         let i = this.state.openFiles.findIndex(x => x.filepath === filepath)

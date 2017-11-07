@@ -1,3 +1,11 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+}
+#app {
+}
 article {
   background-color: white;
   width: 100%;

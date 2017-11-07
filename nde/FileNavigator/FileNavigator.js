@@ -77,10 +77,10 @@ class FileNavigator extends React.Component {
     if (this.props.glContainer) {
       this.props.glContainer.setTitle('File Navigator')
     }
-    MotherLayout.eventHub.on('toggleFolder', this.toggleFolder.bind(this))
-    MotherLayout.eventHub.on('refreshGitStatus', this.refreshDir.bind(this))
-    MotherLayout.eventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
-    MotherLayout.eventHub.on('DISABLE_CONTEXTMENU', () => {
+    EventHub.on('toggleFolder', this.toggleFolder.bind(this))
+    EventHub.on('refreshGitStatus', this.refreshDir.bind(this))
+    EventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
+    EventHub.on('DISABLE_CONTEXTMENU', () => {
       this.setState((state, props) => ({
         state,
         disableContextMenu: !state.disableContextMenu
@@ -105,7 +105,7 @@ class FileNavigator extends React.Component {
         })
         git().findRoot(fullpath).then(dir =>
           git(dir).status(path.relative(dir, fullpath)).then(status =>
-            MotherLayout.eventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+            EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
           )
         ).catch(() => null)
       } else {
@@ -124,7 +124,7 @@ class FileNavigator extends React.Component {
               let rpath = path.relative(dir, path.join(fullpath, file))
               console.log('rpath =', rpath)
               git(dir).status(rpath).then(status =>
-                MotherLayout.eventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
+                EventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
               ).catch(() => null)
             }
           })
@@ -151,7 +151,7 @@ class FileNavigator extends React.Component {
   }
   render () {
     return (
-      <ContextMenuFolder filepath={this.props.root} disableContextMenu={this.props.disableContextMenu} glEventHub={MotherLayout.eventHub}>
+      <ContextMenuFolder filepath={this.props.root} disableContextMenu={this.props.disableContextMenu}>
         <nav className="_tree">
           <FileList
             disableContextMenu={this.state.disableContextMenu}

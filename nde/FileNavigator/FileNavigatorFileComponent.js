@@ -32,7 +32,7 @@ export default class FileNavigatorFileComponent extends React.Component {
         props: { filepath: this.props.filepath }
       })
     }
-    MotherLayout.eventHub.emit('openFile', this.props.filepath)
+    EventHub.emit('openFile', this.props.filepath)
   }
   deleteFile () {
     fs.unlink(this.props.filepath)
@@ -42,7 +42,7 @@ export default class FileNavigatorFileComponent extends React.Component {
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
     fs.readFile(this.props.filepath, (err, buf) =>
       fs.writeFile(newfile, buf, () =>
-        MotherLayout.eventHub.emit('refreshGitStatus', newfile)
+        EventHub.emit('refreshGitStatus', newfile)
       )
     )
   }
@@ -50,7 +50,7 @@ export default class FileNavigatorFileComponent extends React.Component {
     let dir = await git().findRoot(this.props.filepath)
     let rpath = path.relative(dir, this.props.filepath)
     await git(dir).add(rpath)
-    MotherLayout.eventHub.emit('refreshGitStatus', this.props.filepath)
+    EventHub.emit('refreshGitStatus', this.props.filepath)
   }
   render () {
     let {disableContextMenu, filename} = this.props
