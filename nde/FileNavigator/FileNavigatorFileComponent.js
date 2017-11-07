@@ -32,6 +32,7 @@ export default class FileNavigatorFileComponent extends React.Component {
         props: { filepath: this.props.filepath }
       })
     }
+    MotherLayout.eventHub.emit('openFile', this.props.filepath)
   }
   deleteFile () {
     fs.unlink(this.props.filepath)

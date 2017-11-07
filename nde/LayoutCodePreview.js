@@ -75,27 +75,27 @@ export default class LayoutCodePreview extends React.Component {
     this.state = {
       openFiles: [
         {
-          filepath: 'nde/README.md',
+          filepath: '/nde/README.md',
           scrollPosition: 0,
           active: true
         },
         {
-          filepath: 'nde/nde/app.js',
+          filepath: '/nde/nde/app.js',
           scrollPosition: 0,
           active: false
         },
         {
-          filepath: 'nde/nde/EditableTextFile.js',
+          filepath: '/nde/nde/EditableTextFile.js',
           scrollPosition: 0,
           active: false
         },
         {
-          filepath: 'nde/nde/LayoutCodePreview.js',
+          filepath: '/nde/nde/LayoutCodePreview.js',
           scrollPosition: 0,
           active: false
         },
         {
-          filepath: 'nde/nde/MarkdownViewer.js',
+          filepath: '/nde/nde/MarkdownViewer.js',
           scrollPosition: 0,
           active: false
         }
@@ -106,6 +106,29 @@ export default class LayoutCodePreview extends React.Component {
     if (this.props.glContainer) {
       this.props.glContainer.setTitle('Preview')
     }
+    MotherLayout.eventHub.on('openFile', (filepath) => {
+      this.setState(state => {
+        // Don't open multiple instances of the same file.
+        let i = this.state.openFiles.findIndex(x => x.filepath === filepath)
+        if (i > -1) {
+          console.log('i = ', i)
+          state.openFiles.map(item => item.active = false)
+          state.openFiles[i].active = true
+          return state
+        }
+        // Open the file and insert to the right of the active tab
+        // and make the new tab the active tab.
+        const insertAfter = this.state.openFiles.findIndex(item => item.active)
+        const oldActiveTab = this.state.openFiles[insertAfter]
+        state.openFiles.splice(insertAfter + 1, 0, {
+          filepath,
+          scrollPosition: 0,
+          active: true
+        })
+        oldActiveTab.active = false
+        return state
+      })
+    })
   }
   onTabReorder ({oldIndex, newIndex}) {
     this.setState(state => {
