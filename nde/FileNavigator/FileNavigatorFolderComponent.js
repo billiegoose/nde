@@ -103,7 +103,7 @@ class FileNavigatorFolderComponent extends React.Component {
 }
 
 export default DragSource(ItemTypes.FOLDER, folderSource, collect)(
-    DropTarget(ItemTypes.FOLDER, folderTarget, targetCollect)(
+    DropTarget([ItemTypes.FOLDER, ItemTypes.FILE], folderTarget, targetCollect)(
         FileNavigatorFolderComponent
     )
 )

@@ -5,9 +5,11 @@ import Octicon from 'react-octicons-modular'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu/dist/react-contextmenu.js";
 import fs from 'fs'
 import path from 'path'
+import pify from 'pify'
 import cuid from 'cuid'
+import { DragSource } from 'react-dnd'
 
-export default class FileNavigatorFileComponent extends React.Component {
+class FileNavigatorFileComponent extends React.Component {
   constructor () {
     super()
     this.state = {
@@ -37,6 +39,10 @@ export default class FileNavigatorFileComponent extends React.Component {
   deleteFile () {
     fs.unlink(this.props.filepath)
   }
+  async renameFile () {
+    let name = await prompt('New file name')
+    return pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), name))
+  }
   async copyFile () {
     let name = await prompt('Copy file as')
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
@@ -53,19 +59,26 @@ export default class FileNavigatorFileComponent extends React.Component {
     EventHub.emit('refreshGitStatus', this.props.filepath)
   }
   render () {
-    let {disableContextMenu, filename} = this.props
-    return (
-      <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
+    let {disableContextMenu, filename, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
+    let file = connectDragSource(connectDragPreview(
+      <div>
         <File filename={filename} domProps={{onDoubleClick: this.doubleclick.bind(this)}}>
           &nbsp;<StatusIcon status={this.props.statedata && this.props.statedata.gitstatus || 'unmodified'} />
         </File>
-
+      </div>
+    ))
+    return (
+      <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
+        {file}
         <ContextMenu id={this.state.cuid}>
           <MenuItem onClick={() => this.addToIndex()}>
             Add to Stage <i className="icon git-icon medium-red"></i>
           </MenuItem>
           <MenuItem onClick={() => this.copyFile()}>
             Copy File <i className="icon fa fa-clone"></i>
+          </MenuItem>
+          <MenuItem onClick={() => this.renameFile()}>
+            Rename File <i className="icon fa fa-i-cursor"></i>
           </MenuItem>
           <MenuItem onClick={() => this.deleteFile()}>
             Delete File <i className="icon fa fa-trash"></i>
@@ -75,3 +88,28 @@ export default class FileNavigatorFileComponent extends React.Component {
     )
   }
 }
+
+const ItemTypes = {
+    FILE: 'file',
+    FOLDER: 'folder'
+}
+const fileSource = {
+  beginDrag(props) {
+    return {
+      filename: props.filename,
+      filepath: props.filepath
+    }
+  }
+}
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    isDragging: monitor.isDragging()
+  }
+}
+
+export default DragSource(ItemTypes.FILE, fileSource, collect)(
+  FileNavigatorFileComponent
+)
