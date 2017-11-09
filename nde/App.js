@@ -6,12 +6,12 @@ import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 import {FileIcon} from 'react-file-browser'
 
 import TryComponent from './TryCatchHOC.js'
-import FileViewer from './FileViewer/index.js'
-import EditableTextFile from './EditableTextFile.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
+import FileEditor from './FileEditor/index.js'
+import FileViewer from './FileViewer/index.js'
 
 const TryFileNavigator = TryComponent(FileNavigator)
-const TryEditableTextFile = TryComponent(EditableTextFile)
+const TryFileEditor = TryComponent(FileEditor)
 const TryFileViewer = TryComponent(FileViewer)
 
 const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'} 
@@ -80,12 +80,7 @@ export default class App extends React.Component {
           active: true
         },
         {
-          filepath: '/nde/nde/index.js',
-          scrollPosition: 0,
-          active: false
-        },
-        {
-          filepath: '/nde/nde/EditableTextFile.js',
+          filepath: '/nde/index.js',
           scrollPosition: 0,
           active: false
         },
@@ -95,7 +90,12 @@ export default class App extends React.Component {
           active: false
         },
         {
-          filepath: '/nde/nde/MarkdownViewer.js',
+          filepath: '/nde/nde/FileEditor/TextEditor.js',
+          scrollPosition: 0,
+          active: false
+        },
+        {
+          filepath: '/nde/nde/FileViewer/MarkdownViewer.js',
           scrollPosition: 0,
           active: false
         }
@@ -167,7 +167,7 @@ export default class App extends React.Component {
         <div>
           <TabList items={this.state.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.onTabReorder.bind(this)} onTabClick={this.onTabClick.bind(this)} onTabClose={this.onTabClose.bind(this)}/>
           <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
-            <TryEditableTextFile filepath={activeFilepath}/>
+            <TryFileEditor filepath={activeFilepath}/>
             <TryFileViewer filepath={activeFilepath}/>
           </SplitterLayout>
         </div>
