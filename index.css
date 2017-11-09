@@ -1,0 +1,147 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+}
+#app {
+}
+article {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.lm_popin {
+  background-color: black;
+}
+.react-contextmenu-wrapper {
+  width: 100%;
+  height: 100%;
+}
+.react-contextmenu--visible {
+  z-index: 21;
+}
+
+/* Fancy scrollbars. https://codepen.io/devstreak/pen/dMYgeO */
+::-webkit-scrollbar
+{
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track:hover
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, .15);
+}
+::-webkit-scrollbar-thumb
+{
+  border-radius: 8px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #555;
+}
+::-webkit-scrollbar-thumb:hover
+{
+  border-radius: 8px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #AAA;
+}
+
+/* Icon hack */
+.octicon.valign-middle {
+  vertical-align: middle;
+}
+
+/* TODO: Put this into the contextmenu component. */
+.react-contextmenu {
+    min-width: 160px;
+    padding: 0;
+    margin: 2px 0 0;
+    font-size: 16px;
+    color: #373a3c;
+    text-align: left;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    outline: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease !important;
+}
+
+.react-contextmenu.react-contextmenu--visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.react-contextmenu-item {
+    padding: 3px 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #373a3c;
+    text-align: inherit;
+    white-space: nowrap;
+    background: 0 0;
+    border: 0;
+    border-bottom: 1px solid rgba(0,0,0,.15);
+	  cursor: pointer;
+}
+.react-contextmenu-item:last-child {
+  border-bottom: none;
+}
+.react-contextmenu-item .icon {
+    position: absolute;
+    right: 0;
+}
+
+.react-contextmenu-item.react-contextmenu-item--active,
+.react-contextmenu-item.react-contextmenu-item--selected {
+    background-color: #DDD;
+    outline: solid 1px #20a0ff;
+    text-decoration: none;
+    border-bottom-color: transparent;
+}
+
+.react-contextmenu-item.react-contextmenu-item--disabled,
+.react-contextmenu-item.react-contextmenu-item--disabled:hover {
+    color: #878a8c;
+    background-color: transparent;
+    border-color: rgba(0,0,0,.15);
+    text-decoration: line-through;
+    outline: none;
+}
+
+.react-contextmenu-item--divider {
+    margin-bottom: 3px;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(0,0,0,.15);
+    cursor: inherit;
+}
+.react-contextmenu-item--divider:hover {
+    background-color: transparent;
+    border-color: rgba(0,0,0,.15);
+}
+
+.react-contextmenu-item.react-contextmenu-submenu {
+	padding: 0;
+  border-bottom: none;
+}
+
+.react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item:after {
+    content: "\0025B6"; /*"◀ ▶ ▲ ▼";*/
+    font-family: "Arial", "Liberation Sans", sans-serif; /* Needed to avoid Segoe UI Emoji used by navigation tree */
+    display: inline-block;
+    position: absolute;
+    right: 7px;
+}
+
+.example-multiple-targets::after {
+    content: attr(data-count);
+    display: block;
+}
