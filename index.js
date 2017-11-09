@@ -21,7 +21,7 @@ window.EventHub = EventHub
 // Global CSS
 import './index.css'
 // Application code
-import LayoutCodePreview from './nde/App.js'
+import LayoutCodePreview from './components/App.js'
 
 // Hot reload case
 if (module) {
