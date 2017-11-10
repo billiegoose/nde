@@ -4,6 +4,8 @@ import path from 'path'
 import markyMarkdown from 'marky-markdown/dist/marky-markdown.js'
 import cuid from 'cuid'
 import MarkdownViewer from './MarkdownViewer'
+import ReactComponentViewer from './ReactComponentViewer'
+import ErrorBoundary from '../ErrorBoundary/index.js'
 
 export default class FileViewer extends React.Component {
   constructor ({filepath, glContainer}) {
@@ -24,7 +26,9 @@ export default class FileViewer extends React.Component {
   // }
   render () {
     if (this.props.filepath && this.props.filepath.endsWith('.md')) {
-      return <MarkdownViewer filepath={this.props.filepath}/>
+      return <ErrorBoundary><MarkdownViewer filepath={this.props.filepath}/></ErrorBoundary>
+    } else if (this.props.filepath && this.props.filepath.endsWith('.jsx')) {
+      return <ErrorBoundary><ReactComponentViewer filepath={this.props.filepath}/></ErrorBoundary>
     } else {
       return <article>{'No preview available for this filetype'}</article>
     }

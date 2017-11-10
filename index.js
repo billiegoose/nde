@@ -45,14 +45,22 @@ export const __unload = () => {
 
 // Listen for files that we need to hot-reload when saved.
 let base
-System.resolve('/').then(here => base = here)
+System.resolve('/').then(here => {
+  base = here
+  console.log('BASE =', base)
+})
 
 const onChange = ({filename}) => {
-  let file = path.join(base, filename)
+  // Hack to work around the extra '/' everywhere.
+  let file = new URL(base)
+  file.pathname = filename
+  file = file.href
   console.log(file + ' file changed')
   if (file in System.loads) {
     console.log('Reloading!')
-    System.reload(file)
+    System.reload(file).then(() => {
+      fs.Events.emit('reload', filename)
+    })
   }
 }
 fs.Events.on('change', onChange)

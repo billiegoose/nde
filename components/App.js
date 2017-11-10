@@ -12,7 +12,7 @@ import FileViewer from './FileViewer/index.js'
 
 const TryFileNavigator = TryComponent(FileNavigator)
 const TryFileEditor = TryComponent(FileEditor)
-const TryFileViewer = TryComponent(FileViewer)
+const TryFileViewer = FileViewer //TryComponent(FileViewer)
 
 const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'} 
 const inactiveTabStyle = {color: '#6d6d6d', background: '#000000', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
@@ -90,7 +90,7 @@ export default class App extends React.Component {
           active: false
         },
         {
-          filepath: '/nde/components/FileEditor/TextEditor.js',
+          filepath: '/nde/components/FileViewer/index.js',
           scrollPosition: 0,
           active: false
         },
