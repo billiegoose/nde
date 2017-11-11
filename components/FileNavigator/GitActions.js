@@ -41,17 +41,65 @@ export async function clone ({filepath, glEventHub}) {
 }
 
 export async function push ({filepath, glEventHub}) {
-  let token = await prompt({
-    text: 'Enter auth to use',
-    input: 'password'
-  })
-  // WIP: Prompt to save push credentials in the browser credential manager
   let host = await git(filepath).config('remote.origin.host')
-  // let cred = bob = await navigator.credentials.create({federated:{id: 'test@example.com', protocol: 'git', name: token, provider: host}})
+  let helper = await git(filepath).config(`credential."${host}".helper`)
+  let auth = null
+  // WIP: Prompt to save push credentials in the browser credential manager
+  if (helper === 'navigator.credentials' && navigator.credentials && navigator.credentials.preventSilentAccess) {
+    // The new Credential Management API is available
+    let cred = await navigator.credentials.get({
+      federated: {
+        providers: [host]
+      }
+    })
+    if (cred) {
+      auth = atob(cred.id) // I obfuscated this slightly because it *is* shown in the UI. :(
+    }
+  }
+  let username = await git(filepath).config(`credential."${host}".username`)
+  username = await git(filepath).config(`credential."${host}".username`)
+  const usernameHelper = username ? true : false
+  if (auth === null) {
+    username = username || await prompt({
+      text: `Enter username (for ${host})`,
+      input: 'text'
+    })
+    let token = await prompt({
+      text: `Enter access token`,
+      input: 'password'
+    })
+    auth = `${username}:${token}`
+  }
+  // WIP: Prompt to save push credentials in the browser credential manager
+  if (!usernameHelper && navigator.credentials && navigator.credentials.preventSilentAccess) {
+    // The new Credential Management API is available
+    let cred = await navigator.credentials.create({
+      federated: {
+        provider: host,
+        name: username,
+        id: btoa(auth) // I obfuscate this slightly because it *is* shown in the UI. :(
+      }
+    })
+    cred = await navigator.credentials.store(cred)
+    if (cred) {
+      navigator.credentials.preventSilentAccess() // Mitigate XSS attacks
+      await git(filepath).config(`credential."${host}".helper`, 'navigator.credentials')
+    } else {
+      let offer = await prompt({
+        text: `Don't offer to remember this again`,
+        input: 'checkbox'
+      })
+      if (offer) {
+        // Use the presense of the username helper to indicate we DON'T want the password helper
+        // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
+        await git(filepath).config(`credential."${host}".username`, username)
+      }
+    }
+  }
   glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
   try {
     await git(filepath)
-      .auth(token)
+      .auth(auth)
       .remote('origin')
       .push('refs/heads/master')
   } catch (err) {
