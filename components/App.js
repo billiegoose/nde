@@ -5,6 +5,9 @@ import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 
 import {FileIcon} from 'react-file-browser'
 
+import { store } from './store'
+console.log('STORE =', store)
+
 import TryComponent from './TryCatchHOC.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
 import FileEditor from './FileEditor/index.js'
