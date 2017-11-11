@@ -82,7 +82,8 @@ export async function push ({filepath, glEventHub}) {
       }
     })
     try {
-      // NOTE: I don't think store is working correctly.
+      // TODO: Awaiting a response from the @ChromiumDev team as to how to tell whether the
+      // password was stored successfully or not.
       let c = await navigator.credentials.store(cred)
       console.log('saving to config', c)
       await git(filepath).config(`credential "${host}".helper`, 'navigator.credentials')
@@ -100,7 +101,6 @@ export async function push ({filepath, glEventHub}) {
       }
     }
   }
-  return
   glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
   try {
     await git(filepath)
