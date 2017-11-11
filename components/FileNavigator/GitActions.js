@@ -75,7 +75,7 @@ export async function push ({filepath, glEventHub}) {
     // The new Credential Management API is available
     let cred = await navigator.credentials.create({
       federated: {
-        provider: host,
+        provider: 'https://' + host,
         name: username,
         id: btoa(auth) // I obfuscate this slightly because it *is* shown in the UI. :(
       }
@@ -86,7 +86,8 @@ export async function push ({filepath, glEventHub}) {
       await git(filepath).config(`credential."${host}".helper`, 'navigator.credentials')
     } else {
       let offer = await prompt({
-        text: `Don't offer to remember this again`,
+        title: 'Opt out of password manager integration',
+        inputPlaceholder: `Don't offer to remember this again`,
         input: 'checkbox'
       })
       if (offer) {
