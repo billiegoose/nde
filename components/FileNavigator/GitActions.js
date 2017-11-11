@@ -41,19 +41,19 @@ export async function clone ({filepath, glEventHub}) {
 }
 
 export async function push ({filepath, glEventHub}) {
-  let host = await git(filepath).config('remote.origin.host')
-  let helper = await git(filepath).config(`credential."${host}".helper`)
+  let host = 'https://' + await git(filepath).config('remote.origin.host')
+  let helper = await git(filepath).config(`credential "${host}".helper`)
   let auth = null
   // WIP: Prompt to save push credentials in the browser credential manager
   if (helper === 'navigator.credentials' && navigator.credentials && navigator.credentials.preventSilentAccess) {
     // The new Credential Management API is available
     let cred = await navigator.credentials.get({
-      federated: {
-        providers: [host]
-      }
+      password: true,
+      mediation: 'required'
     })
+    await navigator.credentials.preventSilentAccess()
     if (cred) {
-      auth = atob(cred.id) // I obfuscated this slightly because it *is* shown in the UI. :(
+      auth = cred.id // This is slightly regretable because it *is* shown in the UI. :(
     }
   }
   let username = await git(filepath).config(`credential."${host}".username`)
@@ -74,16 +74,19 @@ export async function push ({filepath, glEventHub}) {
   if (!usernameHelper && navigator.credentials && navigator.credentials.preventSilentAccess) {
     // The new Credential Management API is available
     let cred = await navigator.credentials.create({
-      federated: {
-        provider: 'https://' + host,
-        name: username,
-        id: btoa(auth) // I obfuscate this slightly because it *is* shown in the UI. :(
+      password: {
+        id: username,
+        name: host,
+        iconURL: host + '/favicon.ico',
+        password: auth
       }
     })
     cred = await navigator.credentials.store(cred)
-    if (cred) {
-      navigator.credentials.preventSilentAccess() // Mitigate XSS attacks
+    console.log('cred =', cred)
+    if (cred || 'Hmm it looks like navigator.credentials.store isnt returning the correct thing on success') {
+      console.log('saving to config')
       await git(filepath).config(`credential."${host}".helper`, 'navigator.credentials')
+      await navigator.credentials.preventSilentAccess() // Mitigate XSS attacks
     } else {
       // let offer = await prompt({
       //   title: 'Opt out of password manager integration',
@@ -97,6 +100,7 @@ export async function push ({filepath, glEventHub}) {
       // }
     }
   }
+  return
   glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
   try {
     await git(filepath)
