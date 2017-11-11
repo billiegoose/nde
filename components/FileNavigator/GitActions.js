@@ -31,6 +31,7 @@ export async function clone ({filepath, glEventHub}) {
             .depth(1)
             .onprogress(updateProgressBar)
             .clone(`https://cors-buster-jfpactjnem.now.sh/${proxyurl}`)
+        await git(dir).config('remote.origin.host', new URL('https://' + proxyurl).hostname)
     } catch (err) {
         console.log('err =', err)
     } finally {
@@ -44,6 +45,9 @@ export async function push ({filepath, glEventHub}) {
       text: 'Enter auth to use',
       input: 'password'
     })
+    // WIP: Prompt to save push credentials in the browser credential manager
+    let host = await git(filepath).config('remote.origin.host')
+    // let cred = bob = await navigator.credentials.create({federated:{id: 'test@example.com', protocol: 'git', name: token, provider: host}})
     glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
     try {
       await git(filepath)
@@ -59,14 +63,23 @@ export async function push ({filepath, glEventHub}) {
 }
 
 export async function commit ({filepath, glEventHub}) {
-  let author = await prompt({
-    text: 'Author Name',
-    input: 'text'
-  })
-  let email = await prompt({
-    text: 'Author Email',
-    input: 'text'
-  })
+  let author = await git(filepath).config('user.name')
+  let email = await git(filepath).config('user.email')
+  if (!author) {
+    author = await prompt({
+      text: 'Author Name',
+      input: 'text'
+    })
+    git(filepath).config('user.name', author)
+  }
+  if (!email) {
+    email = await prompt({
+      text: 'Author Email',
+      input: 'text'
+    })
+    git(filepath).config('user.email', email)
+  }
+  // signingkey = 9609B8A5928BA6B9
   let msg = await prompt({
     text: 'Commit Message',
     input: 'text'
