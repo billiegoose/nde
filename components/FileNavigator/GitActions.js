@@ -85,16 +85,16 @@ export async function push ({filepath, glEventHub}) {
       navigator.credentials.preventSilentAccess() // Mitigate XSS attacks
       await git(filepath).config(`credential."${host}".helper`, 'navigator.credentials')
     } else {
-      let offer = await prompt({
-        title: 'Opt out of password manager integration',
-        inputPlaceholder: `Don't offer to remember this again`,
-        input: 'checkbox'
-      })
-      if (offer) {
-        // Use the presense of the username helper to indicate we DON'T want the password helper
-        // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
-        await git(filepath).config(`credential."${host}".username`, username)
-      }
+      // let offer = await prompt({
+      //   title: 'Opt out of password manager integration',
+      //   inputPlaceholder: `Don't offer to remember this again`,
+      //   input: 'checkbox'
+      // })
+      // if (offer) {
+      //   // Use the presense of the username helper to indicate we DON'T want the password helper
+      //   // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
+      //   await git(filepath).config(`credential."${host}".username`, username)
+      // }
     }
   }
   glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
