@@ -53,12 +53,12 @@ export async function push ({filepath, glEventHub}) {
     })
     await navigator.credentials.preventSilentAccess()
     if (cred) {
-      auth = cred.id // This is slightly regretable because it *is* shown in the UI. :(
+      auth = cred.password
     }
   }
-  let username = await git(filepath).config(`credential."${host}".username`)
-  username = await git(filepath).config(`credential."${host}".username`)
-  const usernameHelper = username ? true : false
+  let username = await git(filepath).config(`credential "${host}".username`)
+  username = await git(filepath).config(`credential "${host}".username`)
+  const offerStorePassword = (!auth && !username) ? true : false
   if (auth === null) {
     username = username || await prompt({
       text: `Enter username (for ${host})`,
@@ -71,7 +71,7 @@ export async function push ({filepath, glEventHub}) {
     auth = `${username}:${token}`
   }
   // WIP: Prompt to save push credentials in the browser credential manager
-  if (!usernameHelper && navigator.credentials && navigator.credentials.preventSilentAccess) {
+  if (offerStorePassword && navigator.credentials && navigator.credentials.preventSilentAccess) {
     // The new Credential Management API is available
     let cred = await navigator.credentials.create({
       password: {
@@ -81,23 +81,23 @@ export async function push ({filepath, glEventHub}) {
         password: auth
       }
     })
-    cred = await navigator.credentials.store(cred)
-    console.log('cred =', cred)
-    if (cred || 'Hmm it looks like navigator.credentials.store isnt returning the correct thing on success') {
-      console.log('saving to config')
-      await git(filepath).config(`credential."${host}".helper`, 'navigator.credentials')
+    try {
+      // NOTE: I don't think store is working correctly.
+      let c = await navigator.credentials.store(cred)
+      console.log('saving to config', c)
+      await git(filepath).config(`credential "${host}".helper`, 'navigator.credentials')
       await navigator.credentials.preventSilentAccess() // Mitigate XSS attacks
-    } else {
-      // let offer = await prompt({
-      //   title: 'Opt out of password manager integration',
-      //   inputPlaceholder: `Don't offer to remember this again`,
-      //   input: 'checkbox'
-      // })
-      // if (offer) {
-      //   // Use the presense of the username helper to indicate we DON'T want the password helper
-      //   // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
-      //   await git(filepath).config(`credential."${host}".username`, username)
-      // }
+    } catch (err) {
+      let offer = await prompt({
+        title: 'Opt out of password manager integration',
+        inputPlaceholder: `Don't offer to remember this again`,
+        input: 'checkbox'
+      })
+      if (offer) {
+        // Use the presense of the username helper to indicate we DON'T want the password helper
+        // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
+        await git(filepath).config(`credential "${host}".username`, username)
+      }
     }
   }
   return
