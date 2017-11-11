@@ -45,7 +45,7 @@ export default function FileList ({root, data, statedata, FolderComponent, FileC
             {...props}>
           </FileComponent>
         </li>
-      );
+      )
     }
   }
   let entries = folders.concat(files)
@@ -53,5 +53,5 @@ export default function FileList ({root, data, statedata, FolderComponent, FileC
     <ul>
       {entries}
     </ul>
-  );
+  )
 }

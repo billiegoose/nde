@@ -12,9 +12,9 @@ import FileViewer from './FileViewer/index.js'
 
 const TryFileNavigator = TryComponent(FileNavigator)
 const TryFileEditor = TryComponent(FileEditor)
-const TryFileViewer = FileViewer //TryComponent(FileViewer)
+const TryFileViewer = FileViewer // TryComponent(FileViewer)
 
-const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'} 
+const activeTabStyle = {color: 'white', background: '#1e1e1e', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
 const inactiveTabStyle = {color: '#6d6d6d', background: '#000000', border: '1px solid', borderBottom: 'none', borderTopLeftRadius: '10px'}
 
 const Tab = SortableElement(
@@ -22,7 +22,7 @@ const Tab = SortableElement(
     if (active) {
       return <li style={{
         display: 'inline-block',
-        padding: "5px",
+        padding: '5px',
         whiteSpace: 'nowrap',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
         ...activeTabStyle
@@ -35,7 +35,7 @@ const Tab = SortableElement(
     } else {
       return <li style={{
         display: 'inline-block',
-        padding: "5px",
+        padding: '5px',
         whiteSpace: 'nowrap',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
         ...inactiveTabStyle
@@ -52,19 +52,19 @@ const Tab = SortableElement(
 const TabList = SortableContainer(
   ({items, onTabClick, onTabClose}) => (
     <ul style={{display: 'block', padding: 0, margin: 0, lineHeight: 0, color: '#4078c0', background: 'black', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'}}>
-    {
-      items.map(
-        (item, index) => 
-          <Tab key={`item-${index}`}
-            index={index}
-            currentIndex={index}
-            filepath={item.filepath}
-            active={item.active}
-            onTabClick={onTabClick}
-            onTabClose={onTabClose}
-          />
-      )
-    }
+      {
+        items.map(
+          (item, index) =>
+            <Tab key={`item-${index}`}
+              index={index}
+              currentIndex={index}
+              filepath={item.filepath}
+              active={item.active}
+              onTabClick={onTabClick}
+              onTabClose={onTabClose}
+            />
+        )
+      }
     </ul>
   )
 )
@@ -154,25 +154,25 @@ export default class App extends React.Component {
   }
   render () {
     const activeTab = this.state.openFiles.find(item => item.active)
-    const activeFilepath = activeTab ? activeTab.filepath : undefined //'nde/README.md'
+    const activeFilepath = activeTab ? activeTab.filepath : undefined // 'nde/README.md'
     return (
-    <article>
-      <style>{`
+      <article>
+        <style>{`
       .splitter-layout .layout-pane {
         overflow: unset;
       }`}
-      </style>
-      <SplitterLayout primaryIndex={1} secondaryInitialSize={250}>
-        <TryFileNavigator root="/"/>
-        <div>
-          <TabList items={this.state.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.onTabReorder.bind(this)} onTabClick={this.onTabClick.bind(this)} onTabClose={this.onTabClose.bind(this)}/>
-          <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
-            <TryFileEditor filepath={activeFilepath}/>
-            <TryFileViewer filepath={activeFilepath}/>
-          </SplitterLayout>
-        </div>
-      </SplitterLayout>
-    </article>
-    );
+        </style>
+        <SplitterLayout primaryIndex={1} secondaryInitialSize={250}>
+          <TryFileNavigator root="/"/>
+          <div>
+            <TabList items={this.state.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.onTabReorder.bind(this)} onTabClick={this.onTabClick.bind(this)} onTabClose={this.onTabClose.bind(this)}/>
+            <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
+              <TryFileEditor filepath={activeFilepath}/>
+              <TryFileViewer filepath={activeFilepath}/>
+            </SplitterLayout>
+          </div>
+        </SplitterLayout>
+      </article>
+    )
   }
 }

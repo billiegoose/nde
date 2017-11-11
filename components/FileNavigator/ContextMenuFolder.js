@@ -1,7 +1,7 @@
 import React from 'react'
 import {FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
-import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu/dist/react-contextmenu.js';
+import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu/dist/react-contextmenu.js'
 import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
@@ -15,7 +15,7 @@ export default class ContextMenuFolder extends React.Component {
   constructor () {
     super()
     this.state = {
-      cuid: cuid(),
+      cuid: cuid()
     }
   }
   click () {
@@ -71,11 +71,11 @@ export default class ContextMenuFolder extends React.Component {
       glEventHub: EventHub
     })
   }
-  render() {
+  render () {
     let {disableContextMenu, filename, open, ...passedProps} = this.props
     let busyIcon = passedProps.statedata && passedProps.statedata.busy
-             ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
-             : ''
+      ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
+      : ''
     return (
       <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
         {this.props.children}

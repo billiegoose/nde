@@ -7,7 +7,7 @@ export default class MarkdownViewer extends React.Component {
   constructor ({filepath, glContainer}) {
     super()
     this.state = {
-      content: '',
+      content: ''
     }
   }
   componentDidMount () {
@@ -17,6 +17,6 @@ export default class MarkdownViewer extends React.Component {
     })
   }
   render () {
-    return <article dangerouslySetInnerHTML={{__html: markyMarkdown(this.state.content)}}></article>;
+    return <article dangerouslySetInnerHTML={{__html: markyMarkdown(this.state.content)}}></article>
   }
 }

@@ -14,13 +14,13 @@ class FileNavigatorFileComponent extends React.Component {
   constructor () {
     super()
     this.state = {
-      cuid: cuid(),
+      cuid: cuid()
     }
   }
   componentDidMount () {
     if (this.props.glContainer) {
       this.props.glContainer.layoutManager.createDragSource(ReactDOM.findDOMNode(this), {
-        type:'react-component',
+        type: 'react-component',
         component: 'EditableTextFile',
         props: { filepath: this.props.filepath }
       })
@@ -30,7 +30,7 @@ class FileNavigatorFileComponent extends React.Component {
     if (this.props.glContainer) {
       let stack = this.props.glContainer.layoutManager.root.getItemsById('MainEditor')[0]
       stack.addChild({
-        type:'react-component',
+        type: 'react-component',
         component: 'EditableTextFile',
         props: { filepath: this.props.filepath }
       })
@@ -91,11 +91,11 @@ class FileNavigatorFileComponent extends React.Component {
 }
 
 const ItemTypes = {
-    FILE: 'file',
-    FOLDER: 'folder'
+  FILE: 'file',
+  FOLDER: 'folder'
 }
 const fileSource = {
-  beginDrag(props) {
+  beginDrag (props) {
     return {
       filename: props.filename,
       filepath: props.filepath
@@ -103,7 +103,7 @@ const fileSource = {
   }
 }
 
-function collect(connect, monitor) {
+function collect (connect, monitor) {
   return {
     connectDragSource: connect.dragSource(),
     connectDragPreview: connect.dragPreview(),

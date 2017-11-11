@@ -10,7 +10,7 @@ const hotReload = () => {
 
 // This function is a total mess. I must be sleep deprived.
 const mkdirs = (filename) => {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     let dirname = path.dirname(filename)
     let dirs = dirname.replace(/(^\/)|(\/$)/g, '').split('/').filter(x => x !== '')
     for (let i = 1; i < dirs.length + 1; i++) {
@@ -23,7 +23,7 @@ const mkdirs = (filename) => {
       }
     }
     resolve()
-  });
+  })
 }
 
 export default class EditableTextFile extends React.Component {
@@ -38,8 +38,8 @@ export default class EditableTextFile extends React.Component {
       glContainer.setTitle(filepath)
     }
   }
-  
-  editorDidMount(editor, monaco) {
+
+  editorDidMount (editor, monaco) {
     // Set language
     let ext = path.extname(this.props.filepath)
     for (let l of monaco.languages.getLanguages()) {
@@ -118,7 +118,7 @@ export default class EditableTextFile extends React.Component {
     }
   }
   runCommand () {
-    return
+
   }
   setContainerTitle (title) {
     if (this.props.glContainer) {
@@ -135,8 +135,8 @@ export default class EditableTextFile extends React.Component {
     if (this.props.glContainer) {
       this.props.glContainer.layoutManager.root.contentItems[0].addChild({
         type: 'column',
-        content:[{
-          type:'react-component',
+        content: [{
+          type: 'react-component',
           component: 'MarkdownViewer',
           props: { filepath: this.props.filepath }
         }]
@@ -169,11 +169,11 @@ export default class EditableTextFile extends React.Component {
       paths: {
         'vs': './monaco-editor/min/vs'
       }
-    };
+    }
     const options = {
       automaticLayout: true,
       selectOnLineNumbers: true
-    };
+    }
     return (
       <MonacoEditor
         theme="vs-dark"
@@ -184,6 +184,6 @@ export default class EditableTextFile extends React.Component {
         editorDidMount={editorDidMount}
         requireConfig={requireConfig}
       />
-    );
+    )
   }
 }

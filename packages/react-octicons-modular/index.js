@@ -7,7 +7,7 @@ export default class Octicon extends React.Component {
     this.state = {
       svg: ''
     }
-    System.import(`octicons-modular/icons/${name}`).then( M => {
+    System.import(`octicons-modular/icons/${name}`).then(M => {
       this.setState({svg: M.svg({class: 'valign-middle'})})
     })
   }

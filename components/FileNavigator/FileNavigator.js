@@ -14,9 +14,9 @@ import ContextMenuFolder from './ContextMenuFolder'
 
 // returns true if file, false if directory, null if error (e.g. not found)
 const isFile = async (fullpath) => {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     fs.stat(fullpath, (err, stats) => {
-      if (err) return resolve(null);
+      if (err) return resolve(null)
       console.log('fullpath, stats.isFile() =', fullpath, stats.isFile())
       return resolve(stats.isFile())
     })
@@ -44,9 +44,9 @@ const separateFilesFromFolders = async (root, files) => {
 }
 
 async function statDir (fullpath) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     fs.readdir(fullpath, async (err, files) => {
-      if (err) return reject(err);
+      if (err) return reject(err)
       console.log('files =', files)
       let result = await separateFilesFromFolders(fullpath, files)
       console.log('result =', result)
@@ -67,7 +67,7 @@ class FileNavigator extends React.Component {
     this.state = {
       data: {},
       statedata: {},
-      disableContextMenu: false,
+      disableContextMenu: false
     }
   }
   componentDidMount () {
@@ -88,46 +88,46 @@ class FileNavigator extends React.Component {
   }
   refreshDir (fullpath) {
     isFile(fullpath)
-    .then(is_file => {
+      .then(is_file => {
       // File deleted case
-      if (is_file === null) {
-        this.setState((state, props) => {
-          _.unset(state, ['data', ...fullpath.split('/').filter(x => x !== '')])
-          return state
-        })
-      } else if (is_file === true) {
-        this.setState((state, props) => {
-          _.merge(state, toDirStructure(fullpath, null))
-          return state
-        })
-        git().findRoot(fullpath).then(dir =>
-          git(dir).status(path.relative(dir, fullpath)).then(status =>
-            EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
-          )
-        ).catch(() => null)
-      } else {
-        statDir(fullpath).then(result => {
+        if (is_file === null) {
           this.setState((state, props) => {
-            _.merge(state, toDirStructure(fullpath, result))
+            _.unset(state, ['data', ...fullpath.split('/').filter(x => x !== '')])
             return state
           })
-        }).catch(console.log)
-        git().findRoot(fullpath).then(dir => {
-          console.log('dir =', dir)
-          // This is stupid. Stupid stupid data structure choices.
-          fs.readdir(fullpath, (err, files) => {
-            for (let file of files) {
-              console.log('file =', file)
-              let rpath = path.relative(dir, path.join(fullpath, file))
-              console.log('rpath =', rpath)
-              git(dir).status(rpath).then(status =>
-                EventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
-              ).catch(() => null)
-            }
+        } else if (is_file === true) {
+          this.setState((state, props) => {
+            _.merge(state, toDirStructure(fullpath, null))
+            return state
           })
-        }).catch(() => null)
-      }
-    }).catch(console.log)
+          git().findRoot(fullpath).then(dir =>
+            git(dir).status(path.relative(dir, fullpath)).then(status =>
+              EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+            )
+          ).catch(() => null)
+        } else {
+          statDir(fullpath).then(result => {
+            this.setState((state, props) => {
+              _.merge(state, toDirStructure(fullpath, result))
+              return state
+            })
+          }).catch(console.log)
+          git().findRoot(fullpath).then(dir => {
+            console.log('dir =', dir)
+            // This is stupid. Stupid stupid data structure choices.
+            fs.readdir(fullpath, (err, files) => {
+              for (let file of files) {
+                console.log('file =', file)
+                let rpath = path.relative(dir, path.join(fullpath, file))
+                console.log('rpath =', rpath)
+                git(dir).status(rpath).then(status =>
+                  EventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
+                ).catch(() => null)
+              }
+            })
+          }).catch(() => null)
+        }
+      }).catch(console.log)
   }
   toggleFolder (fullpath) {
     this.setState((state, props) => {

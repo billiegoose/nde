@@ -6,22 +6,22 @@ import fs from 'fs'
 import path from 'path'
 import pify from 'pify'
 import { DragSource, DropTarget } from 'react-dnd'
- 
+
 import ContextMenuFolder from './ContextMenuFolder'
 
 const ItemTypes = {
-    FILE: 'file',
-    FOLDER: 'folder'
+  FILE: 'file',
+  FOLDER: 'folder'
 }
 const folderSource = {
-  beginDrag(props) {
+  beginDrag (props) {
     return {
       filename: props.filename,
       filepath: props.filepath
     }
   }
 }
-function collect(connect, monitor) {
+function collect (connect, monitor) {
   return {
     connectDragSource: connect.dragSource(),
     connectDragPreview: connect.dragPreview(),
@@ -29,7 +29,7 @@ function collect(connect, monitor) {
   }
 }
 const folderTarget = {
-  drop(props, monitor) {
+  drop (props, monitor) {
     const oldPath = monitor.getItem().filepath
     const oldName = monitor.getItem().filename
     const parentPath = props.filepath
@@ -45,11 +45,11 @@ const folderTarget = {
     })
   }
 }
-function targetCollect(connect, monitor) {
-    return {
-        connectDropTarget: connect.dropTarget(),
-        isDraggingOver: monitor.isOver()
-    }
+function targetCollect (connect, monitor) {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isDraggingOver: monitor.isOver()
+  }
 }
 
 class FileNavigatorFolderComponent extends React.Component {
@@ -62,11 +62,11 @@ class FileNavigatorFolderComponent extends React.Component {
   setFolderStateData (key, value) {
     EventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
   }
-  render() {
+  render () {
     let {disableContextMenu, filename, open, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
     let busyIcon = passedProps.statedata && passedProps.statedata.busy
-             ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
-             : ''
+      ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
+      : ''
     // let progressBar = <div style={{
     //   position: 'absolute',
     //   left: '0',
@@ -78,17 +78,17 @@ class FileNavigatorFolderComponent extends React.Component {
     let progressPercent = 0.50
     let style = (passedProps.statedata && passedProps.statedata.progress !== undefined)
       ? {
-          backgroundRepeat: 'no-repeat',
-          backgroundImage: 'linear-gradient(to right, transparent, cyan 75%, transparent)',
-          backgroundSize: `${passedProps.statedata.progress * 100}% 100%`
-        }
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'linear-gradient(to right, transparent, cyan 75%, transparent)',
+        backgroundSize: `${passedProps.statedata.progress * 100}% 100%`
+      }
       : {}
     let folder = connectDragPreview(
       <div>
         <Folder filename={filename} open={open} domProps={{
-          onClick:this.click.bind(this),
+          onClick: this.click.bind(this),
           style
-          }}>
+        }}>
           {busyIcon}
         </Folder>
       </div>
@@ -104,7 +104,7 @@ class FileNavigatorFolderComponent extends React.Component {
 }
 
 export default DragSource(ItemTypes.FOLDER, folderSource, collect)(
-    DropTarget([ItemTypes.FOLDER, ItemTypes.FILE], folderTarget, targetCollect)(
-        FileNavigatorFolderComponent
-    )
+  DropTarget([ItemTypes.FOLDER, ItemTypes.FILE], folderTarget, targetCollect)(
+    FileNavigatorFolderComponent
+  )
 )

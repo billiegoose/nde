@@ -15,5 +15,15 @@
   "bugs": {
     "url": "https://github.com/wmhilton/nde/issues"
   },
-  "homepage": "https://nde.now.sh"
+  "homepage": "https://nde.now.sh",
+  "devDependencies": {
+    "babel-eslint": "^8.0.2",
+    "eslint": "^4.11.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.4.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
 }

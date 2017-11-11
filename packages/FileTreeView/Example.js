@@ -4,7 +4,7 @@ import _ from 'lodash'
 import {FileList, File, Folder, AtomStyles} from 'react-file-browser'
 
 const BasicFolder = ({filename, open, ClickCallback, filepath}) => (
-  <Folder filename={filename} open={open} domProps={{onClick:() => ClickCallback(filepath)}} />
+  <Folder filename={filename} open={open} domProps={{onClick: () => ClickCallback(filepath)}} />
 )
 
 class BasicFileTree extends React.Component {
@@ -21,7 +21,7 @@ class BasicFileTree extends React.Component {
       return state
     })
   }
-  
+
   render () {
     let toggle = this.toggle.bind(this)
     return (

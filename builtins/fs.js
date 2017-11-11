@@ -1,12 +1,12 @@
 // Step 1. Setup BrowserFS
 import BrowserFS from './browserfs'
 
-export const fsReady = new Promise(function(resolve, reject) {
+export const fsReady = new Promise(function (resolve, reject) {
   BrowserFS.configure({
-    fs: "MountableFileSystem",
+    fs: 'MountableFileSystem',
     options: {
-      "/": {
-        fs: "IndexedDB",
+      '/': {
+        fs: 'IndexedDB',
         options: {}
       }
     }
@@ -38,7 +38,7 @@ fs._origWriteFileSync = fs.writeFileSync
 fs.writeFileSync = function (file, ...args) {
   console.log('writeFileSync', file)
   results = fs._origWriteFileSync(file, ...args)
-  setTimeout( () => {
+  setTimeout(() => {
     fs.Events.emit('change', {
       eventType: 'change',
       filename: file
@@ -67,7 +67,7 @@ fs.mkdir = function (path, mode, callback) {
 fs.mkdirSync = function (path, ...args) {
   console.log('mkdirSync', path)
   let results = fs._origMkdirSync(file, ...args)
-  setTimeout( () => {
+  setTimeout(() => {
     fs.Events.emit('change', {
       eventType: 'change',
       filename: path
@@ -92,7 +92,7 @@ fs._origUnlinkSync = fs.unlinkSync
 fs.unlinkSync = function (path) {
   console.log('unlink', path)
   fs._origUnlinkSync(path)
-  setTimeout( () => {
+  setTimeout(() => {
     fs.Events.emit('change', {
       eventType: 'change',
       filename: path
@@ -117,7 +117,7 @@ fs._origRmdirSync = fs.rmdirSync
 fs.rmdirSync = function (path) {
   console.log('rmdir', path)
   fs._origRmdirSync(path)
-  setTimeout( () => {
+  setTimeout(() => {
     fs.Events.emit('change', {
       eventType: 'change',
       filename: path

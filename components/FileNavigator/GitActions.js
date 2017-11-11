@@ -58,7 +58,7 @@ export async function push ({filepath, glEventHub}) {
   }
   let username = await git(filepath).config(`credential "${host}".username`)
   username = await git(filepath).config(`credential "${host}".username`)
-  const offerStorePassword = (!auth && !username) ? true : false
+  const offerStorePassword = !!((!auth && !username))
   if (auth === null) {
     username = username || await prompt({
       text: `Enter username (for ${host})`,
@@ -189,7 +189,7 @@ export async function fetch ({filepath, glEventHub}) {
   try {
     await git(filepath)
       .remote('origin')
-      //.depth(1)
+      // .depth(1)
       .fetch(ref)
   } catch (err) {
     console.log('err =', err)

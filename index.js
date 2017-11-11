@@ -15,7 +15,7 @@ window.React = React
 window.ReactDOM = ReactDOM
 window.git = git
 console.log('git =', git)
-let EventHub = new EventEmitter
+let EventHub = new EventEmitter()
 window.EventHub = EventHub
 
 // Global CSS
