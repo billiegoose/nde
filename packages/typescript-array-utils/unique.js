@@ -4,8 +4,6 @@ const identityCompare = (a, b) => {
 
 export function unique(arr, compare = identityCompare) {
 	return arr.filter((e, index) => {
-		return index === (arr as any).findIndex((v) => {
-			return compare(e, v);
-		});
+		return index === arr.findIndex((v) => compare(e, v))
 	});
 }

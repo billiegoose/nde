@@ -1,6 +1,6 @@
 import { createStore } from 'redux'
 import undoable from 'redux-undo'
-import { arrayMove } from 'react-sortable-hoc'
+import { insert, move, without, replace } from 'typescript-array-utils'
 
 const NEW_TAB = 'OPEN_TAB'
 const CLOSE_TAB = 'CLOSE_TAB'
@@ -12,14 +12,14 @@ export const newTab = (filepath) => ({
   filepath
 })
 
-export const closeTab = (index) => ({
+export const closeTab = (filepath) => ({
   type: CLOSE_TAB,
-  index
+  filepath
 })
 
-export const activateTab = (index) => ({
+export const activateTab = (filepath) => ({
   type: ACTIVATE_TAB,
-  index
+  filepath
 })
 
 export const moveTab = (oldIndex, newIndex) => ({
@@ -29,52 +29,46 @@ export const moveTab = (oldIndex, newIndex) => ({
 })
 
 const onTabCreate = (state, {filepath}) => {
-  // Make all tabs inactive, except a tab for the file to open
-  // if it already exists.
-  const openFiles = state.openFiles.map(x => {
-    return Object.freeze({...x, active: x.filepath === filepath})
-  })
+  const activeFilepath = filepath
+  let openFiles = state.openFiles
   // If no tab for the file exists, insert one to the right of the active tab.
   // (For now, disallow opening multiple instances of the same file.)
   let i = state.openFiles.findIndex(x => x.filepath === filepath)
   if (i === -1) {
-    const activeTab = state.openFiles.findIndex(item => item.active)
-    openFiles.splice(activeTab + 1, 0, Object.freeze({
+    const activeIndex = state.openFiles.findIndex(item => item.filepath === state.activeFilepath)
+    openFiles = insert(state.openFiles, activeIndex + 1, Object.freeze({
       filepath,
-      scrollPosition: 0,
-      active: true
+      scrollPosition: 0
     }))
   }
   return Object.freeze({
     ...state,
+    activeFilepath,
     openFiles: Object.freeze(openFiles)
   })
 }
 
-const onTabClick = (state, {index}) => {
-  const openFiles = state.openFiles.map((x, i) => {
-    return Object.freeze({...x, active: i === index})
-  })
+const onTabClick = (state, {filepath}) => {  
   return Object.freeze({
     ...state,
-    openFiles: Object.freeze(openFiles)
+    activeFilepath: filepath
   })
 }
 
-const onTabClose = (state, {index}) => {
-  if (index >= state.openFiles.length) return state
-  const openFiles = state.openFiles.map((x, i) => {
-    return Object.freeze({...x, active: i === Math.max(0, index - 1)})
-  })
-  openFiles.splice(index, 1)
+const onTabClose = (state, {filepath}) => {
+  let index = state.openFiles.findIndex((x, i) => x.filepath === filepath)
+  const openFiles = without(state.openFiles, index)
+  const newActiveIndex = Math.min(openFiles.length - 1, index)
+  const activeFilepath = openFiles.length > 0 ? openFiles[newActiveIndex].filepath : undefined
   return Object.freeze({
     ...state,
+    activeFilepath,
     openFiles: Object.freeze(openFiles)
   })
 }
 
 const onTabReorder = (state, {oldIndex, newIndex}) => {
-  const openFiles = arrayMove(state.openFiles, oldIndex, newIndex)
+  const openFiles = move(state.openFiles, oldIndex, newIndex)
   return Object.freeze({
     ...state,
     openFiles: Object.freeze(openFiles)
@@ -82,26 +76,23 @@ const onTabReorder = (state, {oldIndex, newIndex}) => {
 }
 
 const initialState = Object.freeze({
+  activeFilepath: '/nde/components/App.js',
   openFiles: [
     {
       filepath: '/nde/README.md',
-      scrollPosition: 0,
-      active: true
+      scrollPosition: 0
     },
     {
-      filepath: '/nde/index.js',
-      scrollPosition: 0,
-      active: false
+      filepath: '/nde/index.html',
+      scrollPosition: 0
     },
     {
       filepath: '/nde/components/App.js',
-      scrollPosition: 0,
-      active: false
+      scrollPosition: 0
     },
     {
       filepath: '/nde/components/store.js',
-      scrollPosition: 0,
-      active: false
+      scrollPosition: 0
     }
   ]
 })
