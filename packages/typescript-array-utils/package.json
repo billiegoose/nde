@@ -1,0 +1,29 @@
+{
+  "name": "typescript-array-utils",
+  "version": "0.1.2",
+  "main": "index.js",
+  "types": "dist/index.d.ts",
+  "description": "Immutable array manipulation methods",
+  "keywords": [
+    "typescript",
+    "array",
+    "utility",
+    "immutable",
+    "manipulation"
+  ],
+  "scripts": {
+    "test": "tape *.test.js"
+  },
+  "author": "Daniel Król",
+  "license": "MIT",
+  "dependencies": {
+    "es6-shim": "^0.35.2"
+  },
+  "devDependencies": {
+    "tape": "^4.6.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mleko/typescript-array-utils.git"
+  }
+}
