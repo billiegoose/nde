@@ -6,7 +6,7 @@ import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 
 import {FileIcon} from 'react-file-browser'
 
-import { activateTab, closeTab, moveTab, newTab  } from './store.js'
+import { activateTab, closeTab, moveTab, newTab, undo, redo } from './store.js'
 
 import TryComponent from './TryCatchHOC.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
@@ -73,8 +73,10 @@ const SortableTabList = SortableContainer(TabList)
 
 const mapStateToProps = (state) => {
   return {
-    activeFilepath: state.activeFilepath,
-    openFiles: state.openFiles.map(x => ({...x, active: x.filepath === state.activeFilepath}))
+    canUndo: state.past.length > 0,
+    canRedo: state.future.length > 0,
+    activeFilepath: state.present.activeFilepath,
+    openFiles: state.present.openFiles.map(x => ({...x, active: x.filepath === state.present.activeFilepath}))
   }
 }
 const mapDispatchToProps = (dispatch) => ({
@@ -89,6 +91,12 @@ const mapDispatchToProps = (dispatch) => ({
   },
   onTabOpen (filepath) {
     dispatch(newTab(filepath))
+  },
+  onUndo () {
+    dispatch(undo())
+  },
+  onRedo () {
+    dispatch(redo())
   }
 })
 
@@ -107,7 +115,13 @@ class App extends React.Component {
         <SplitterLayout primaryIndex={1} secondaryInitialSize={250}>
           <TryFileNavigator root="/"/>
           <div>
-            <SortableTabList items={this.props.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.props.onTabReorder} onTabClick={this.props.onTabClick} onTabClose={this.props.onTabClose}/>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <SortableTabList items={this.props.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.props.onTabReorder} onTabClick={this.props.onTabClick} onTabClose={this.props.onTabClose}/>
+              <div style={{color: 'white'}}>
+                <button title="Undo" disabled={!this.props.canUndo} style={{color: this.props.canUndo ? 'white' : 'grey', background: 'none', border: 'none'}} onClick={this.props.onUndo}><i className="fa fa-fw fa-undo"></i></button>
+                <button title="Redo" disabled={!this.props.canRedo} style={{color: this.props.canRedo ? 'white' : 'grey', background: 'none', border: 'none'}} onClick={this.props.onRedo}><i className="fa fa-fw fa-repeat"></i></button>
+              </div>
+            </div>
             <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
               <TryFileEditor filepath={this.props.activeFilepath}/>
               <TryFileViewer filepath={this.props.activeFilepath}/>

@@ -1,5 +1,5 @@
 import { createStore } from 'redux'
-import undoable from 'redux-undo'
+import undoable, { ActionCreators } from 'redux-undo'
 import { insert, move, without, replace } from 'typescript-array-utils'
 import { State } from './State'
 
@@ -28,6 +28,10 @@ export const moveTab = (oldIndex, newIndex) => ({
   oldIndex,
   newIndex
 })
+
+export const undo = () => ActionCreators.undo()
+
+export const redo = () => ActionCreators.redo()
 
 const onTabCreate = (state, {filepath}) => {
   const newState = new State(state)
@@ -106,4 +110,4 @@ function tabreducer (state = initialState, action) {
 
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.
-export const store = createStore(tabreducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+export const store = createStore(undoable(tabreducer, {initialState}), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
