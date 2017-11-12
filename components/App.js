@@ -120,6 +120,7 @@ class App extends React.Component {
               <div style={{color: 'white'}}>
                 <button title="Undo" disabled={!this.props.canUndo} style={{color: this.props.canUndo ? 'white' : 'grey', background: 'none', border: 'none'}} onClick={this.props.onUndo}><i className="fa fa-fw fa-undo"></i></button>
                 <button title="Redo" disabled={!this.props.canRedo} style={{color: this.props.canRedo ? 'white' : 'grey', background: 'none', border: 'none'}} onClick={this.props.onRedo}><i className="fa fa-fw fa-repeat"></i></button>
+                <a norel nofollower noopener target="_blank" href="https://github.com/wmhilton/nde/commits/master"><button title="Commits" style={{color: 'white', background: 'none', border: 'none'}}><i className="fa fa-fw fa-github"></i></button></a>
               </div>
             </div>
             <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
