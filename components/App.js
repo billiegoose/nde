@@ -1,12 +1,12 @@
 import path from 'path'
 import React from 'react'
+import { connect } from 'react-redux'
 import SplitterLayout from 'react-splitter-layout'
 import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 
 import {FileIcon} from 'react-file-browser'
 
-import { store } from './store'
-console.log('STORE =', store)
+import { activateTab, closeTab, moveTab, newTab  } from './store.js'
 
 import TryComponent from './TryCatchHOC.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
@@ -72,91 +72,28 @@ const TabList = SortableContainer(
   )
 )
 
-export default class App extends React.Component {
-  constructor () {
-    super()
-    this.state = {
-      openFiles: [
-        {
-          filepath: '/nde/README.md',
-          scrollPosition: 0,
-          active: true
-        },
-        {
-          filepath: '/nde/index.js',
-          scrollPosition: 0,
-          active: false
-        },
-        {
-          filepath: '/nde/components/App.js',
-          scrollPosition: 0,
-          active: false
-        },
-        {
-          filepath: '/nde/components/FileViewer/index.js',
-          scrollPosition: 0,
-          active: false
-        },
-        {
-          filepath: '/nde/components/FileViewer/MarkdownViewer.js',
-          scrollPosition: 0,
-          active: false
-        }
-      ]
-    }
-  }
-  componentDidMount () {
-    if (this.props.glContainer) {
-      this.props.glContainer.setTitle('Preview')
-    }
-    EventHub.on('openFile', (filepath) => {
-      this.setState(state => {
-        // Don't open multiple instances of the same file.
-        let i = this.state.openFiles.findIndex(x => x.filepath === filepath)
-        if (i > -1) {
-          console.log('i = ', i)
-          state.openFiles.map(item => item.active = false)
-          state.openFiles[i].active = true
-          return state
-        }
-        // Open the file and insert to the right of the active tab
-        // and make the new tab the active tab.
-        const insertAfter = this.state.openFiles.findIndex(item => item.active)
-        const oldActiveTab = this.state.openFiles[insertAfter]
-        state.openFiles.splice(insertAfter + 1, 0, {
-          filepath,
-          scrollPosition: 0,
-          active: true
-        })
-        oldActiveTab.active = false
-        return state
-      })
-    })
-  }
+const mapStateToProps = (state) => state
+const mapDispatchToProps = (dispatch) => ({
   onTabReorder ({oldIndex, newIndex}) {
-    this.setState(state => {
-      state.openFiles = arrayMove(state.openFiles, oldIndex, newIndex)
-      return state
-    })
-  }
+    dispatch(moveTab(oldIndex, newIndex))
+  },
   onTabClick ({index}) {
-    this.setState(state => {
-      state.openFiles.map(item => item.active = false)
-      state.openFiles[index].active = true
-      return state
-    })
-  }
+    dispatch(activateTab(index))
+  },
   onTabClose ({index}) {
-    this.setState(state => {
-      const removed = state.openFiles.splice(index, 1)
-      if (removed && removed[0] && removed[0].active) {
-        state.openFiles[Math.max(0, index - 1)].active = true
-      }
-      return state
-    })
+    dispatch(closeTab(index))
+  },
+  onTabOpen (filepath) {
+    dispatch(newTab(filepath))
+  }
+})
+
+class App extends React.Component {
+  componentDidMount () {
+    EventHub.on('openFile', this.props.onTabOpen)
   }
   render () {
-    const activeTab = this.state.openFiles.find(item => item.active)
+    const activeTab = this.props.openFiles.find(item => item.active)
     const activeFilepath = activeTab ? activeTab.filepath : undefined // 'nde/README.md'
     return (
       <article>
@@ -168,7 +105,7 @@ export default class App extends React.Component {
         <SplitterLayout primaryIndex={1} secondaryInitialSize={250}>
           <TryFileNavigator root="/"/>
           <div>
-            <TabList items={this.state.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.onTabReorder.bind(this)} onTabClick={this.onTabClick.bind(this)} onTabClose={this.onTabClose.bind(this)}/>
+            <TabList items={this.props.openFiles} axis="x" lockAxis="x" lockToContainerEdges={true} lockOffset="0%" distance={25} onSortEnd={this.props.onTabReorder} onTabClick={this.props.onTabClick} onTabClose={this.props.onTabClose}/>
             <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
               <TryFileEditor filepath={activeFilepath}/>
               <TryFileViewer filepath={activeFilepath}/>
@@ -179,3 +116,7 @@ export default class App extends React.Component {
     )
   }
 }
+
+const SmartApp = connect(mapStateToProps, mapDispatchToProps)(App)
+
+export default SmartApp

@@ -7,6 +7,7 @@ import { module } from '@hot'
 import EventEmitter from 'eventemitter3'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
 import fs, {fsReady} from 'fs'
 import path from 'path'
 import git from 'isomorphic-git'
@@ -21,7 +22,9 @@ window.EventHub = EventHub
 // Global CSS
 import './index.css'
 // Application code
-import LayoutCodePreview from './components/App.js'
+import App from './components/App.js'
+import { store } from './components/store.js'
+console.log('STORE =', store)
 
 // Hot reload case
 if (module) {
@@ -30,7 +33,12 @@ if (module) {
 }
 
 fsReady.then(() => {
-  ReactDOM.render(<LayoutCodePreview/>, document.getElementById('app'))
+  ReactDOM.render(
+    <Provider store={store}>
+      <App/>
+    </Provider>,
+    document.getElementById('app')
+  )
 })
 
 export let savedState = null
