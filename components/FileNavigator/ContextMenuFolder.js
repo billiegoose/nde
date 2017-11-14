@@ -1,7 +1,7 @@
 import React from 'react'
 import {FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
-import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu/dist/react-contextmenu.js'
+import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
