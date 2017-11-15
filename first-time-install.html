@@ -17,9 +17,9 @@ if (!navigator.serviceWorker) {
   document.body.appendChild(div)
   const img = new Image()
   document.body.appendChild(img)
-  img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
+  img.src = 'https://cataas.com/cat/gif?timestamp=' + Date.now()
   setInterval(function () {
-    img.src = 'http://cataas.com/cat/gif?timestamp=' + Date.now()
+    img.src = 'https://cataas.com/cat/gif?timestamp=' + Date.now()
   }, 5000)
   navigator.serviceWorker
   .register('service-worker.js', { scope: '/' })
