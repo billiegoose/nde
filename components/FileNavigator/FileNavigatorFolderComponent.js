@@ -3,9 +3,11 @@ import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
 import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 import fs from 'fs'
+import { Buffer } from 'buffer'
 import path from 'path'
 import pify from 'pify'
 import { DragSource, DropTarget } from 'react-dnd'
+import { NativeTypes } from 'react-dnd-html5-backend'
 
 import ContextMenuFolder from './ContextMenuFolder'
 
@@ -30,8 +32,31 @@ function collect (connect, monitor) {
 }
 const folderTarget = {
   drop (props, monitor) {
-    const oldPath = monitor.getItem().filepath
-    const oldName = monitor.getItem().filename
+    const item = monitor.getItem()
+    // Handle drop-uploading of real files
+    if (item.files) {
+      for (let file of item.files) {
+        const filename = path.join(props.filepath, file.name)
+        console.log('file =', file)
+        if (file.size > 0) {
+          var fileReader = new FileReader()
+          fileReader.onload = function() {
+            fs.writeFile(filename, new Buffer(this.result), (err) => console.log(err))
+          };
+          fileReader.readAsArrayBuffer(file)
+        } else {
+          fs.mkdir(filename, (err) => {
+            console.log(err)
+            alert('Created empty folder ' + filename)
+          })
+        }
+      }
+      return
+    }
+
+    // Handle FileNavigatorFileComponent drops
+    const oldPath = item.filepath
+    const oldName = item.filename
     const parentPath = props.filepath
     const newPath = path.join(parentPath, oldName)
     console.log(`I will move ${oldPath} to ${newPath}`)
@@ -104,7 +129,7 @@ class FileNavigatorFolderComponent extends React.Component {
 }
 
 export default DragSource(ItemTypes.FOLDER, folderSource, collect)(
-  DropTarget([ItemTypes.FOLDER, ItemTypes.FILE], folderTarget, targetCollect)(
+  DropTarget([ItemTypes.FOLDER, ItemTypes.FILE, NativeTypes.FILE], folderTarget, targetCollect)(
     FileNavigatorFolderComponent
   )
 )
