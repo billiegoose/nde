@@ -2,8 +2,10 @@ import path from 'path'
 import React from 'react'
 import { connect } from 'react-redux'
 import SplitterLayout from 'react-splitter-layout'
-import { newTab, undo, redo } from './store.js'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
+import { newTab, undo, redo } from './store.js'
 import TryComponent from './TryCatchHOC.js'
 import FileNavigator from './FileNavigator/FileNavigator.js'
 import FileEditor from './FileEditor/index.js'
@@ -68,6 +70,6 @@ class App extends React.Component {
   }
 }
 
-const SmartApp = connect(mapStateToProps, mapDispatchToProps)(App)
+const SmartApp = connect(mapStateToProps, mapDispatchToProps)(DragDropContext(HTML5Backend)(App))
 
 export default SmartApp

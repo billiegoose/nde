@@ -164,4 +164,4 @@ class FileNavigator extends React.Component {
     )
   }
 }
-export default DragDropContext(HTML5Backend)(FileNavigator)
+export default FileNavigator
