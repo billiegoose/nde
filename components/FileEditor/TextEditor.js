@@ -49,7 +49,13 @@ export default class EditableTextFile extends React.Component {
       }
     }
     // Correct tab size
-    editor.getModel().updateOptions({ tabSize: 2 })
+    editor.getModel().updateOptions({
+      tabSize: 2
+    })
+    editor.updateOptions({
+      fontFamily: '"Fira Code", Consolas, "Courier New", monospace',
+      fontLigatures: true
+    })
     // Extend context menu
     editor.addAction({
       id: 'saveFile',
