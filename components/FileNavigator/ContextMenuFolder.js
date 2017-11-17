@@ -10,6 +10,7 @@ import git from 'isomorphic-git'
 import { prompt } from '../SweetAlert'
 import swal from 'sweetalert2'
 import { clone, commit, push, checkout, fetch } from './GitActions'
+import { rimraf } from './rimraf'
 
 export default class ContextMenuFolder extends React.Component {
   constructor () {
@@ -32,7 +33,7 @@ export default class ContextMenuFolder extends React.Component {
     return pify(fs.mkdir)(path.join(this.props.filepath, await prompt('Enter foldername:')))
   }
   async deleteFolder () {
-    return pify(fs.rmdir)(this.props.filepath)
+    return await rimraf(this.props.filepath)
   }
   async renameFolder () {
     let name = await prompt('New folder name')
