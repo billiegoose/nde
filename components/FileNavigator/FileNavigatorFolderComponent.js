@@ -88,8 +88,8 @@ class FileNavigatorFolderComponent extends React.Component {
     EventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
   }
   render () {
-    let {disableContextMenu, filename, open, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
-    let busyIcon = passedProps.statedata && passedProps.statedata.busy
+    let {disableContextMenu, filename, filepath, fileMap, open, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver} = this.props
+    let busyIcon = fileMap && fileMap[filepath] && fileMap[filepath].busy
       ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
       : ''
     // let progressBar = <div style={{
@@ -101,11 +101,11 @@ class FileNavigatorFolderComponent extends React.Component {
     //   backgroundColor: 'navy'
     // }}></div>
     let progressPercent = 0.50
-    let style = (passedProps.statedata && passedProps.statedata.progress !== undefined)
+    let style = (fileMap && fileMap[filepath] && fileMap[filepath].progress !== undefined)
       ? {
         backgroundRepeat: 'no-repeat',
         backgroundImage: 'linear-gradient(to right, transparent, cyan 75%, transparent)',
-        backgroundSize: `${passedProps.statedata.progress * 100}% 100%`
+        backgroundSize: `${fileMap[filepath].progress * 100}% 100%`
       }
       : {}
     let folder = connectDragPreview(
