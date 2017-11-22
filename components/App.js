@@ -49,7 +49,7 @@ class App extends React.Component {
       }`}
         </style>
         <SplitterLayout primaryIndex={1} secondaryInitialSize={250}>
-          <TryFileNavigator root="/"/>
+          <TryFileNavigator root="/" filepath="/"/>
           <div>
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
               <TryFileTabs/>

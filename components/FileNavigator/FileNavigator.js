@@ -86,54 +86,65 @@ class FileNavigator extends React.Component {
     this.refreshDir('/')
     fs.Events.on('change', ({eventType, filename}) => this.refreshDir(filename))
   }
-  refreshDir (fullpath) {
-    isFile(fullpath)
-      .then(is_file => {
-      // File deleted case
-        if (is_file === null) {
-          this.setState((state, props) => {
-            _.unset(state, ['data', ...fullpath.split('/').filter(x => x !== '')])
-            return state
-          })
-        } else if (is_file === true) {
-          this.setState((state, props) => {
-            _.merge(state, toDirStructure(fullpath, null))
-            return state
-          })
-          git().findRoot(fullpath).then(dir =>
-            git(dir).status(path.relative(dir, fullpath)).then(status =>
-              EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
-            )
-          ).catch(() => null)
-        } else {
-          statDir(fullpath).then(result => {
-            this.setState((state, props) => {
-              _.merge(state, toDirStructure(fullpath, result))
-              return state
-            })
-          }).catch(console.log)
-          git().findRoot(fullpath).then(dir => {
-            console.log('dir =', dir)
-            // This is stupid. Stupid stupid data structure choices.
-            fs.readdir(fullpath, (err, files) => {
-              for (let file of files) {
-                console.log('file =', file)
-                let rpath = path.relative(dir, path.join(fullpath, file))
-                console.log('rpath =', rpath)
-                git(dir).status(rpath).then(status =>
-                  EventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
-                ).catch(() => null)
-              }
-            })
-          }).catch(() => null)
+  statDir (dirpath) {
+    fs.readdir(dirpath, (err, files) => {
+      if (err) return reject(err)
+      files.forEach(async filename => {
+        let filepath = path.join(dirpath, filename)
+        let type = await isFile(filepath) ? 'file' : 'dir'
+        this.setState((state) => {
+          _.set(state, ['statedata', filepath, 'type'], type)
+          return state
+        })
+      })
+    })
+  }
+  async refreshDir (fullpath) {
+    let is_file = await isFile(fullpath)
+    // File deleted case
+    if (is_file === null) {
+      this.setState((state, props) => {
+        _.unset(state, ['data', ...fullpath.split('/').filter(x => x !== '')])
+        _.unset(state, ['statedata', fullpath])
+        return state
+      })
+    } else if (is_file === true) {
+      this.setState((state, props) => {
+        _.merge(state, toDirStructure(fullpath, null))
+        _.set(state, ['statedata', fullpath], {type: 'file'})
+        return state
+      })
+      let dir = await git().findRoot(fullpath)
+      let status = await git(dir).status(path.relative(dir, fullpath))
+      EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+    } else {
+      let result = await statDir(fullpath)
+      this.setState((state, props) => {
+        _.merge(state, toDirStructure(fullpath, result))
+        return state
+      })
+      this.statDir(fullpath)
+      let dir = await git().findRoot(fullpath)
+      console.log('dir =', dir)
+      // This is stupid. Stupid stupid data structure choices.
+      fs.readdir(fullpath, (err, files) => {
+        for (let file of files) {
+          console.log('file =', file)
+          let rpath = path.relative(dir, path.join(fullpath, file))
+          console.log('rpath =', rpath)
+          git(dir).status(rpath).then(status =>
+            EventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
+          ).catch((err) => console.log(err))
         }
-      }).catch(console.log)
+      })
+    }
   }
   toggleFolder (fullpath) {
     this.setState((state, props) => {
       let wasOpen = _.get(state, ['statedata', fullpath, 'open'], false)
       let nowOpen = !wasOpen
       _.set(state, ['statedata', fullpath, 'open'], nowOpen)
+      _.set(state, ['statedata', fullpath, 'navOpen'], nowOpen)
       if (nowOpen) {
         this.refreshDir(fullpath)
       }
@@ -155,6 +166,8 @@ class FileNavigator extends React.Component {
             root={[]}
             data={this.state.data}
             statedata={this.state.statedata}
+            filepath="/"
+            fileMap={this.state.statedata}
             FileComponent={FileNavigatorFileComponent}
             FolderComponent={FileNavigatorFolderComponent}
             {...this.props}

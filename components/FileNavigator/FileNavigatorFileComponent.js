@@ -60,11 +60,11 @@ class FileNavigatorFileComponent extends React.Component {
     EventHub.emit('refreshGitStatus', this.props.filepath)
   }
   render () {
-    let {disableContextMenu, filename, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
+    let {disableContextMenu, filename, filepath, fileMap, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
     let file = connectDragSource(connectDragPreview(
       <div>
         <File filename={filename} domProps={{onDoubleClick: this.doubleclick.bind(this)}}>
-          &nbsp;<StatusIcon status={this.props.statedata && this.props.statedata.gitstatus || 'unmodified'} />
+          &nbsp;<StatusIcon status={fileMap && fileMap[filepath] && fileMap[filepath].gitstatus || 'unmodified'} />
         </File>
       </div>
     ))
