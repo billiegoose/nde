@@ -7,10 +7,6 @@ import ghparse from 'parse-github-url'
 
 import { prompt } from '../SweetAlert'
 
-function setFolderStateData (key, value) {
-  glEventHub.emit('setFolderStateData', {fullpath: filepath, key, value})
-}
-
 export async function clone ({filepath, glEventHub}) {
   let url = await prompt({
     text: 'Git URL to clone',

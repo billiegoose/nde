@@ -17,24 +17,7 @@ class FileNavigatorFileComponent extends React.Component {
       cuid: cuid()
     }
   }
-  componentDidMount () {
-    if (this.props.glContainer) {
-      this.props.glContainer.layoutManager.createDragSource(ReactDOM.findDOMNode(this), {
-        type: 'react-component',
-        component: 'EditableTextFile',
-        props: { filepath: this.props.filepath }
-      })
-    }
-  }
   doubleclick () {
-    if (this.props.glContainer) {
-      let stack = this.props.glContainer.layoutManager.root.getItemsById('MainEditor')[0]
-      stack.addChild({
-        type: 'react-component',
-        component: 'EditableTextFile',
-        props: { filepath: this.props.filepath }
-      })
-    }
     EventHub.emit('openFile', this.props.filepath)
   }
   deleteFile () {
