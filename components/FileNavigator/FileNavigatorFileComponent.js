@@ -1,23 +1,11 @@
 import React from 'react'
-import {File, FileIcon} from 'react-file-browser'
-import Octicon from 'react-octicons-modular'
-import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
-import fs from 'fs'
-import path from 'path'
-import pify from 'pify'
-import cuid from 'cuid'
+import {File} from 'react-file-browser'
 import { DragSource } from 'react-dnd'
 
 import ContextMenuFile from './ContextMenuFile'
 import StatusIcon from './StatusIcon'
 
 class FileNavigatorFileComponent extends React.Component {
-  constructor () {
-    super()
-    this.state = {
-      cuid: cuid()
-    }
-  }
   doubleclick () {
     EventHub.emit('openFile', this.props.filepath)
   }

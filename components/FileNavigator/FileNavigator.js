@@ -98,9 +98,8 @@ class FileNavigator extends React.Component {
   }
   toggleFolder (fullpath) {
     this.setState((state, props) => {
-      let wasOpen = _.get(state, ['statedata', fullpath, 'open'], false)
+      let wasOpen = _.get(state, ['statedata', fullpath, 'navOpen'], false)
       let nowOpen = !wasOpen
-      _.set(state, ['statedata', fullpath, 'open'], nowOpen)
       _.set(state, ['statedata', fullpath, 'navOpen'], nowOpen)
       if (nowOpen) {
         this.refreshDir(fullpath)

@@ -1,15 +1,12 @@
 import React from 'react'
-import {FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
-import { ContextMenu, SubMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
-import swal from 'sweetalert2'
 import { stage } from './GitActions'
-import { rimraf } from './rimraf'
 
 export default class ContextMenuFile extends React.Component {
   constructor () {
