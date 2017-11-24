@@ -7,6 +7,10 @@ import ghparse from 'parse-github-url'
 
 import { prompt } from '../SweetAlert'
 
+export async function init ({filepath, glEventHub}) {
+  await git(filepath).init()
+}
+
 export async function clone ({filepath, glEventHub}) {
   let url = await prompt({
     text: 'Git URL to clone',
@@ -109,6 +113,13 @@ export async function push ({filepath, glEventHub}) {
     glEventHub.emit('refreshGitStatus', filepath)
     glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: false})
   }
+}
+
+export async function stage ({filepath, glEventHub}) {
+  let dir = await git().findRoot(filepath)
+  let rpath = path.relative(dir, filepath)
+  await git(dir).add(rpath)
+  glEventHub.emit('refreshGitStatus', filepath)
 }
 
 export async function commit ({filepath, glEventHub}) {

@@ -6,10 +6,9 @@ import cuid from 'cuid'
 import fs from 'fs'
 import path from 'path'
 import pify from 'pify'
-import git from 'isomorphic-git'
 import { prompt } from '../SweetAlert'
 import swal from 'sweetalert2'
-import { clone, commit, push, checkout, fetch } from './GitActions'
+import { init, clone, commit, push, checkout, fetch } from './GitActions'
 import { rimraf } from './rimraf'
 
 export default class ContextMenuFolder extends React.Component {
@@ -34,7 +33,11 @@ export default class ContextMenuFolder extends React.Component {
   renameFolder = async () => 
     pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), await prompt('New folder name')))
   
-  gitInit = () => git(this.props.filepath).init()
+  gitInit = () => 
+    init({
+      filepath: this.props.filepath,
+      glEventHub: EventHub
+    })
   
   gitClone = () =>
     clone({
