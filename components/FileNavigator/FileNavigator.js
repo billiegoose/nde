@@ -23,49 +23,10 @@ const isFile = async (fullpath) => {
   })
 }
 
-const separateFilesFromFolders = async (root, files) => {
-  files = await Promise.all(files.map(async file => {
-    let isfile = await isFile(path.join(root, file))
-    if (isfile === null) return null
-    return ({
-      fullpath: path.join(root, file),
-      filename: file,
-      isFile: isfile ? 1 : 0
-    })
-  }))
-  files = files.filter(file => file !== null)
-  console.log('files =', files)
-  files = _.sortBy(files, ['isFile', 'filename'])
-  let result = {}
-  for (let f of files) {
-    result[f.filename] = f.isFile ? null : {}
-  }
-  return result
-}
-
-async function statDir (fullpath) {
-  return new Promise(function (resolve, reject) {
-    fs.readdir(fullpath, async (err, files) => {
-      if (err) return reject(err)
-      console.log('files =', files)
-      let result = await separateFilesFromFolders(fullpath, files)
-      console.log('result =', result)
-      resolve(result)
-    })
-  })
-}
-
-function toDirStructure (fullpath, result) {
-  let tmp = {}
-  _.set(tmp, ['data', ...fullpath.split('/').filter(x => x !== '')], result)
-  return tmp
-}
-
 class FileNavigator extends React.Component {
   constructor () {
     super()
     this.state = {
-      data: {},
       statedata: {},
       disableContextMenu: false
     }
@@ -104,37 +65,33 @@ class FileNavigator extends React.Component {
     // File deleted case
     if (is_file === null) {
       this.setState((state, props) => {
-        _.unset(state, ['data', ...fullpath.split('/').filter(x => x !== '')])
         _.unset(state, ['statedata', fullpath])
         return state
       })
     } else if (is_file === true) {
       this.setState((state, props) => {
-        _.merge(state, toDirStructure(fullpath, null))
-        _.set(state, ['statedata', fullpath], {type: 'file'})
+        _.merge(state, ['statedata', fullpath], {type: 'file'})
         return state
       })
       let dir = await git().findRoot(fullpath)
       let status = await git(dir).status(path.relative(dir, fullpath))
       EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
     } else {
-      let result = await statDir(fullpath)
-      this.setState((state, props) => {
-        _.merge(state, toDirStructure(fullpath, result))
-        return state
-      })
       this.statDir(fullpath)
       let dir = await git().findRoot(fullpath)
       console.log('dir =', dir)
       // This is stupid. Stupid stupid data structure choices.
-      fs.readdir(fullpath, (err, files) => {
+      fs.readdir(fullpath, async (err, files) => {
         for (let file of files) {
-          console.log('file =', file)
-          let rpath = path.relative(dir, path.join(fullpath, file))
-          console.log('rpath =', rpath)
-          git(dir).status(rpath).then(status =>
-            EventHub.emit('setFolderStateData', {fullpath: path.join(fullpath, file), key: 'gitstatus', value: status})
-          ).catch((err) => console.log(err))
+          let filepath = path.join(fullpath, file)
+          if (await isFile(filepath)) {
+            console.log('file =', file)
+            let rpath = path.relative(dir, filepath)
+            console.log('rpath =', rpath)
+            git(dir).status(rpath).then(status =>
+              EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
+            ).catch((err) => console.log(err, dir, file, rpath))
+          }
         }
       })
     }
@@ -152,6 +109,7 @@ class FileNavigator extends React.Component {
     })
   }
   setFolderStateData ({fullpath, key, value}) {
+    console.log('setFolderStateData', fullpath, key, value)
     this.setState((state, props) => {
       _.set(state, ['statedata', fullpath, key], value)
       return state
@@ -164,7 +122,6 @@ class FileNavigator extends React.Component {
           <FileList
             disableContextMenu={this.state.disableContextMenu}
             root={[]}
-            data={this.state.data}
             statedata={this.state.statedata}
             filepath="/"
             fileMap={this.state.statedata}
