@@ -25,7 +25,7 @@ class FileNavigator extends React.Component {
   constructor () {
     super()
     this.state = {
-      statedata: {},
+      fileMap: {},
       disableContextMenu: false
     }
   }
@@ -52,7 +52,7 @@ class FileNavigator extends React.Component {
         let filepath = path.join(dirpath, filename)
         let type = await isFile(filepath) ? 'file' : 'dir'
         this.setState((state) => {
-          _.set(state, ['statedata', filepath, 'type'], type)
+          _.set(state, ['fileMap', filepath, 'type'], type)
           return state
         })
       })
@@ -63,42 +63,52 @@ class FileNavigator extends React.Component {
     // File deleted case
     if (isfile === null) {
       this.setState((state, props) => {
-        _.unset(state, ['statedata', fullpath])
+        _.unset(state, ['fileMap', fullpath])
         return state
       })
     } else if (isfile === true) {
       this.setState((state, props) => {
-        _.merge(state, ['statedata', fullpath], {type: 'file'})
+        _.merge(state, ['fileMap', fullpath], {type: 'file'})
         return state
       })
-      let dir = await git().findRoot(fullpath)
-      let status = await git(dir).status(path.relative(dir, fullpath))
-      EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+      try {
+        let dir = await git().findRoot(fullpath)
+        let status = await git(dir).status(path.relative(dir, fullpath))
+        EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
+      } catch (err) {
+        console.log('not in a git repo', fullpath)
+      }
     } else {
       this.statDir(fullpath)
-      let dir = await git().findRoot(fullpath)
-      console.log('dir =', dir)
-      // This is stupid. Stupid stupid data structure choices.
-      fs.readdir(fullpath, async (err, files) => {
-        for (let file of files) {
-          let filepath = path.join(fullpath, file)
-          if (await isFile(filepath)) {
-            console.log('file =', file)
-            let rpath = path.relative(dir, filepath)
-            console.log('rpath =', rpath)
-            git(dir).status(rpath).then(status =>
-              EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
-            ).catch((err) => console.log(err, dir, file, rpath))
+      // Don't try to get the git status of anything *inside* a .git dir
+      if (path.basename(fullpath) == '.git') return
+      try {
+        let dir = await git().findRoot(fullpath)
+        console.log('dir =', dir)
+        // This is stupid. Stupid stupid data structure choices.
+        fs.readdir(fullpath, async (err, files) => {
+          for (let file of files) {
+            let filepath = path.join(fullpath, file)
+            if (await isFile(filepath)) {
+              console.log('file =', file)
+              let rpath = path.relative(dir, filepath)
+              console.log('rpath =', rpath)
+              git(dir).status(rpath).then(status =>
+                EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
+              ).catch((err) => console.log(err, dir, file, rpath))
+            }
           }
-        }
-      })
+        })
+      } catch (err) {
+        console.log('not in a git repo', fullpath)
+      }
     }
   }
   toggleFolder (fullpath) {
     this.setState((state, props) => {
-      let wasOpen = _.get(state, ['statedata', fullpath, 'navOpen'], false)
+      let wasOpen = _.get(state, ['fileMap', fullpath, 'navOpen'], false)
       let nowOpen = !wasOpen
-      _.set(state, ['statedata', fullpath, 'navOpen'], nowOpen)
+      _.set(state, ['fileMap', fullpath, 'navOpen'], nowOpen)
       if (nowOpen) {
         this.refreshDir(fullpath)
       }
@@ -108,7 +118,7 @@ class FileNavigator extends React.Component {
   setFolderStateData ({fullpath, key, value}) {
     console.log('setFolderStateData', fullpath, key, value)
     this.setState((state, props) => {
-      _.set(state, ['statedata', fullpath, key], value)
+      _.set(state, ['fileMap', fullpath, key], value)
       return state
     })
   }
@@ -118,10 +128,8 @@ class FileNavigator extends React.Component {
         <nav className="_tree">
           <FileList
             disableContextMenu={this.state.disableContextMenu}
-            root={[]}
-            statedata={this.state.statedata}
             filepath="/"
-            fileMap={this.state.statedata}
+            fileMap={this.state.fileMap}
             FileComponent={FileNavigatorFileComponent}
             FolderComponent={FileNavigatorFolderComponent}
             {...this.props}

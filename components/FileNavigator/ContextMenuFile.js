@@ -25,12 +25,12 @@ export default class ContextMenuFile extends React.Component {
   async copyFile () {
     let name = await prompt('Copy file as')
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
-    fs.readFile(this.props.filepath, (err, buf) =>
+    fs.readFile(this.props.filepath, (err, buf) => {
       if (err) return console.log(err)
       fs.writeFile(newfile, buf, () =>
         EventHub.emit('refreshGitStatus', newfile)
       )
-    )
+    })
   }
   async addToIndex () {
     await stage({
