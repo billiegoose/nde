@@ -1,8 +1,5 @@
-import fs from 'fs'
 import path from 'path'
-import pify from 'pify'
 import git from 'isomorphic-git'
-import swal from 'sweetalert2'
 import ghparse from 'parse-github-url'
 
 import { prompt } from '../SweetAlert'

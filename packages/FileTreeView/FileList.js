@@ -10,7 +10,6 @@ const findDirectChildren = (filepath, filepaths) =>
 const getChildren = (filepath, fileMap) => {
   let keys = Object.keys(fileMap)
   let filepaths = findDirectChildren(filepath, keys)
-
 }
 
 export default function FileList ({root, data, filepath, fileMap, statedata, FolderComponent, FileComponent, ...props}) {
@@ -18,10 +17,10 @@ export default function FileList ({root, data, filepath, fileMap, statedata, Fol
   if (fileMap !== undefined) {
     let folders = []
     let files = []
-    
+
     let keys = Object.keys(fileMap)
     let filepaths = findDirectChildren(filepath, keys)
-    
+
     for (let key of filepaths) {
       if (fileMap[key].type === 'dir') {
         let open = fileMap[key].navOpen

@@ -44,7 +44,8 @@ export default class ReactComponentViewer extends React.Component {
           return state
         })
       }).catch(err => {
-      // This is a hack to get the async error to bubble to the parent ErrorBoundary
+        console.log(err)
+        // This is a hack to get the async error to bubble to the parent ErrorBoundary
         this.setState(state => {
           throw new Error(`Unable to load component file ${this.props.filepath}`)
         })

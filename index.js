@@ -3,28 +3,30 @@ import 'babel-polyfill'
 import { module } from '@hot'
 // import { AppContainer } from 'react-hot-loader'
 
+// Global CSS
+import './index.css'
+
 // Libraries
 import EventEmitter from 'eventemitter3'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import fs, {fsReady} from 'fs'
-import path from 'path'
 import git from 'isomorphic-git'
 
+// Application code
+import App from './components/App.js'
+import { store } from './components/store.js'
+
+console.log('STORE =', store)
+
+// Global variables
 window.React = React
 window.ReactDOM = ReactDOM
 window.git = git
 console.log('git =', git)
 let EventHub = new EventEmitter()
 window.EventHub = EventHub
-
-// Global CSS
-import './index.css'
-// Application code
-import App from './components/App.js'
-import { store } from './components/store.js'
-console.log('STORE =', store)
 
 // Hot reload case
 if (module) {

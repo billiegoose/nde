@@ -1,3 +1,4 @@
+/* global EventHub */
 import React from 'react'
 import {File} from 'react-file-browser'
 import { DragSource } from 'react-dnd'
@@ -10,11 +11,11 @@ class FileNavigatorFileComponent extends React.Component {
     EventHub.emit('openFile', this.props.filepath)
   }
   render () {
-    let {disableContextMenu, filename, filepath, fileMap, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver, ...passedProps} = this.props
+    let {disableContextMenu, filename, filepath, fileMap, connectDragSource, connectDragPreview, isDragging, connectDropTarget, isDraggingOver} = this.props
     let file = connectDragSource(connectDragPreview(
       <div>
         <File filename={filename} domProps={{onDoubleClick: this.doubleclick.bind(this)}}>
-          &nbsp;<StatusIcon status={fileMap && fileMap[filepath] && fileMap[filepath].gitstatus || 'unmodified'} />
+          &nbsp;<StatusIcon status={fileMap && fileMap[filepath] && (fileMap[filepath].gitstatus || 'unmodified')} />
         </File>
       </div>
     ))

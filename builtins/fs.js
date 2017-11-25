@@ -1,5 +1,13 @@
-// Step 1. Setup BrowserFS
 import BrowserFS from './browserfs'
+import EventEmitter from 'eventemitter2'
+import {module} from '@hot'
+
+// (Failing) Attempt to prevent "RangeError: Maximum call stack size exceeded"
+export const __unload = () => {
+  // Detach all event listeners
+  fs.Events.removeAllListeners()
+  // fs.umount('/');
+}
 
 export const fsReady = new Promise(function (resolve, reject) {
   BrowserFS.configure({
@@ -15,7 +23,6 @@ export const fsReady = new Promise(function (resolve, reject) {
 // Step 2. Export fs
 const fs = BrowserFS.BFSRequire('fs')
 // Cheap hack to get file monitoring in
-import EventEmitter from 'eventemitter2'
 fs.Events = new EventEmitter()
 fs._origWriteFile = fs.writeFile
 fs.writeFile = function (file, data, options, callback) {
@@ -37,7 +44,7 @@ fs.writeFile = function (file, data, options, callback) {
 fs._origWriteFileSync = fs.writeFileSync
 fs.writeFileSync = function (file, ...args) {
   console.log('writeFileSync', file)
-  results = fs._origWriteFileSync(file, ...args)
+  let results = fs._origWriteFileSync(file, ...args)
   setTimeout(() => {
     fs.Events.emit('change', {
       eventType: 'change',
@@ -66,7 +73,7 @@ fs.mkdir = function (path, mode, callback) {
 }
 fs.mkdirSync = function (path, ...args) {
   console.log('mkdirSync', path)
-  let results = fs._origMkdirSync(file, ...args)
+  let results = fs._origMkdirSync(path, ...args)
   setTimeout(() => {
     fs.Events.emit('change', {
       eventType: 'change',
@@ -128,11 +135,3 @@ fs.rmdirSync = function (path) {
 
 window.fs = fs
 export default fs
-
-// (Failing) Attempt to prevent "RangeError: Maximum call stack size exceeded"
-import {module} from '@hot'
-export const __unload = () => {
-  // Detach all event listeners
-  fs.Events.removeAllListeners()
-  // fs.umount('/');
-}

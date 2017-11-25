@@ -1,10 +1,8 @@
 import React from 'react'
-import {Folder, FileIcon, FolderIcon} from 'react-file-browser'
-import Octicon from 'react-octicons-modular'
+import {Folder} from 'react-file-browser'
 import fs from 'fs'
 import { Buffer } from 'buffer'
 import path from 'path'
-import pify from 'pify'
 import { DragSource, DropTarget } from 'react-dnd'
 import { NativeTypes } from 'react-dnd-html5-backend'
 
@@ -39,9 +37,9 @@ const folderTarget = {
         console.log('file =', file)
         if (file.size > 0) {
           var fileReader = new FileReader()
-          fileReader.onload = function() {
-            fs.writeFile(filename, new Buffer(this.result), (err) => console.log(err))
-          };
+          fileReader.onload = function () {
+            fs.writeFile(filename, Buffer.from(this.result), (err) => console.log(err))
+          }
           fileReader.readAsArrayBuffer(file)
         } else {
           fs.mkdir(filename, (err) => {
@@ -77,9 +75,6 @@ function targetCollect (connect, monitor) {
 }
 
 class FileNavigatorFolderComponent extends React.Component {
-  constructor () {
-    super()
-  }
   click () {
     EventHub.emit('toggleFolder', this.props.filepath)
   }
@@ -91,15 +86,6 @@ class FileNavigatorFolderComponent extends React.Component {
     let busyIcon = fileMap && fileMap[filepath] && fileMap[filepath].busy
       ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
       : ''
-    // let progressBar = <div style={{
-    //   position: 'absolute',
-    //   left: '0',
-    //   top: '0',
-    //   bottom: '0',
-    //   width: '50%',
-    //   backgroundColor: 'navy'
-    // }}></div>
-    let progressPercent = 0.50
     let style = (fileMap && fileMap[filepath] && fileMap[filepath].progress !== undefined)
       ? {
         backgroundRepeat: 'no-repeat',

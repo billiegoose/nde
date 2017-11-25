@@ -1,5 +1,5 @@
+/* global EventHub */
 import React from 'react'
-import Octicon from 'react-octicons-modular'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 import cuid from 'cuid'
 import fs from 'fs'
@@ -26,6 +26,7 @@ export default class ContextMenuFile extends React.Component {
     let name = await prompt('Copy file as')
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
     fs.readFile(this.props.filepath, (err, buf) =>
+      if (err) return console.log(err)
       fs.writeFile(newfile, buf, () =>
         EventHub.emit('refreshGitStatus', newfile)
       )

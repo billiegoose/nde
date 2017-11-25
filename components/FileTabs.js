@@ -3,7 +3,7 @@ import path from 'path'
 import { connect } from 'react-redux'
 import { FileIcon } from 'react-file-browser'
 import { SortableTabList } from './Tabs/TabList.js'
-import { activateTab, closeTab, moveTab, newTab, undo, redo } from './store.js'
+import { activateTab, closeTab, moveTab, newTab } from './store.js'
 
 const mapStateToProps = (state) => {
   return {

@@ -95,16 +95,16 @@ const initialState = new State({
 
 function tabreducer (state = initialState, action) {
   switch (action.type) {
-  case NEW_TAB:
-    return onTabCreate(state, action)
-  case CLOSE_TAB:
-    return onTabClose(state, action)
-  case ACTIVATE_TAB:
-    return onTabClick(state, action)
-  case MOVE_TAB:
-    return onTabReorder(state, action)
-  default:
-    return state
+    case NEW_TAB:
+      return onTabCreate(state, action)
+    case CLOSE_TAB:
+      return onTabClose(state, action)
+    case ACTIVATE_TAB:
+      return onTabClick(state, action)
+    case MOVE_TAB:
+      return onTabReorder(state, action)
+    default:
+      return state
   }
 }
 

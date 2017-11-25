@@ -1,4 +1,4 @@
-import path from 'path'
+/* global EventHub */
 import React from 'react'
 import { connect } from 'react-redux'
 import SplitterLayout from 'react-splitter-layout'

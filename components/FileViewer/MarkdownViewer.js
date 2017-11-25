@@ -1,6 +1,5 @@
 import React from 'react'
 import fs from 'fs'
-import path from 'path'
 import markyMarkdown from 'marky-markdown/dist/marky-markdown.js'
 
 export default class MarkdownViewer extends React.Component {

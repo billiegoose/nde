@@ -1,5 +1,7 @@
+/* global EventHub */
 import React from 'react'
 import path from 'path'
+import fs from 'fs'
 import { Buffer } from 'buffer'
 import TextEditor from './TextEditor'
 import { DropTarget } from 'react-dnd'
@@ -20,9 +22,10 @@ class FileEditor extends React.Component {
     let {filepath, connectDropTarget, isDraggingOver, isDraggingItem} = this.props
     // TODO: Uses mime type detection to determine if it is text or binary
     const editor = isDraggingOver
-      ? <article style={style}>Drop to Open <code style={{fontSize: '150%'}}>{
-          isDraggingItem && isDraggingItem.filepath
-          }</code></article>
+      ? <article style={style}>
+          Drop to Open
+        <code style={{fontSize: '150%'}}>{isDraggingItem && isDraggingItem.filepath}</code>
+      </article>
       : filepath
         ? <article style={{overflow: 'hidden'}}><TextEditor filepath={filepath}/></article>
         : <article style={style}>{'No preview available for this filetype'}</article>
@@ -44,13 +47,13 @@ const fileTarget = {
         const filename = '~temp' + path.extname(file.name)
         console.log('file =', file)
         var fileReader = new FileReader()
-        fileReader.onload = function() {
-          fs.writeFile(filename, new Buffer(this.result), (err) => {
+        fileReader.onload = function () {
+          fs.writeFile(filename, Buffer.from(this.result), (err) => {
             if (err) return console.log(err)
             // Open file in Editor.
             EventHub.emit('openFile', filename)
           })
-        };
+        }
         fileReader.readAsArrayBuffer(file)
       }
       return

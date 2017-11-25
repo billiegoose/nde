@@ -1,3 +1,4 @@
+/* global EventHub */
 import React from 'react'
 import {FolderIcon} from 'react-file-browser'
 import Octicon from 'react-octicons-modular'
@@ -7,7 +8,6 @@ import fs from 'fs'
 import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
-import swal from 'sweetalert2'
 import { init, clone, commit, push, checkout, fetch } from './GitActions'
 import { rimraf } from './rimraf'
 
@@ -18,62 +18,59 @@ export default class ContextMenuFolder extends React.Component {
       cuid: cuid()
     }
   }
-  
+
   setFolderStateData = (key, value) =>
     EventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
-  
+
   newFile = async () =>
     pify(fs.writeFile)(path.join(this.props.filepath, await prompt('Enter filename:')), '')
-  
+
   newFolder = async () =>
     pify(fs.mkdir)(path.join(this.props.filepath, await prompt('Enter foldername:')))
-  
+
   deleteFolder = async () => await rimraf(this.props.filepath)
 
-  renameFolder = async () => 
+  renameFolder = async () =>
     pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), await prompt('New folder name')))
-  
-  gitInit = () => 
+
+  gitInit = () =>
     init({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })
-  
+
   gitClone = () =>
     clone({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })
-  
+
   gitPush = () =>
     push({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })
-  
+
   gitCommit = () =>
     commit({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })
-  
+
   gitCheckout = () =>
     checkout({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })
-  
+
   gitFetch = () =>
     fetch({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })
-  
+
   render () {
     let {disableContextMenu, filename, open, ...passedProps} = this.props
-    let busyIcon = passedProps.statedata && passedProps.statedata.busy
-      ? <span>&nbsp;<i className='fa fa-spinner fa-spin'></i></span>
-      : ''
     return (
       <ContextMenuTrigger id={this.state.cuid} disable={disableContextMenu}>
         {this.props.children}

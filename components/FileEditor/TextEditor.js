@@ -1,3 +1,4 @@
+/* global monaco */
 import React from 'react'
 import MonacoEditor from 'react-monaco-editor'
 import fs from 'fs'
@@ -6,24 +7,6 @@ import download from 'downloadjs'
 
 const hotReload = () => {
   System.reload('./nde/app.js')
-}
-
-// This function is a total mess. I must be sleep deprived.
-const mkdirs = (filename) => {
-  return new Promise(function (resolve, reject) {
-    let dirname = path.dirname(filename)
-    let dirs = dirname.replace(/(^\/)|(\/$)/g, '').split('/').filter(x => x !== '')
-    for (let i = 1; i < dirs.length + 1; i++) {
-      let dir = dirs.slice(0, i).join('/')
-      console.log('dir =', dir)
-      try {
-        fs.mkdirSync(dir)
-      } catch (e) {
-        if (e.code !== 'EEXIST') return reject(e)
-      }
-    }
-    resolve()
-  })
 }
 
 export default class EditableTextFile extends React.Component {

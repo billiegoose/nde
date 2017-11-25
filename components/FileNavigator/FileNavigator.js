@@ -1,12 +1,10 @@
+/* global EventHub */
 import React from 'react'
-import ReactDOM from 'react-dom'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import {FileList, Folder, FileIcon, FolderIcon} from 'react-file-browser'
-import Octicon from 'react-octicons-modular'
-import { DragDropContext } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import git from 'isomorphic-git'
+import {FileList} from 'react-file-browser'
 
 import FileNavigatorFileComponent from './FileNavigatorFileComponent'
 import FileNavigatorFolderComponent from './FileNavigatorFolderComponent'
@@ -49,7 +47,7 @@ class FileNavigator extends React.Component {
   }
   statDir (dirpath) {
     fs.readdir(dirpath, (err, files) => {
-      if (err) return reject(err)
+      if (err) return console.log(err)
       files.forEach(async filename => {
         let filepath = path.join(dirpath, filename)
         let type = await isFile(filepath) ? 'file' : 'dir'
@@ -61,14 +59,14 @@ class FileNavigator extends React.Component {
     })
   }
   async refreshDir (fullpath) {
-    let is_file = await isFile(fullpath)
+    let isfile = await isFile(fullpath)
     // File deleted case
-    if (is_file === null) {
+    if (isfile === null) {
       this.setState((state, props) => {
         _.unset(state, ['statedata', fullpath])
         return state
       })
-    } else if (is_file === true) {
+    } else if (isfile === true) {
       this.setState((state, props) => {
         _.merge(state, ['statedata', fullpath], {type: 'file'})
         return state
