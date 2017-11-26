@@ -40,7 +40,7 @@ const FileTabList = ({items, onTabReorder, onTabClick, onTabClose}) => (
     lockAxis="x"
     lockToContainerEdges={true}
     lockOffset="0%"
-    distance={25}
+    distance={5}
     onSortEnd={onTabReorder}
     onTabClick={onTabClick}
     onTabClose={onTabClose}

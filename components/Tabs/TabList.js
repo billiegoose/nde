@@ -6,7 +6,6 @@ const tablistStyle = {
   display: 'block',
   padding: 0,
   margin: 0,
-  lineHeight: 0,
   color: '#4078c0',
   background: 'black',
   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'

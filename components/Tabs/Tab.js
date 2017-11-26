@@ -1,11 +1,22 @@
 import React from 'react'
 import { SortableElement } from 'react-sortable-hoc'
 
+const unselectableStyle = {
+  cursor: 'pointer',
+  userSelect: 'none',
+  WebkitUserSelect: 'none',
+  MozUserSelect: 'none',
+  msUserSelect: 'none'
+}
+
 const baseTabStyle = {
+  ...unselectableStyle,
   display: 'inline-block',
-  padding: '5px',
+  padding: '0 5px 5px 5px',
   whiteSpace: 'nowrap',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+  userSelect: 'none',
+  mozUserSelect: 'none'
 }
 
 const activeTabStyle = {
