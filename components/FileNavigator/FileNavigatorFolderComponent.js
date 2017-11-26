@@ -76,6 +76,7 @@ function targetCollect (connect, monitor) {
 
 class FileNavigatorFolderComponent extends React.Component {
   click () {
+    console.time(this.props.filepath)
     EventHub.emit('toggleFolder', this.props.filepath)
   }
   setFolderStateData (key, value) {

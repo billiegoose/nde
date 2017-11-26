@@ -1,5 +1,6 @@
 import React from 'react'
 import path from 'path'
+// import PropTypes from 'prop-types'
 
 const findDirectChildren = (filepath, filepaths) =>
   filepaths.filter(x => x.length > filepath.length)
@@ -12,9 +13,38 @@ const getChildren = (filepath, fileMap) => {
   let filepaths = findDirectChildren(filepath, keys)
 }
 
-export default function FileList ({filepath, fileMap, FolderComponent, FileComponent, ...props}) {
-  // new implementation
-  if (fileMap !== undefined) {
+export default class FileList extends React.Component {
+  // static propTypes = {
+  //   filepath: PropTypes.string.isRequired,
+  //   fileMap: PropTypes.object.isRequired,
+  //   open: PropTypes.bool,
+  //   FolderComponent: PropTypes.any.isRequired,
+  //   FileComponent: PropTypes.any.isRequired
+  // }
+  constructor ({open}) {
+    super()
+    this.state = {
+      beLazy: !open
+    }
+  }
+  componentWillReceiveProps ({open}) {
+    if (open) {
+      this.setState({beLazy: false})
+    }
+  }
+  shouldComponentUpdate (nextProps, nextState) {
+    // Here is the optimization
+    if (!this.props.open && !nextProps.open)  {
+      return false
+    }
+    // We could continue optimizing by handling the "folder is open" case next.
+    return true
+  }
+  render () {
+    if (this.state.beLazy) return ''
+    let {filepath, fileMap, open, FolderComponent, FileComponent, ...props} = this.props
+    let style = !open ? {display: 'none'} : {}
+
     let folders = []
     let files = []
 
@@ -24,18 +54,6 @@ export default function FileList ({filepath, fileMap, FolderComponent, FileCompo
     for (let key of filepaths) {
       if (fileMap[key].type === 'dir') {
         let open = fileMap[key].navOpen
-        let filelist
-        if (open) {
-          filelist = (
-            <FileList
-              filepath={key}
-              fileMap={fileMap}
-              FolderComponent={FolderComponent}
-              FileComponent={FileComponent}
-              {...props}>
-            </FileList>
-          )
-        }
         folders.push(
           <li key={key}>
             <FolderComponent
@@ -45,7 +63,14 @@ export default function FileList ({filepath, fileMap, FolderComponent, FileCompo
               open={open}
               {...props}>
             </FolderComponent>
-            {filelist}
+            <FileList
+              filepath={key}
+              fileMap={fileMap}
+              open={open}
+              FolderComponent={FolderComponent}
+              FileComponent={FileComponent}
+              {...props}>
+            </FileList>
           </li>
         )
       } else {
@@ -63,9 +88,10 @@ export default function FileList ({filepath, fileMap, FolderComponent, FileCompo
     }
     let entries = folders.concat(files)
     return (
-      <ul>
+      <ul style={style}>
         {entries}
       </ul>
     )
   }
 }
+
