@@ -14,9 +14,7 @@ const baseTabStyle = {
   display: 'inline-block',
   padding: '0 5px 5px 5px',
   whiteSpace: 'nowrap',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-  userSelect: 'none',
-  mozUserSelect: 'none'
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 }
 
 const activeTabStyle = {
