@@ -1,62 +1,5 @@
 import React from 'react'
-import _ from 'lodash'
-import path from 'path'
-
-import {FileList, File, Folder, AtomStyles} from 'react-file-browser'
-
-const findDirectChildren = (filepath, filepaths) =>
-  filepaths.filter(x => x.length > filepath.length)
-    .filter(x => x.startsWith(filepath))
-    .filter(x => x.lastIndexOf('/') <= filepath.length)
-    .sort()
-
-const BasicFolder = ({filename, open, ClickCallback, filepath}) => (
-  <Folder filename={filename} open={open} domProps={{onClick: () => ClickCallback(filepath)}} />
-)
-
-class BasicFileTree extends React.Component {
-  constructor (props) {
-    super()
-    let files = Object.keys(props.fileMap)
-    let children = findDirectChildren(props.filepath, files) 
-    this.state = {
-      statedata: {},
-      children
-    }
-  }
-  toggle (fullpath) {
-    this.setState((state, props) => {
-      let val = _.get(state, ['statedata', fullpath, 'open'], false)
-      _.set(state, ['statedata', fullpath, 'open'], !val)
-      return state
-    })
-    data[fullpath].navOpen = !data[fullpath].navOpen
-  }
-  componentWillReceiveProps (newProps) {
-    // compare newProps and this.props
-    console.log(newProps.fileMap)
-    let files = Object.keys(newProps.fileMap)
-    let children = findDirectChildren(newProps.filepath, files)
-    this.setState({ children })
-  }
-  render () {
-    let toggle = this.toggle.bind(this)
-    return (
-      <nav className="_tree">
-        <FileList
-          root={[]}
-          data={this.props.data}
-          statedata={this.state.statedata}
-          filepath={this.props.filepath}
-          fileMap={this.props.fileMap}
-          FileComponent={File}
-          FolderComponent={BasicFolder}
-          ClickCallback={toggle}
-        />
-      </nav>
-    )
-  }
-}
+import {FileList, File, Folder} from 'react-file-browser'
 
 const data = {
   '/': {
@@ -82,8 +25,38 @@ const data = {
   },
 }
 
-const ExampleTreeView = () =>
-  <BasicFileTree fileMap={data} data={data} filepath={'/'} />
+const BasicFolder = ({filename, open, toggle, filepath}) => (
+  <Folder filename={filename} open={open} domProps={{onClick: () => toggle(filepath)}} />
+)
 
+class BasicFileTree extends React.Component {
+  constructor ({initData}) {
+    super()
+    this.state = initData
+  }
+  toggle (fullpath) {
+    let node = Object.assign({}, this.state[fullpath])
+    node.navOpen = !node.navOpen
+    this.setState({[fullpath]: node})
+  }
+  render () {
+    const toggle = this.toggle.bind(this)
+    return (
+      <nav className="_tree">
+        <FileList
+          filepath="/"
+          fileMap={this.state}
+          open={true}
+          FileComponent={File}
+          FolderComponent={BasicFolder}
+          toggle={toggle}
+        />
+      </nav>
+    )
+  }
+}
+
+const ExampleTreeView = () =>
+  <BasicFileTree initData={data} />
 
 export default ExampleTreeView
