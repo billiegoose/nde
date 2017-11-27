@@ -119,6 +119,13 @@ export async function stage ({filepath, glEventHub}) {
   glEventHub.emit('refreshGitStatus', filepath)
 }
 
+export async function remove ({filepath, glEventHub}) {
+  let dir = await git().findRoot(filepath)
+  let rpath = path.relative(dir, filepath)
+  await git(dir).remove(rpath)
+  glEventHub.emit('refreshGitStatus', filepath)
+}
+
 export async function commit ({filepath, glEventHub}) {
   let author = await git(filepath).config('user.name')
   let email = await git(filepath).config('user.email')

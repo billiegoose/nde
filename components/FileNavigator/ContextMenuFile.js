@@ -6,7 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
-import { stage } from './GitActions'
+import { stage, remove } from './GitActions'
 
 export default class ContextMenuFile extends React.Component {
   constructor () {
@@ -38,6 +38,12 @@ export default class ContextMenuFile extends React.Component {
       glEventHub: EventHub
     })
   }
+  async removeFromIndex () {
+    await remove({
+      filepath: this.props.filepath,
+      glEventHub: EventHub
+    })
+  }
   render () {
     return (
       <ContextMenuTrigger id={this.state.cuid} disable={this.props.disableContextMenu}>
@@ -45,6 +51,9 @@ export default class ContextMenuFile extends React.Component {
         <ContextMenu id={this.state.cuid}>
           <MenuItem onClick={() => this.addToIndex()}>
             Add to Stage <i className="icon git-icon medium-red"></i>
+          </MenuItem>
+          <MenuItem onClick={() => this.removeFromIndex()}>
+            Mark for Deletion <i className="icon git-icon medium-red"></i>
           </MenuItem>
           <MenuItem onClick={() => this.copyFile()}>
             Copy File <i className="icon fa fa-clone"></i>

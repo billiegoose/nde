@@ -1,7 +1,7 @@
 import React from 'react'
 import path from 'path'
 import { connect } from 'react-redux'
-import { FileIcon } from 'react-file-browser'
+import { FileIcon } from 'react-file-icons'
 import { SortableTabList } from './Tabs/TabList.js'
 import { activateTab, closeTab, moveTab, newTab } from './store.js'
 

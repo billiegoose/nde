@@ -1,4 +1,4 @@
-import FileIcon from './FileIcon.js'
+import { FileIcon } from 'react-file-icons'
 
 export default function File ({filename, domProps, children}) {
   return (
