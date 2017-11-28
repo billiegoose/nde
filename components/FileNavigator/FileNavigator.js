@@ -8,7 +8,7 @@ import {FileList} from 'react-file-browser'
 import pify from 'pify'
 import FileNavigatorFileComponent from './FileNavigatorFileComponent'
 import FileNavigatorFolderComponent from './FileNavigatorFolderComponent'
-import ContextMenuFolder from './ContextMenuFolder'
+import ContextMenuFileNavigator from './ContextMenuFileNavigator'
 
 // returns true if file, false if directory, null if error (e.g. not found)
 const isFile = async (fullpath) => {
@@ -195,7 +195,7 @@ class FileNavigator extends React.Component {
   }
   render () {
     return (
-      <ContextMenuFolder filepath={this.props.root} disableContextMenu={this.props.disableContextMenu}>
+      <ContextMenuFileNavigator filepath={this.props.root} disableContextMenu={this.props.disableContextMenu}>
         <nav className="_tree">
           <FileList
             disableContextMenu={this.state.disableContextMenu}
@@ -207,7 +207,7 @@ class FileNavigator extends React.Component {
             {...this.props}
           />
         </nav>
-      </ContextMenuFolder>
+      </ContextMenuFileNavigator>
     )
   }
 }

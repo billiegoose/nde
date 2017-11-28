@@ -1,7 +1,7 @@
 import React from 'react'
 import MarkdownViewer from './MarkdownViewer'
 import ReactComponentViewer from './ReactComponentViewer'
-import ErrorBoundary from '../ErrorBoundary/index.js'
+import { ErrorBoundary } from 'react-pretty-error-boundary'
 
 const style = {
   backgroundColor: '#1e1e1e',

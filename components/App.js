@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import SplitterLayout from 'react-splitter-layout'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
+import { ErrorBoundary } from 'react-pretty-error-boundary'
 
 import { newTab, undo, redo } from './store.js'
 import TryComponent from './TryCatchHOC.js'
@@ -60,8 +61,8 @@ class App extends React.Component {
               </div>
             </div>
             <SplitterLayout primaryIndex={1} percentage={true} primaryInitialSize={50} secondaryInitialSize={50}>
-              <TryFileEditor filepath={this.props.activeFilepath}/>
-              <TryFileViewer filepath={this.props.activeFilepath}/>
+              <ErrorBoundary><FileEditor filepath={this.props.activeFilepath}/></ErrorBoundary>
+              <ErrorBoundary><FileViewer filepath={this.props.activeFilepath}/></ErrorBoundary>
             </SplitterLayout>
           </div>
         </SplitterLayout>

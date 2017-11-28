@@ -1,8 +1,8 @@
 import React from 'react'
-import ErrorTrap from './ErrorTrap'
+import { ErrorTrap } from './ErrorTrap'
 import { PrettyError } from './PrettyError'
 
-export default class ErrorBoundary extends React.Component {
+export class ErrorBoundary extends React.Component {
   constructor (props) {
     super(props)
     this.state = { error: null }
