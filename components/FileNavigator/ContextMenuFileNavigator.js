@@ -30,12 +30,19 @@ export default class ContextMenuFileNavigator extends React.Component {
       glEventHub: EventHub
     })
 
-  uninstall = () => {
-    caches.keys().then(keys => keys.forEach(key => caches.delete(key)))
+  uninstall = async () => {
+    let keys = await caches.keys()
+    for (let key of keys) {
+      caches.delete(key)
+    }
     localStorage.clear()
     sessionStorage.clear()
     indexedDB.deleteDatabase('getlibs')
     indexedDB.deleteDatabase('browserfs')
+    let registrations = await navigator.serviceWorker.getRegistrations()
+    for (let registration of registrations) {
+      registration.unregister()
+    }
     location.reload(true)
   }
 
