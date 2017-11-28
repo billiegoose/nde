@@ -1,7 +1,6 @@
 export {default as File} from './File'
 export {default as Folder} from './Folder'
 export {default as FileList} from './FileList'
-export {default as FileIcon} from './FileIcon'
 export {default as FolderIcon} from './FolderIcon'
 export {default as AtomStyles} from './atom-styles.css'
 export {default as Example} from './Example'
