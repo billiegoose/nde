@@ -1,5 +1,10 @@
 import path from 'path'
 import git from 'isomorphic-git'
+try {
+  git.utils.setfs(fs)
+} catch (e) {
+  console.log(e)
+}
 import ghparse from 'parse-github-url'
 
 import { prompt } from '../SweetAlert'
