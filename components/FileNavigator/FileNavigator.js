@@ -3,7 +3,7 @@ import React from 'react'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import git from 'isomorphic-git'
+import {Git, findRoot, status as gitStatus} from 'isomorphic-git'
 import {FileList} from 'react-file-browser'
 import pify from 'pify'
 import FileNavigatorFileComponent from './FileNavigatorFileComponent'
@@ -126,11 +126,11 @@ class FileNavigator extends React.Component {
         return state
       })
       try {
-        let gitdir = await git().findRoot(fullpath)
-        let status = await git(gitdir).status(path.relative(gitdir, fullpath))
+        let dir = await findRoot({fs}, {filepath: fullpath})
+        let status = await gitStatus(new Git({fs, dir}), {filepath: path.relative(dir, fullpath)})
         EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
       } catch (err) {
-        console.log('not in a git repo', fullpath)
+        // console.log('not in a git repo', fullpath)
       }
     } else {
       this.setState((state, props) => {
@@ -144,7 +144,7 @@ class FileNavigator extends React.Component {
         try {
           // Don't try to get the git status of anything *inside* a .git dir
           if (path.basename(fullpath) !== '.git') {
-            gitdir = await git().findRoot(fullpath)
+            gitdir = await findRoot({fs}, {filepath: fullpath})
           }
         } catch (err) {
           console.log('not tracked by git')
@@ -164,7 +164,8 @@ class FileNavigator extends React.Component {
             if (type === 'file' && gitdir !== null) {
               let rpath = path.relative(gitdir, filepath)
               console.time(rpath + ' gitstatus')
-              git(gitdir).status(rpath).then(status => {
+              let repo = new Git({fs, dir: gitdir})
+              gitStatus(repo, {filepath: rpath}).then(status => {
                 console.timeEnd(rpath + ' gitstatus')
                 EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
               }).catch((err) => console.log(err, gitdir, file, rpath))

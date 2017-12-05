@@ -12,7 +12,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import fs, {fsReady} from 'fs'
-import git from 'isomorphic-git'
 
 // Application code
 import App from './components/App.js'
@@ -23,8 +22,6 @@ console.log('STORE =', store)
 // Global variables
 window.React = React
 window.ReactDOM = ReactDOM
-window.git = git
-console.log('git =', git)
 let EventHub = new EventEmitter()
 window.EventHub = EventHub
 
