@@ -40,6 +40,9 @@ class FileNavigator extends React.Component {
     EventHub.on('toggleFolder', this.toggleFolder.bind(this))
     EventHub.on('refreshGitStatus', this.refreshDir.bind(this))
     EventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
+    EventHub.on('renameFile', ({from, to}) => {
+      return pify(fs.rename)(from, to)
+    })
     EventHub.on('DISABLE_CONTEXTMENU', () => {
       this.setState((state, props) => ({
         state,

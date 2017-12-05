@@ -100,7 +100,7 @@ class FileNavigatorFolderComponent extends React.Component {
           onClick: this.click.bind(this),
           style
         }}>
-          {busyIcon}
+          {filename}{busyIcon}
         </Folder>
       </div>
     )

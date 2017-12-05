@@ -19,8 +19,18 @@ export default class ContextMenuFile extends React.Component {
     fs.unlink(this.props.filepath)
   }
   async renameFile () {
-    let name = await prompt('New file name')
-    return pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), name))
+    EventHub.emit('setFolderStateData', {
+      fullpath: this.props.filepath,
+      key: 'tentativeFilename',
+      value: path.basename(this.props.filepath)
+    })
+    EventHub.emit('setFolderStateData', {
+      fullpath: this.props.filepath,
+      key: 'editingName',
+      value: true
+    })
+    // let name = await prompt('New file name')
+    // return pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), name))
   }
   async copyFile () {
     let name = await prompt('Copy file as')

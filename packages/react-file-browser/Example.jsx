@@ -26,7 +26,15 @@ const data = {
 }
 
 const BasicFolder = ({filename, open, toggle, filepath}) => (
-  <Folder filename={filename} open={open} domProps={{onClick: () => toggle(filepath)}} />
+  <Folder filename={filename} open={open} domProps={{onClick: () => toggle(filepath)}}>
+    {filename}
+  </Folder>
+)
+
+const BasicFile = ({filename, open, toggle, filepath}) => (
+  <File filename={filename} open={open} domProps={{onClick: () => toggle(filepath)}}>
+    {filename}
+  </File>
 )
 
 class BasicFileTree extends React.Component {
@@ -47,7 +55,7 @@ class BasicFileTree extends React.Component {
           filepath="/"
           fileMap={this.state}
           open={true}
-          FileComponent={File}
+          FileComponent={BasicFile}
           FolderComponent={BasicFolder}
           toggle={toggle}
         />

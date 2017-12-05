@@ -6,7 +6,6 @@ export default function Folder ({filename, open, domProps, children}) {
     <label {...domProps}>
       <a target="#" style={{whiteSpace: 'nowrap', position: 'relative'}}>
         <FolderIcon open={open}/>
-        {filename}
         {children}
       </a>
     </label>
