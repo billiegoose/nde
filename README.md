@@ -33,15 +33,12 @@ Most of my work currently focuses on the git integration and file browser compon
 Milestone reached! The IDE can be used to edit itself!
 
 ## Next steps:
-
+- [ ] Support running off hosted Github Pages without having to "install" first
+- [ ] Build in a Getting Started or walkthrough tutorial
 - [ ] Move state into a Redux store
-  - [ ] Add "undo" functionality via redux-undo
   - [ ] Add state serialization
   - [ ] Perfect hot module reloading
-- [ ] Add menu item for removing a file from the git index
 - [ ] Add a menu item to view the file diff with Monaco
 - [ ] Add a UI for signing in with Github and creating an OpenPGP key
 - [ ] Finish filesystem wrapper to enable file watching
-- [ ] Make the EditableTextFile's ContextMenu customizable per file type
 - [ ] Trigger Hot Module reload on file save
-- [ ] Build in a Getting Started or walkthrough tutorial

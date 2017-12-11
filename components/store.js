@@ -7,6 +7,7 @@ const NEW_TAB = 'OPEN_TAB'
 const CLOSE_TAB = 'CLOSE_TAB'
 const ACTIVATE_TAB = 'ACTIVATE_TAB'
 const MOVE_TAB = 'MOVE_TAB'
+const UNINSTALL = 'UNINSTALL'
 
 export const newTab = (filepath) => ({
   type: NEW_TAB,
@@ -27,6 +28,10 @@ export const moveTab = (oldIndex, newIndex) => ({
   type: MOVE_TAB,
   oldIndex,
   newIndex
+})
+
+export const uninstall = () => ({
+  type: UNINSTALL
 })
 
 export const undo = () => ActionCreators.undo()
@@ -71,23 +76,20 @@ const onTabReorder = (state, {oldIndex, newIndex}) => {
   return newState
 }
 
+const onUninstall = (state, action) => {
+  caches.keys().then(keys => keys.forEach(key => caches.delete(key)))
+  localStorage.clear()
+  sessionStorage.clear()
+  indexedDB.deleteDatabase('getlibs')
+  indexedDB.deleteDatabase('browserfs')
+  location.reload(true)
+}
+
 const initialState = new State({
-  activeFilepath: '/nde/components/App.js',
+  activeFilepath: '/nde/TODO.md',
   openFiles: [
     {
-      filepath: '/nde/README.md',
-      scrollPosition: 0
-    },
-    {
-      filepath: '/nde/index.html',
-      scrollPosition: 0
-    },
-    {
-      filepath: '/nde/components/App.js',
-      scrollPosition: 0
-    },
-    {
-      filepath: '/nde/components/store.js',
+      filepath: '/nde/TODO.md',
       scrollPosition: 0
     }
   ]
@@ -103,6 +105,8 @@ function tabreducer (state = initialState, action) {
       return onTabClick(state, action)
     case MOVE_TAB:
       return onTabReorder(state, action)
+    case UNINSTALL:
+      return onUninstall(state, action)
     default:
       return state
   }
