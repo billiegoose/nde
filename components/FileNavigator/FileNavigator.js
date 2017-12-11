@@ -21,6 +21,122 @@ const isFile = async (fullpath) => {
 }
 
 class FileNavigator extends React.Component {
+  onWrite = async ({filepath}) => {
+    this.setState((state, props) => {
+      _.merge(state, ['fileMap', filepath], {type: 'file'})
+      return state
+    })
+    this.refreshFile(filepath)
+  }
+  onUnlink = ({filepath}) => {
+    this.setState((state, props) => {
+      _.unset(state, ['fileMap', filepath])
+      return state
+    })
+  }
+  onMkdir = ({filepath}) => {
+    this.setState((state, props) => {
+      _.merge(state, ['fileMap', filepath], {type: 'dir'})
+      return state
+    })
+  }
+  onRmdir = ({filepath}) => {
+    this.setState((state, props) => {
+      _.unset(state, ['fileMap', filepath])
+      return state
+    })
+  }
+  onRename = async ({from, to}) => {
+    this.setState((state, props) => {
+      state.fileMap[to] = state.fileMap[from]
+      _.unset(state, ['fileMap', from])
+      return state
+    })
+    this.refreshDir(from)
+    this.refreshDir(to)
+  }
+  toggleFolder = (fullpath) => {
+    this.setState((state, props) => {
+      let wasOpen = _.get(state, ['fileMap', fullpath, 'navOpen'], false)
+      let nowOpen = !wasOpen
+      _.set(state, ['fileMap', fullpath, 'navOpen'], nowOpen)
+      if (nowOpen) {
+        this.refreshDir(fullpath)
+      }
+      console.timeEnd(fullpath)
+      return state
+    })
+  }
+  setFolderStateData = ({fullpath, key, value}) => {
+    console.log('setFolderStateData', fullpath, key, value)
+    this.setState((state, props) => {
+      _.set(state, ['fileMap', fullpath, key], value)
+      return state
+    })
+  }
+  refresh = async (filepath) => {
+    if (state.fileMap[filepath] && state.fileMap[filepath].type) {
+      if (state.fileMap[filepath].type === 'file') {
+        return this.refreshFile(filepath)
+      } else if (state.fileMap[filepath].type === 'dir') {
+        return this.refreshDir(filepath)
+      }
+    } else {
+      let isfile = await isFile(filepath)
+      if (isfile === true) {
+        return this.refreshFile(filepath)
+      } else if (isfile === false) {
+        return this.refreshDir(filepath)
+      }
+    }
+  }
+  refreshFile = async (filepath) => {
+    try {
+      let dir = await findRoot({fs}, {filepath})
+      let status = await gitStatus(new Git({fs, dir}), {filepath: path.relative(dir, filepath)})
+      EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
+    } catch (err) {
+      // console.log('not in a git repo', filepath)
+    }
+  }
+  refreshDir = async (fullpath) => {
+    // For folders that are open...
+    if (this.state.fileMap[fullpath] && this.state.fileMap[fullpath].navOpen) {
+      let gitdir = null
+      // Find the parent git root dir if there is one
+      try {
+        // Don't try to get the git status of anything *inside* a .git dir
+        if (path.basename(fullpath) !== '.git') {
+          gitdir = await findRoot({fs}, {filepath: fullpath})
+        }
+      } catch (err) {
+        console.log('not tracked by git')
+      }
+      console.time(fullpath + ' readdir')
+      fs.readdir(fullpath, async (err, files) => {
+        console.timeEnd(fullpath + ' readdir')
+        for (let file of files) {
+          let filepath = path.join(fullpath, file)
+          let type = await isFile(filepath) ? 'file' : 'dir'
+          // Determine whether the child is a file or a dir
+          this.setState((state) => {
+            _.set(state, ['fileMap', filepath, 'type'], type)
+            return state
+          })
+          // If it's a file, check the git status
+          if (type === 'file' && gitdir !== null) {
+            let rpath = path.relative(gitdir, filepath)
+            console.time(rpath + ' gitstatus')
+            let repo = new Git({fs, dir: gitdir})
+            gitStatus(repo, {filepath: rpath}).then(status => {
+              console.timeEnd(rpath + ' gitstatus')
+              EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
+            }).catch((err) => console.log(err, gitdir, file, rpath))
+          }
+        }
+      })
+    }
+  }
   constructor () {
     super()
     this.state = {
@@ -34,12 +150,12 @@ class FileNavigator extends React.Component {
     }
   }
   componentDidMount () {
-    if (this.props.glContainer) {
-      this.props.glContainer.setTitle('File Navigator')
-    }
-    EventHub.on('toggleFolder', this.toggleFolder.bind(this))
-    EventHub.on('refreshGitStatus', this.refreshDir.bind(this))
-    EventHub.on('setFolderStateData', this.setFolderStateData.bind(this))
+    EventHub.on('toggleFolder', this.toggleFolder)
+    EventHub.on('setFolderStateData', this.setFolderStateData)
+    EventHub.on('refreshGitStatus', this.refresh)
+    EventHub.on('refreshGitStatusFile', this.refreshFile)
+    EventHub.on('refreshGitStatusDir', this.refreshDir)
+
     EventHub.on('renameFile', ({from, to}) => {
       return pify(fs.rename)(from, to)
     })
@@ -49,11 +165,28 @@ class FileNavigator extends React.Component {
         disableContextMenu: !state.disableContextMenu
       }))
     })
+    fs.Events.on('unlink', this.onUnlink)
+    fs.Events.on('write', this.onWrite)
+    fs.Events.on('mkdir', this.onMkdir)
+    fs.Events.on('rmdir', this.onRmdir)
+    fs.Events.on('rename', this.onRename)
     fs.Events.on('change', ({eventType, filename}) => this.refreshDir(filename))
     // this.crawlDirectory('/')
     this.pureCrawlDirectory('/').then(fileMap => 
       this.setState((state, props) => ({fileMap}))
     )
+  }
+  componentWillUnmount () {
+    EventHub.off('toggleFolder', this.toggleFolder)
+    EventHub.off('setFolderStateData', this.setFolderStateData)
+    EventHub.off('refreshGitStatus', this.refresh)
+    EventHub.off('refreshGitStatusFile', this.refreshFile)
+    EventHub.off('refreshGitStatusDir', this.refreshDir)
+    fs.Events.off('unlink', this.onUnlink)
+    fs.Events.off('write', this.onWrite)
+    fs.Events.on('mkdir', this.onMkdir)
+    fs.Events.on('rmdir', this.onRmdir)
+    fs.Events.off('rename', this.onRename)
   }
   async pureCrawlDirectory (filepath, depth = 5) {
     if (depth === 0) return {}
@@ -111,90 +244,6 @@ class FileNavigator extends React.Component {
         console.timeEnd(filepath)
         resolve(result)
       })
-    })
-  }
-  async refreshDir (fullpath) {
-    console.time(fullpath + ' isFile')
-    let isfile = await isFile(fullpath)
-    console.timeEnd(fullpath + ' isFile')
-    // File deleted case
-    if (isfile === null) {
-      this.setState((state, props) => {
-        _.unset(state, ['fileMap', fullpath])
-        return state
-      })
-    } else if (isfile === true) {
-      this.setState((state, props) => {
-        _.merge(state, ['fileMap', fullpath], {type: 'file'})
-        return state
-      })
-      try {
-        let dir = await findRoot({fs}, {filepath: fullpath})
-        let status = await gitStatus(new Git({fs, dir}), {filepath: path.relative(dir, fullpath)})
-        EventHub.emit('setFolderStateData', {fullpath: fullpath, key: 'gitstatus', value: status})
-      } catch (err) {
-        // console.log('not in a git repo', fullpath)
-      }
-    } else {
-      this.setState((state, props) => {
-        _.merge(state, ['fileMap', fullpath], {type: 'dir'})
-        return state
-      })
-      // For folders that are open...
-      if (this.state.fileMap[fullpath] && this.state.fileMap[fullpath].navOpen) {
-        let gitdir = null
-        // Find the parent git root dir if there is one
-        try {
-          // Don't try to get the git status of anything *inside* a .git dir
-          if (path.basename(fullpath) !== '.git') {
-            gitdir = await findRoot({fs}, {filepath: fullpath})
-          }
-        } catch (err) {
-          console.log('not tracked by git')
-        }
-        console.time(fullpath + ' readdir')
-        fs.readdir(fullpath, async (err, files) => {
-          console.timeEnd(fullpath + ' readdir')
-          for (let file of files) {
-            let filepath = path.join(fullpath, file)
-            let type = await isFile(filepath) ? 'file' : 'dir'
-            // Determine whether the child is a file or a dir
-            this.setState((state) => {
-              _.set(state, ['fileMap', filepath, 'type'], type)
-              return state
-            })
-            // If it's a file, check the git status
-            if (type === 'file' && gitdir !== null) {
-              let rpath = path.relative(gitdir, filepath)
-              console.time(rpath + ' gitstatus')
-              let repo = new Git({fs, dir: gitdir})
-              gitStatus(repo, {filepath: rpath}).then(status => {
-                console.timeEnd(rpath + ' gitstatus')
-                EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
-              }).catch((err) => console.log(err, gitdir, file, rpath))
-            }
-          }
-        })
-      }
-    }
-  }
-  toggleFolder (fullpath) {
-    this.setState((state, props) => {
-      let wasOpen = _.get(state, ['fileMap', fullpath, 'navOpen'], false)
-      let nowOpen = !wasOpen
-      _.set(state, ['fileMap', fullpath, 'navOpen'], nowOpen)
-      if (nowOpen) {
-        this.refreshDir(fullpath)
-      }
-      console.timeEnd(fullpath)
-      return state
-    })
-  }
-  setFolderStateData ({fullpath, key, value}) {
-    console.log('setFolderStateData', fullpath, key, value)
-    this.setState((state, props) => {
-      _.set(state, ['fileMap', fullpath, key], value)
-      return state
     })
   }
   render () {

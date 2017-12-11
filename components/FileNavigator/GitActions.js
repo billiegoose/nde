@@ -129,7 +129,7 @@ export async function push ({filepath, glEventHub}) {
   } catch (err) {
     console.log('err =', err)
   } finally {
-    glEventHub.emit('refreshGitStatus', filepath)
+    glEventHub.emit('refreshGitStatusDir', filepath)
     glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: false})
   }
 }
@@ -139,7 +139,7 @@ export async function stage ({filepath, glEventHub}) {
   let rpath = path.relative(dir, filepath)
   let repo = new Git({fs, dir})
   await gadd(repo, {filepath: rpath})
-  glEventHub.emit('refreshGitStatus', filepath)
+  glEventHub.emit('refreshGitStatusFile', filepath)
 }
 
 export async function remove ({filepath, glEventHub}) {
@@ -147,7 +147,7 @@ export async function remove ({filepath, glEventHub}) {
   let rpath = path.relative(dir, filepath)
   let repo = new Git({fs, dir})
   await gremove(repo, {filepath: rpath})
-  glEventHub.emit('refreshGitStatus', filepath)
+  glEventHub.emit('refreshGitStatusFile', filepath)
 }
 
 export async function commit ({filepath, glEventHub}) {
@@ -185,7 +185,7 @@ export async function commit ({filepath, glEventHub}) {
   } catch (err) {
     console.log('err =', err)
   } finally {
-    glEventHub.emit('refreshGitStatus', filepath)
+    glEventHub.emit('refreshGitStatusDir', filepath)
     glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: false})
   }
 }
@@ -211,7 +211,7 @@ export async function checkout ({filepath, glEventHub}) {
   } catch (err) {
     console.log('err =', err)
   } finally {
-    glEventHub.emit('refreshGitStatus', filepath)
+    glEventHub.emit('refreshGitStatusDir', filepath)
     glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: false })
   }
 }

@@ -61,8 +61,6 @@ const folderTarget = {
     EventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: true})
     fs.rename(oldPath, newPath, (err) => {
       console.log(err)
-      EventHub.emit('refreshGitStatus', oldPath)
-      EventHub.emit('refreshGitStatus', newPath)
       EventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: false})
     })
   }

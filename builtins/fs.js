@@ -21,117 +21,86 @@ export const fsReady = new Promise(function (resolve, reject) {
   }, (err) => err ? reject(err) : resolve())
 })
 // Step 2. Export fs
-const fs = BrowserFS.BFSRequire('fs')
-// Cheap hack to get file monitoring in
+let fs = BrowserFS.BFSRequire('fs')
+// Wrap fs so we can monitor all file operations
 fs.Events = new EventEmitter()
-fs._origWriteFile = fs.writeFile
-fs.writeFile = function (file, data, options, callback) {
-  if (typeof options === 'function') {
-    callback = options
-    options = {}
+
+function emit(propKey, ...args) {
+  switch (propKey) {
+    case 'writeFile':
+    case 'writeFileSync':
+      return fs.Events.emit('write', {
+        eventType: 'write',
+        filepath: args[0]
+      });
+    case 'mkdir':
+    case 'mkdirSync':
+      return fs.Events.emit('mkdir', {
+        eventType: 'mkdir',
+        filepath: args[0]
+      });
+    case 'unlink':
+    case 'unlinkSync':
+      fs.Events.emit('unlink', {
+        eventType: 'unlink',
+        filepath: args[0]
+      });
+      return
+    case 'rmdir':
+    case 'rmdirSync':
+      return fs.Events.emit('rmdir', {
+        eventType: 'rmdir',
+        filepath: args[0]
+      });
+    case 'rename':
+    case 'renameSync':
+      return fs.Events.emit('rename', {
+        eventType: 'rename',
+        from: args[0],
+        to: args[1]
+      });
+    default:
+      return
   }
-  console.log('writeFile', file)
-  fs._origWriteFile(file, data, options, (err) => {
-    if (!err) {
-      fs.Events.emit('change', {
-        eventType: 'change',
-        filename: file
-      })
+}
+
+function traceMethodCalls(obj) {
+  const handler = {
+    get(target, propKey, receiver) {
+      const targetValue = Reflect.get(target, propKey, receiver);
+      if (typeof targetValue === 'function') {
+        return function (...args) {
+          for (let i in args) {
+            if (typeof args[i] === 'function') {
+              let _callback = args[i];
+              args[i] = function (...cbargs) {
+                _callback(...cbargs);
+                if (!cbargs[0]) {
+                  console.log('CALLBACK', propKey, args, cbargs);
+                  emit(propKey, ...args);
+                }
+              }
+            }
+          }
+          let result = targetValue.apply(this, args); // (A)
+          if (propKey.endsWith('Sync')) {
+            console.log('CALLED', propKey, args, result);
+            fs.Events.emit('change', {
+              eventType: 'change',
+              filename: file
+            })
+          }
+          return result;
+        }
+      } else {
+        return targetValue;
+      }
     }
-    if (callback) callback(err)
-  })
+  };
+  return new Proxy(obj, handler);    
 }
-fs._origWriteFileSync = fs.writeFileSync
-fs.writeFileSync = function (file, ...args) {
-  console.log('writeFileSync', file)
-  let results = fs._origWriteFileSync(file, ...args)
-  setTimeout(() => {
-    fs.Events.emit('change', {
-      eventType: 'change',
-      filename: file
-    })
-  }, 0)
-  return results
-}
-fs._origMkdir = fs.mkdir
-fs._origMkdirSync = fs.mkdirSync
-fs.mkdir = function (path, mode, callback) {
-  console.log('mkdir', path)
-  if (typeof mode === 'function') {
-    callback = mode
-    mode = 0o777
-  }
-  fs._origMkdir(path, mode, (err) => {
-    if (!err) {
-      fs.Events.emit('change', {
-        eventType: 'change',
-        filename: path
-      })
-    }
-    if (callback) return callback(err)
-  })
-}
-fs.mkdirSync = function (path, ...args) {
-  console.log('mkdirSync', path)
-  let results = fs._origMkdirSync(path, ...args)
-  setTimeout(() => {
-    fs.Events.emit('change', {
-      eventType: 'change',
-      filename: path
-    })
-  }, 0)
-  return results
-}
-fs._origUnlink = fs.unlink
-fs.unlink = function (path, callback) {
-  console.log('unlink', path)
-  fs._origUnlink(path, (err) => {
-    if (!err) {
-      fs.Events.emit('change', {
-        eventType: 'change',
-        filename: path
-      })
-    }
-    if (callback) return callback(err)
-  })
-}
-fs._origUnlinkSync = fs.unlinkSync
-fs.unlinkSync = function (path) {
-  console.log('unlink', path)
-  fs._origUnlinkSync(path)
-  setTimeout(() => {
-    fs.Events.emit('change', {
-      eventType: 'change',
-      filename: path
-    })
-  }, 0)
-  return undefined
-}
-fs._origRmdir = fs.rmdir
-fs.rmdir = function (path, callback) {
-  console.log('rmdir', path)
-  fs._origRmdir(path, (err) => {
-    if (!err) {
-      fs.Events.emit('change', {
-        eventType: 'change',
-        filename: path
-      })
-    }
-    if (callback) return callback(err)
-  })
-}
-fs._origRmdirSync = fs.rmdirSync
-fs.rmdirSync = function (path) {
-  console.log('rmdir', path)
-  fs._origRmdirSync(path)
-  setTimeout(() => {
-    fs.Events.emit('change', {
-      eventType: 'change',
-      filename: path
-    })
-  }, 0)
-  return undefined
-}
+
+fs = traceMethodCalls(fs)
 
 window.fs = fs
 export default fs

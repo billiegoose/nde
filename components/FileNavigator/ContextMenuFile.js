@@ -7,6 +7,7 @@ import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
 import { stage, remove } from './GitActions'
+const noop = () => void(0)
 
 export default class ContextMenuFile extends React.Component {
   constructor () {
@@ -16,7 +17,7 @@ export default class ContextMenuFile extends React.Component {
     }
   }
   deleteFile () {
-    fs.unlink(this.props.filepath)
+    fs.unlink(this.props.filepath, noop)
   }
   async renameFile () {
     EventHub.emit('setFolderStateData', {
@@ -38,7 +39,7 @@ export default class ContextMenuFile extends React.Component {
     fs.readFile(this.props.filepath, (err, buf) => {
       if (err) return console.log(err)
       fs.writeFile(newfile, buf, () =>
-        EventHub.emit('refreshGitStatus', newfile)
+        EventHub.emit('refreshGitStatusFile', newfile)
       )
     })
   }

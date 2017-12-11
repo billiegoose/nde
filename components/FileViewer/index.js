@@ -14,22 +14,9 @@ const style = {
 }
 
 export default class FileViewer extends React.Component {
-  constructor ({filepath, glContainer}) {
+  constructor ({filepath}) {
     super()
-    // this.state = {
-    //   content: '',
-    //   cuid: cuid()
-    // }
-    if (glContainer) {
-      glContainer.setTitle('Preview ' + filepath)
-    }
   }
-  // componentDidMount () {
-  //   fs.readFile(this.props.filepath, 'utf8', (err, text) => {
-  //     if (err) return console.log(err)
-  //     this.setState(state => ({...state, content: text}))
-  //   })
-  // }
   render () {
     if (this.props.filepath && this.props.filepath.endsWith('.md')) {
       return <ErrorBoundary><MarkdownViewer filepath={this.props.filepath}/></ErrorBoundary>
