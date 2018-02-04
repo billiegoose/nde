@@ -51,6 +51,7 @@ export async function push({ filepath, glEventHub }) {
   let host = 'https://' + await git.config({fs, dir, path: 'remote.origin.host'})
   let helper = await git.config({fs, dir, path: `credential "${host}".helper`})
   let authPassword = null
+  let authUsername = null
   // WIP: Prompt to save push credentials in the browser credential manager
   if (helper === 'navigator.credentials' && navigator.credentials && navigator.credentials.preventSilentAccess) {
     // The new Credential Management API is available
@@ -60,10 +61,13 @@ export async function push({ filepath, glEventHub }) {
     })
     await navigator.credentials.preventSilentAccess()
     if (cred) {
+      authUsername = cred.id
       authPassword = cred.password
     }
   }
-  let authUsername = await git.config({fs, dir, path: `credential "${host}".username`})
+  if (authUsername === null) {
+    authUsername = await git.config({ fs, dir, path: `credential "${host}".username` })
+  }
   const offerStorePassword = !!((!authPassword && !authUsername))
   if (authPassword === null) {
     authUsername = authUsername || await prompt({
