@@ -50,7 +50,7 @@ export async function push({ filepath, glEventHub }) {
   const dir = filepath
   let host = 'https://' + await git.config({fs, dir, path: 'remote.origin.host'})
   let helper = await git.config({fs, dir, path: `credential "${host}".helper`})
-  let auth = null
+  let authPassword = null
   // WIP: Prompt to save push credentials in the browser credential manager
   if (helper === 'navigator.credentials' && navigator.credentials && navigator.credentials.preventSilentAccess) {
     // The new Credential Management API is available
@@ -60,14 +60,13 @@ export async function push({ filepath, glEventHub }) {
     })
     await navigator.credentials.preventSilentAccess()
     if (cred) {
-      auth = cred.password
+      authPassword = cred.password
     }
   }
-  let username = await git.config({fs, dir, path: `credential "${host}".username`})
-  username = await git.config({fs, dir, path: `credential "${host}".username`})
-  const offerStorePassword = !!((!auth && !username))
-  if (auth === null) {
-    username = username || await prompt({
+  let authUsername = await git.config({fs, dir, path: `credential "${host}".username`})
+  const offerStorePassword = !!((!authPassword && !authUsername))
+  if (authPassword === null) {
+    authUsername = authUsername || await prompt({
       text: `Enter username (for ${host})`,
       input: 'text'
     })
@@ -75,17 +74,17 @@ export async function push({ filepath, glEventHub }) {
       text: `Enter access token`,
       input: 'password'
     })
-    auth = `${username}:${token}`
+    authPassword = token
   }
   // WIP: Prompt to save push credentials in the browser credential manager
   if (offerStorePassword && navigator.credentials && navigator.credentials.preventSilentAccess) {
     // The new Credential Management API is available
     let cred = await navigator.credentials.create({
       password: {
-        id: username,
+        id: authUsername,
         name: host,
         iconURL: host + '/favicon.ico',
-        password: auth
+        password: authPassword
       }
     })
     try {
@@ -104,7 +103,7 @@ export async function push({ filepath, glEventHub }) {
       if (offer) {
         // Use the presense of the username helper to indicate we DON'T want the password helper
         // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
-        await git.config({fs, dir, path: `credential "${host}".username`, value: username})
+        await git.config({fs, dir, path: `credential "${host}".username`, value: authUsername})
       }
     }
   }
@@ -113,8 +112,8 @@ export async function push({ filepath, glEventHub }) {
     await git.push({
       fs,
       dir,
-      authUsername: auth,
-      authPassword: auth,
+      authUsername,
+      authPassword,
       remote: 'origin',
       ref: 'refs/heads/master'
     })
