@@ -1,8 +1,8 @@
 # \*\*\*Work In Progress\*\*\*
 
-# The IDE of the future, today! [nde.now.sh](https://nde.now.sh)
+<img alt="nde logo" src="favicon.png" width="120" align="right"/>
 
-<img alt="nde logo" src="favicon.png" width="120" style="float: right"/>
+# The IDE of the future, today! [nde.now.sh](https://nde.now.sh)
 
 It is a next-generation development environment for modern JavaScript developers: editor, bundler, and browser all in one.
 
