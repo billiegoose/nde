@@ -3,7 +3,7 @@ import React from 'react'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import {Git, findRoot, status as gitStatus} from 'isomorphic-git'
+import {findRoot, status as gitStatus} from 'isomorphic-git'
 import {FileList} from 'react-file-browser'
 import pify from 'pify'
 import FileNavigatorFileComponent from './FileNavigatorFileComponent'
@@ -92,8 +92,8 @@ class FileNavigator extends React.Component {
   }
   refreshFile = async (filepath) => {
     try {
-      let dir = await findRoot({fs}, {filepath})
-      let status = await gitStatus(new Git({fs, dir}), {filepath: path.relative(dir, filepath)})
+      let dir = await findRoot({fs, filepath})
+      let status = await gitStatus({fs, dir, filepath: path.relative(dir, filepath)})
       EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
     } catch (err) {
       // console.log('not in a git repo', filepath)
@@ -107,7 +107,7 @@ class FileNavigator extends React.Component {
       try {
         // Don't try to get the git status of anything *inside* a .git dir
         if (path.basename(fullpath) !== '.git') {
-          gitdir = await findRoot({fs}, {filepath: fullpath})
+          gitdir = await findRoot({fs, filepath: fullpath})
         }
       } catch (err) {
         console.log('not tracked by git')
@@ -127,8 +127,7 @@ class FileNavigator extends React.Component {
           if (type === 'file' && gitdir !== null) {
             let rpath = path.relative(gitdir, filepath)
             console.time(rpath + ' gitstatus')
-            let repo = new Git({fs, dir: gitdir})
-            gitStatus(repo, {filepath: rpath}).then(status => {
+            gitStatus({fs, dir: gitdir, filepath: rpath}).then(status => {
               console.timeEnd(rpath + ' gitstatus')
               EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
             }).catch((err) => console.log(err, gitdir, file, rpath))

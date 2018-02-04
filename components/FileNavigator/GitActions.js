@@ -1,25 +1,12 @@
 import path from 'path'
-import { Git,
-  init as ginit,
-  clone as gclone,
-  config as gconfig,
-  push as gpush,
-  add as gadd,
-  findRoot as gfindRoot,
-  remove as gremove,
-  commit as gcommit,
-  checkout as gcheckout,
-  listBranches as glistBranches,
-  fetch as gfetch
-} from 'isomorphic-git'
-console.log('Git', Git)
+import * as git from 'isomorphic-git'
 import ghparse from 'parse-github-url'
 
 import { prompt } from '../SweetAlert'
 
 export async function init ({filepath, glEventHub}) {
-  let repo = new Git({fs, dir: filepath})
-  await ginit(repo)
+  const dir = filepath
+  await git.init({fs, dir})
 }
 
 export async function clone ({filepath, glEventHub}) {
@@ -38,13 +25,16 @@ export async function clone ({filepath, glEventHub}) {
     glEventHub.emit('setFolderStateData', { fullpath: dir, key: 'progress', value })
   }
   try {
-    let repo = new Git({fs, dir})
-    await gclone(repo, {
+    await git.clone({
+      fs,
+      dir,
       depth: 1,
       onprogress: updateProgressBar,
       url: `https://cors-buster-jfpactjnem.now.sh/${proxyurl}`
     })
-    await gconfig(repo, {
+    await git.config({
+      fs,
+      dir,
       path: 'remote.origin.host',
       value: new URL('https://' + proxyurl).hostname
     })
@@ -56,10 +46,10 @@ export async function clone ({filepath, glEventHub}) {
   }
 }
 
-export async function push ({filepath, glEventHub}) {
-  let repo = new Git({fs, dir: filepath})
-  let host = 'https://' + await gconfig(repo, {path: 'remote.origin.host'})
-  let helper = await gconfig(repo, {path: `credential "${host}".helper`})
+export async function push({ filepath, glEventHub }) {
+  const dir = filepath
+  let host = 'https://' + await git.config({fs, dir, path: 'remote.origin.host'})
+  let helper = await git.config({fs, dir, path: `credential "${host}".helper`})
   let auth = null
   // WIP: Prompt to save push credentials in the browser credential manager
   if (helper === 'navigator.credentials' && navigator.credentials && navigator.credentials.preventSilentAccess) {
@@ -73,8 +63,8 @@ export async function push ({filepath, glEventHub}) {
       auth = cred.password
     }
   }
-  let username = await gconfig(repo, {path: `credential "${host}".username`})
-  username = await gconfig(repo, {path: `credential "${host}".username`})
+  let username = await git.config({fs, dir, path: `credential "${host}".username`})
+  username = await git.config({fs, dir, path: `credential "${host}".username`})
   const offerStorePassword = !!((!auth && !username))
   if (auth === null) {
     username = username || await prompt({
@@ -103,7 +93,7 @@ export async function push ({filepath, glEventHub}) {
       // password was stored successfully or not.
       let c = await navigator.credentials.store(cred)
       console.log('saving to config', c)
-      await gconfig(repo, {path: `credential "${host}".helper`, value: 'navigator.credentials'})
+      await git.config({fs, dir, path: `credential "${host}".helper`, value: 'navigator.credentials'})
       await navigator.credentials.preventSilentAccess() // Mitigate XSS attacks
     } catch (err) {
       let offer = await prompt({
@@ -114,13 +104,15 @@ export async function push ({filepath, glEventHub}) {
       if (offer) {
         // Use the presense of the username helper to indicate we DON'T want the password helper
         // Yes this is totally batshit, I will fix this in the future. Don't blame me, blame the coffee.
-        await gconfig(repo, {path: `credential "${host}".username`, value: username})
+        await git.config({fs, dir, path: `credential "${host}".username`, value: username})
       }
     }
   }
   glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
   try {
-    await gpush(repo, {
+    await git.push({
+      fs,
+      dir,
       authUsername: auth,
       authPassword: auth,
       remote: 'origin',
@@ -135,38 +127,36 @@ export async function push ({filepath, glEventHub}) {
 }
 
 export async function stage ({filepath, glEventHub}) {
-  let dir = await gfindRoot({fs}, {filepath})
+  let dir = await git.findRoot({fs, filepath})
   let rpath = path.relative(dir, filepath)
-  let repo = new Git({fs, dir})
-  await gadd(repo, {filepath: rpath})
+  await git.add({fs, dir, filepath: rpath})
   glEventHub.emit('refreshGitStatusFile', filepath)
 }
 
 export async function remove ({filepath, glEventHub}) {
-  let dir = await gfindRoot({fs}, {filepath})
+  let dir = await git.findRoot({fs, filepath})
   let rpath = path.relative(dir, filepath)
-  let repo = new Git({fs, dir})
-  await gremove(repo, {filepath: rpath})
+  await git.remove({fs, dir, filepath: rpath})
   glEventHub.emit('refreshGitStatusFile', filepath)
 }
 
 export async function commit ({filepath, glEventHub}) {
-  let repo = new Git({fs, dir: filepath})
-  let author = await gconfig(repo, {path: 'user.name'})
-  let email = await gconfig(repo, {path: 'user.email'})
+  const dir = filepath
+  let author = await git.config({fs, dir, path: 'user.name'})
+  let email = await git.config({fs, dir, path: 'user.email'})
   if (!author) {
     author = await prompt({
       text: 'Author Name',
       input: 'text'
     })
-    await gconfig(repo, {path: 'user.name', value: author})
+    await git.config({fs, dir, path: 'user.name', value: author})
   }
   if (!email) {
     email = await prompt({
       text: 'Author Email',
       input: 'text'
     })
-    await gconfig(repo, {path: 'user.email', value: email})
+    await git.config({fs, dir, path: 'user.email', value: email})
   }
   // signingkey = 9609B8A5928BA6B9
   let msg = await prompt({
@@ -175,7 +165,9 @@ export async function commit ({filepath, glEventHub}) {
   })
   try {
     glEventHub.emit('setFolderStateData', {fullpath: filepath, key: 'busy', value: true})
-    await gcommit(repo, {
+    await git.commit({
+      fs,
+      dir,
       author: {
         name: author,
         email: email
@@ -191,8 +183,8 @@ export async function commit ({filepath, glEventHub}) {
 }
 
 export async function checkout ({filepath, glEventHub}) {
-  let repo = new Git({fs, dir: filepath})
-  let branches = await glistBranches(repo)
+  const dir = filepath
+  let branches = await git.listBranches({fs, dir})
   let branchesObject = {}
   for (let b of branches) {
     branchesObject[b] = b
@@ -207,7 +199,7 @@ export async function checkout ({filepath, glEventHub}) {
   })
   glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: true })
   try {
-    await gcheckout(repo, {ref})
+    await git.checkout({fs, dir, ref})
   } catch (err) {
     console.log('err =', err)
   } finally {
@@ -216,7 +208,8 @@ export async function checkout ({filepath, glEventHub}) {
   }
 }
 
-export async function fetch ({filepath, glEventHub}) {
+export async function fetch({ filepath, glEventHub }) {
+  const dir = filepath
   let ref = await prompt({
     title: 'Fetch branch',
     text: 'Name of remote branch',
@@ -226,7 +219,9 @@ export async function fetch ({filepath, glEventHub}) {
   })
   glEventHub.emit('setFolderStateData', { fullpath: filepath, key: 'busy', value: true })
   try {
-    await gfetch(repo, {
+    await git.fetch({
+      fs,
+      dir,
       remote: 'origin',
       ref
     })
