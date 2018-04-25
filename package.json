@@ -16,14 +16,31 @@
     "url": "https://github.com/wmhilton/nde/issues"
   },
   "homepage": "https://nde.now.sh",
-  "devDependencies": {
-    "babel-eslint": "^8.0.2",
-    "eslint": "^4.11.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-react": "^7.4.0",
-    "eslint-plugin-standard": "^3.0.1"
+  "dependencies": {
+    "cuid": "2.0.1",
+    "deep-freeze": "0.0.1",
+    "downloadjs": "1.4.7",
+    "eventemitter2": "5.0.1",
+    "eventemitter3": "3.0.1",
+    "file-icons-js": "1.0.3",
+    "isomorphic-git": "0.5.1",
+    "lodash": "4.17.10",
+    "marky-markdown": "12.0.0",
+    "octicons-modular": "0.7.4",
+    "parse-github-url": "1.0.2",
+    "pify": "3.0.0",
+    "preact": "8.2.7",
+    "preact-compat": "3.17.0",
+    "react-contextmenu": "2.9.2",
+    "react-dnd": "2.5.4",
+    "react-dnd-html5-backend": "2.5.4",
+    "react-monaco-editor": "0.12.0",
+    "react-redux": "5.0.7",
+    "react-sortable-hoc": "0.6.8",
+    "react-splitter-layout": "3.0.0",
+    "redux": "4.0.0",
+    "redux-undo": "0.6.1",
+    "sweetalert2": "7.19.1",
+    "typescript-array-utils": "0.1.3"
   }
 }

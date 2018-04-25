@@ -154,7 +154,7 @@ export default class EditableTextFile extends React.Component {
     let onChange = this.onChange.bind(this)
     let editorDidMount = this.editorDidMount.bind(this)
     const requireConfig = {
-      url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.min.js',
+      url: 'https://unpkg.com/requirejs@2.3.5/require.js',
       paths: {
         'vs': './monaco-editor/min/vs'
       }

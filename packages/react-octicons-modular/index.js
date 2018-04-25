@@ -1,5 +1,5 @@
 import React from 'react'
-import 'octicons-modular/main.css'
+import 'octicons-modular/lib/main.css'
 
 export default class Octicon extends React.Component {
   constructor ({name}) {
@@ -7,7 +7,7 @@ export default class Octicon extends React.Component {
     this.state = {
       svg: ''
     }
-    System.import(`octicons-modular/icons/${name}`).then(M => {
+    System.import(`octicons-modular/lib/icons/${name}`).then(M => {
       this.setState({svg: M.svg({class: 'valign-middle'})})
     })
   }
