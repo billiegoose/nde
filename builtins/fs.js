@@ -1,5 +1,5 @@
-import BrowserFS from './browserfs'
-import EventEmitter from 'eventemitter2'
+import BrowserFS from 'browserfs'
+import EventEmitter from 'eventemitter3'
 import {module} from '@hot'
 
 // (Failing) Attempt to prevent "RangeError: Maximum call stack size exceeded"
@@ -10,15 +10,23 @@ export const __unload = () => {
 }
 
 export const fsReady = new Promise(function (resolve, reject) {
-  BrowserFS.configure({
-    fs: 'MountableFileSystem',
-    options: {
-      '/': {
-        fs: 'IndexedDB',
-        options: {}
+  fetch('index.json').then(res => res.json()).then(index => {
+    BrowserFS.configure({
+      fs: 'MountableFileSystem',
+      options: {
+        '/': {
+          fs: 'IndexedDB',
+          options: {}
+        },
+        'webroot (read-only)': {
+          fs: 'HTTPRequest',
+          options: {
+            index
+          }
+        }
       }
-    }
-  }, (err) => err ? reject(err) : resolve())
+    }, (err) => err ? reject(err) : resolve())
+  })
 })
 // Step 2. Export fs
 let fs = BrowserFS.BFSRequire('fs')
