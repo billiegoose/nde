@@ -86,10 +86,10 @@ const onUninstall = (state, action) => {
 }
 
 const initialState = new State({
-  activeFilepath: '/nde/TODO.md',
+  activeFilepath: '/webroot (read-only)/README.md',
   openFiles: [
     {
-      filepath: '/nde/TODO.md',
+      filepath: '/webroot (read-only)/README.md',
       scrollPosition: 0
     }
   ]
