@@ -1,3 +1,4 @@
+// Because isaacs "rimraf" is too Node-specific
 import fs from 'fs'
 import pify from 'pify'
 

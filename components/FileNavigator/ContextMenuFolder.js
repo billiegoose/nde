@@ -9,7 +9,7 @@ import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
 import { init, clone, commit, push, checkout, fetch } from './GitActions'
-import { rimraf } from './rimraf'
+import { rimraf } from 'simple-rimraf'
 
 export default class ContextMenuFolder extends React.Component {
   constructor () {
