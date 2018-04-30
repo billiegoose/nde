@@ -7,6 +7,7 @@ import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
 import { stage, remove } from './GitActions'
+import { GitWorker } from 'isomorphic-git-worker'
 const noop = () => void(0)
 
 export default class ContextMenuFile extends React.Component {
@@ -16,8 +17,8 @@ export default class ContextMenuFile extends React.Component {
       cuid: cuid()
     }
   }
-  deleteFile () {
-    fs.unlink(this.props.filepath, noop)
+  async deleteFile () {
+    (await GitWorker).unlink(this.props.filepath, noop)
   }
   async renameFile () {
     EventHub.emit('setFolderStateData', {
@@ -36,12 +37,9 @@ export default class ContextMenuFile extends React.Component {
   async copyFile () {
     let name = await prompt('Copy file as')
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
-    fs.readFile(this.props.filepath, (err, buf) => {
-      if (err) return console.log(err)
-      fs.writeFile(newfile, buf, () =>
-        EventHub.emit('refreshGitStatusFile', newfile)
-      )
-    })
+    let buf = await (await GitWorker).readFile(this.props.filepath)
+    await (await GitWorker).writeFile(newfile, buf)
+    EventHub.emit('refreshGitStatusFile', newfile)
   }
   async addToIndex () {
     await stage({

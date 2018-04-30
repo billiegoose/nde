@@ -1,12 +1,22 @@
 import path from 'path'
 import * as git from 'isomorphic-git'
 import ghparse from 'parse-github-url'
+import { GitWorker } from 'isomorphic-git-worker'
 
 import { prompt } from '../SweetAlert'
 
-export async function init ({filepath, glEventHub}) {
+export async function init ({ filepath, glEventHub }) {
   const dir = filepath
-  await git.init({fs, dir})
+  // await git.init({fs, dir})
+  GitWorker.catch(console.log)
+  try {
+    console.log(GitWorker)
+    let worker = await GitWorker
+    await worker.init({ dir })
+    console.log('ya')
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 export async function clone ({filepath, glEventHub}) {

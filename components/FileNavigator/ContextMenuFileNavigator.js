@@ -9,6 +9,7 @@ import path from 'path'
 import pify from 'pify'
 import { prompt } from '../SweetAlert'
 import { clone } from './GitActions'
+import { GitWorker } from 'isomorphic-git-worker'
 
 export default class ContextMenuFileNavigator extends React.Component {
   constructor () {
@@ -19,13 +20,13 @@ export default class ContextMenuFileNavigator extends React.Component {
   }
 
   newFile = async () =>
-    pify(fs.writeFile)(path.join(this.props.filepath, await prompt('Enter filename:')), '')
+    (await GitWorker).writeFile(path.join(this.props.filepath, await prompt('Enter filename:')), '')
 
   newFolder = async () =>
-    pify(fs.mkdir)(path.join(this.props.filepath, await prompt('Enter foldername:')))
+    (await GitWorker).mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
 
-  gitClone = () =>
-    clone({
+  gitClone = async () =>
+    (await GitWorker).clone({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })

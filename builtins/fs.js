@@ -15,7 +15,7 @@ export const fsReady = new Promise(function (resolve, reject) {
       fs: 'MountableFileSystem',
       options: {
         '/': {
-          fs: 'IndexedDB',
+          fs: 'InMemory',
           options: {}
         },
         'webroot (read-only)': {
