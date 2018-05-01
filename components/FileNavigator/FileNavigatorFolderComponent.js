@@ -1,6 +1,6 @@
 import React from 'react'
 import {Folder} from 'react-file-browser'
-import fs from 'fs'
+import { GitWorker } from 'isomorphic-git-worker'
 import { Buffer } from 'buffer'
 import path from 'path'
 import { DragSource, DropTarget } from 'react-dnd'
@@ -28,7 +28,7 @@ function collect (connect, monitor) {
   }
 }
 const folderTarget = {
-  drop (props, monitor) {
+  async drop (props, monitor) {
     const item = monitor.getItem()
     // Handle drop-uploading of real files
     if (item.files) {
@@ -37,15 +37,21 @@ const folderTarget = {
         console.log('file =', file)
         if (file.size > 0) {
           var fileReader = new FileReader()
-          fileReader.onload = function () {
-            fs.writeFile(filename, Buffer.from(this.result), (err) => console.log(err))
+          fileReader.onload = async function () {
+            try {
+              await GitWorker.writeFile(filename, Buffer.from(this.result))
+            } catch (err) {
+              return console.log(err)
+            }
           }
           fileReader.readAsArrayBuffer(file)
         } else {
-          fs.mkdir(filename, (err) => {
-            console.log(err)
+          try {
+            await GitWorker.mkdir(filename)
             alert('Created empty folder ' + filename)
-          })
+          } catch (err) {
+            console.log(err)
+          }
         }
       }
       return
@@ -58,11 +64,13 @@ const folderTarget = {
     const newPath = path.join(parentPath, oldName)
     console.log(`I will move ${oldPath} to ${newPath}`)
     console.log(props)
-    EventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: true})
-    fs.rename(oldPath, newPath, (err) => {
+    EventHub.emit('setFolderStateData', { fullpath: parentPath, key: 'busy', value: true })
+    try {
+      await GitWorker.rename(oldPath, newPath)
+    } catch (err) {
       console.log(err)
-      EventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: false})
-    })
+    }
+    EventHub.emit('setFolderStateData', {fullpath: parentPath, key: 'busy', value: false})
   }
 }
 function targetCollect (connect, monitor) {

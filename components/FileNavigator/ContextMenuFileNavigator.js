@@ -20,13 +20,13 @@ export default class ContextMenuFileNavigator extends React.Component {
   }
 
   newFile = async () =>
-    (await GitWorker).writeFile(path.join(this.props.filepath, await prompt('Enter filename:')), '')
+    GitWorker.writeFile(path.join(this.props.filepath, await prompt('Enter filename:')), '')
 
   newFolder = async () =>
-    (await GitWorker).mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
+    GitWorker.mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
 
   gitClone = async () =>
-    (await GitWorker).clone({
+    GitWorker.clone({
       filepath: this.props.filepath,
       glEventHub: EventHub
     })

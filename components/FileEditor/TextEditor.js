@@ -1,9 +1,9 @@
 /* global monaco */
 import React from 'react'
 import MonacoEditor from 'react-monaco-editor'
-import fs from 'fs'
 import path from 'path'
 import download from 'downloadjs'
+import { GitWorker } from 'isomorphic-git-worker'
 
 const hotReload = () => {
   System.reload('./nde/app.js')
@@ -84,26 +84,30 @@ export default class EditableTextFile extends React.Component {
       run: (ed) => hotReload()
     })
   }
-  componentDidMount () {
-    fs.readFile(this.props.filepath, 'utf8', (err, text) => {
-      if (err) return console.log(err)
-      this.setState({content: text, unsavedContent: text})
-    })
+  async componentDidMount () {
+    try {
+      let text = await GitWorker.readFile(this.props.filepath, 'utf8')
+      this.setState({ content: text, unsavedContent: text })
+    } catch (err) {
+      return console.log(err)
+    }
   }
-  componentWillReceiveProps ({filepath}) {
+  async componentWillReceiveProps ({filepath}) {
     if (filepath !== this.props.filepath) {
-      fs.readFile(filepath, 'utf8', (err, text) => {
-        if (err) return console.log(err)
+      try {
+        let text = await GitWorker.readFile(filepath, 'utf8')
         this.setState({content: text, unsavedContent: text})
-        // Set language
-        let ext = path.extname(filepath)
-        for (let l of monaco.languages.getLanguages()) {
-          if (l.extensions.includes(ext)) {
-            this.setState({language: l.id})
-            break
-          }
+      } catch (err) {
+        return console.log(err)
+      }
+      // Set language
+      let ext = path.extname(filepath)
+      for (let l of monaco.languages.getLanguages()) {
+        if (l.extensions.includes(ext)) {
+          this.setState({language: l.id})
+          break
         }
-      })
+      }
     }
   }
   runCommand () {
@@ -132,14 +136,20 @@ export default class EditableTextFile extends React.Component {
       })
     }
   }
-  saveFile () {
-    fs.writeFile(this.props.filepath, this.state.unsavedContent, 'utf8', err => console.log)
+  async saveFile () {
+    try {
+      await GitWorker.writeFile(this.props.filepath, this.state.unsavedContent, 'utf8')
+    } catch (err) {
+      console.log(err)
+    }
   }
-  reloadSavedFile () {
-    fs.readFile(this.props.filepath, 'utf8', (err, text) => {
-      if (err) return console.log(err)
-      this.setState({content: text, unsavedContent: text})
-    })
+  async reloadSavedFile () {
+    try {
+      let text = await GitWorker.readFile(this.props.filepath, 'utf8')
+      this.setState({ content: text, unsavedContent: text })
+    } catch (err) {
+      return console.log(err)
+    }
   }
   restoreOriginalFile () {
     // We add the query parameter to thwart the service-worker.

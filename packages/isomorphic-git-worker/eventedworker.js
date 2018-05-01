@@ -6,10 +6,17 @@ global = self
 window = global
 // Note: using browserfs@2.0.0 in a WebWorker with IndexedDB does not work for some reason, so we're using 1.4.3
 importScripts('https://unpkg.com/browserfs@1.4.3/dist/browserfs.js')
-// importScripts('https://unpkg.com/workerpool@2.3.0/dist/workerpool.min.js')
 importScripts('https://unpkg.com/isomorphic-git@0.11.2/dist/bundle.umd.min.js')
-importScripts('https://unpkg.com/eventemitter3@3.1.0/umd/eventemitter3.min.js')
 console.log(BrowserFS, git)
+
+// A small implementation of 'promisify'
+const pfy = function (fn) {
+  return function (...a) {
+    return new Promise(function(resolve, reject) {
+      fn(...a, (err, result) => err ? reject(err) : resolve(result))
+    });
+  }
+}
 
 function print () {
   console.log(BrowserFS, git)
@@ -26,10 +33,10 @@ const fsReady = new Promise(function(resolve, reject) {
     }
   }, (err) => err ? reject(err) : resolve())
 })
-// Step 2. Export fs
+
 const fs = BrowserFS.BFSRequire('fs')
+
 // Cheap hack to get file monitoring in
-fsEvents = new global.EventEmitter3
 fs._origWriteFile = fs.writeFile
 fs.writeFile = function (file, data, options, callback) {
   if (typeof options === 'function') {
@@ -163,52 +170,86 @@ fs.rmdirSync = function (path) {
   return undefined
 }
 
-function openEventChannel () {
-  const channel = new MessageChannel();
-  fsEvents.on('change', (value) => {
-    channel.port1.postMessage(value)
-  })
-  console.log(channel)
-  return channel.port2
+
+// It's elegant in its naivety
+async function rimraf (path) {
+  try {
+    // First assume path is itself a file
+    await pfy(fs.unlink)(path)
+    // if that worked we're done
+    return
+  } catch (err) {
+    // Otherwise, path must be a directory
+    if (err.code !== 'EISDIR') throw err
+  }
+  // Knowing path is a directory,
+  // first, assume everything inside path is a file.
+  let files = await pfy(fs.readdir)(path)
+  for (let file of files) {
+    let child = path + '/' + file
+    try {
+      await pfy(fs.unlink)(child)
+    } catch (err) {
+      if (err.code !== 'EISDIR') throw err
+    }
+  }
+  // Assume what's left are directories and recurse.
+  let dirs = await pfy(fs.readdir)(path)
+  for (let dir of dirs) {
+    let child = path + '/' + dir
+    await rimraf(child)
+  }
+  // Finally, delete the empty directory
+  await pfy(fs.rmdir)(path)
+}
+
+
+async function run(fn, args, REPLYTO) {
+  try {
+    let result = await fn.apply(null, args)
+    if (result === undefined) {
+      global.postMessage({
+        TO: REPLYTO,
+        RESOLVE_VOID: true
+      })
+    } else {
+      global.postMessage({
+        TO: REPLYTO,
+        RESOLVE: result
+      })          
+    }
+  } catch (err) {
+    global.postMessage({
+      TO: REPLYTO,
+      REJECT: err.message
+    })
+  }
 }
 
 global.onmessage = async ({ data }) => {
   console.log(data)
+  await fsReady
   switch (data.CALL) {
     case 'init':
-      try {
-        let result = await git.init({ fs, ...data.ARGS })
-        if (result === undefined) {
-          global.postMessage({
-            TO: data.REPLYTO,
-            RESOLVE_VOID: true
-          })
-        } else {
-          global.postMessage({
-            TO: data.REPLYTO,
-            RESOLVE: result
-          })          
-        }
-      } catch (err) {
-        global.postMessage({
-          TO: data.REPLYTO,
-          REJECT: err.message
-        })
-      }
+      return run(git.init, [{ fs, ...data.ARGS[0] }], data.REPLYTO)
+    case 'unlink':
+      return run(pfy(fs.unlink), data.ARGS, data.REPLYTO)
+    case 'mkdir':
+      // Let's ignore the 'mode' parameter.  
+      return run(pfy(fs.mkdir), data.ARGS, data.REPLYTO)
+    case 'readFile':
+      return run(pfy(fs.readFile), data.ARGS, data.REPLYTO)
+    case 'writeFile':
+      return run(pfy(fs.writeFile), data.ARGS, data.REPLYTO)
+    case 'rimraf':
+      return run(rimraf, data.ARGS, data.REPLYTO)
+    case 'rename':
+      return run(pfy(fs.rename), data.ARGS, data.REPLYTO)
+    case 'readdir':
+      return run(pfy(fs.readdir), data.ARGS, data.REPLYTO)
+    case 'stat':
+      return run(pfy(fs.stat), data.ARGS, data.REPLYTO)
     default:
       console.log(data)
   }
 }
-
-fsReady.then(() => {
-  // workerpool.worker({
-  //   print,
-  //   openEventChannel,
-  //   ...fs,
-  //   init: (args) => git.init({fs, ...args}),
-  //   clone: (args) => git.clone({fs, ...args}),
-  //   listBranches: (args) => git.listBranches({fs, ...args}),
-  //   listTags: (args) => git.listTags({fs, ...args}),
-  //   listFiles: (args) => git.listFiles({fs, ...args}),
-  // })
-})

@@ -1,7 +1,7 @@
 /* global EventHub */
 import React from 'react'
 import path from 'path'
-import fs from 'fs'
+import { GitWorker } from 'isomorphic-git-worker'
 import { Buffer } from 'buffer'
 import TextEditor from './TextEditor'
 import { DropTarget } from 'react-dnd'
@@ -47,12 +47,14 @@ const fileTarget = {
         const filename = '~temp' + path.extname(file.name)
         console.log('file =', file)
         var fileReader = new FileReader()
-        fileReader.onload = function () {
-          fs.writeFile(filename, Buffer.from(this.result), (err) => {
-            if (err) return console.log(err)
-            // Open file in Editor.
-            EventHub.emit('openFile', filename)
-          })
+        fileReader.onload = async function () {
+          try {
+            await GitWorker.writeFile(filename, Buffer.from(this.result))
+          } catch (err) {
+            return console.log(err)
+          }
+          // Open file in Editor.
+          EventHub.emit('openFile', filename)
         }
         fileReader.readAsArrayBuffer(file)
       }

@@ -9,15 +9,17 @@ import pify from 'pify'
 import FileNavigatorFileComponent from './FileNavigatorFileComponent'
 import FileNavigatorFolderComponent from './FileNavigatorFolderComponent'
 import ContextMenuFileNavigator from './ContextMenuFileNavigator'
+import { GitWorker } from 'isomorphic-git-worker'
 
 // returns true if file, false if directory, null if error (e.g. not found)
 const isFile = async (fullpath) => {
-  return new Promise(function (resolve, reject) {
-    fs.stat(fullpath, (err, stats) => {
-      if (err) return resolve(null)
-      return resolve(stats.isFile())
-    })
-  })
+  const FileType = {
+    FILE: 0x8000,
+    DIRECTORY: 0x4000,
+    SYMLINK: 0xA000
+  }
+  let stat = await GitWorker.stat(fullpath)
+  return (stat.mode & 0xF000) === FileType.FILE;
 }
 
 class FileNavigator extends React.Component {
@@ -113,27 +115,26 @@ class FileNavigator extends React.Component {
         console.log('not tracked by git')
       }
       console.time(fullpath + ' readdir')
-      fs.readdir(fullpath, async (err, files) => {
-        console.timeEnd(fullpath + ' readdir')
-        for (let file of files) {
-          let filepath = path.join(fullpath, file)
-          let type = await isFile(filepath) ? 'file' : 'dir'
-          // Determine whether the child is a file or a dir
-          this.setState((state) => {
-            _.set(state, ['fileMap', filepath, 'type'], type)
-            return state
-          })
-          // If it's a file, check the git status
-          if (type === 'file' && gitdir !== null) {
-            let rpath = path.relative(gitdir, filepath)
-            console.time(rpath + ' gitstatus')
-            gitStatus({fs, dir: gitdir, filepath: rpath}).then(status => {
-              console.timeEnd(rpath + ' gitstatus')
-              EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
-            }).catch((err) => console.log(err, gitdir, file, rpath))
-          }
+      let files = await GitWorker.readdir(fullpath)
+      console.timeEnd(fullpath + ' readdir')
+      for (let file of files) {
+        let filepath = path.join(fullpath, file)
+        let type = await isFile(filepath) ? 'file' : 'dir'
+        // Determine whether the child is a file or a dir
+        this.setState((state) => {
+          _.set(state, ['fileMap', filepath, 'type'], type)
+          return state
+        })
+        // If it's a file, check the git status
+        if (type === 'file' && gitdir !== null) {
+          let rpath = path.relative(gitdir, filepath)
+          console.time(rpath + ' gitstatus')
+          gitStatus({fs, dir: gitdir, filepath: rpath}).then(status => {
+            console.timeEnd(rpath + ' gitstatus')
+            EventHub.emit('setFolderStateData', {fullpath: filepath, key: 'gitstatus', value: status})
+          }).catch((err) => console.log(err, gitdir, file, rpath))
         }
-      })
+      }
     }
   }
   constructor () {
@@ -192,7 +193,7 @@ class FileNavigator extends React.Component {
     console.time(filepath)
     let files
     try {
-      files = await pify(fs.readdir)(filepath)
+      files = await GitWorker.readdir(filepath)
     } catch (err) {
       // Yes, regretably this is the *fastest* way to find out if a filepath is a file, or a directory and read it.
       if (err.code === 'ENOTDIR') {
@@ -219,7 +220,7 @@ class FileNavigator extends React.Component {
     console.time(filepath)
     let files
     try {
-      files = await pify(fs.readdir)(filepath)
+      files = await GitWorker.readdir(filepath)
     } catch (err) {
       // Yes, regretably this is the *fastest* way to find out if a filepath is a file, or a directory and read it.
       if (err.code === 'ENOTDIR') {

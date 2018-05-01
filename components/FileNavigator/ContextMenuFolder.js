@@ -10,6 +10,7 @@ import pify from 'pify'
 import { prompt } from '../SweetAlert'
 import { init, clone, commit, push, checkout, fetch } from './GitActions'
 import { rimraf } from 'simple-rimraf'
+import { GitWorker } from 'isomorphic-git-worker'
 
 export default class ContextMenuFolder extends React.Component {
   constructor () {
@@ -23,15 +24,15 @@ export default class ContextMenuFolder extends React.Component {
     EventHub.emit('setFolderStateData', {fullpath: this.props.filepath, key, value})
 
   newFile = async () =>
-    pify(fs.writeFile)(path.join(this.props.filepath, await prompt('Enter filename:')), '')
+    GitWorker.writeFile(path.join(this.props.filepath, await prompt('Enter filename:')), '')
 
   newFolder = async () =>
-    pify(fs.mkdir)(path.join(this.props.filepath, await prompt('Enter foldername:')))
+    GitWorker.mkdir(path.join(this.props.filepath, await prompt('Enter foldername:')))
 
-  deleteFolder = async () => await rimraf(this.props.filepath)
+  deleteFolder = async () => GitWorker.rimraf(this.props.filepath)
 
   renameFolder = async () =>
-    pify(fs.rename)(this.props.filepath, path.join(path.dirname(this.props.filepath), await prompt('New folder name')))
+    GitWorker.rename(this.props.filepath, path.join(path.dirname(this.props.filepath), await prompt('New folder name')))
 
   gitInit = () =>
     init({

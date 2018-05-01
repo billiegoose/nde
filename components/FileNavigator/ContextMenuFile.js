@@ -18,7 +18,7 @@ export default class ContextMenuFile extends React.Component {
     }
   }
   async deleteFile () {
-    (await GitWorker).unlink(this.props.filepath, noop)
+    await GitWorker.unlink(this.props.filepath)
   }
   async renameFile () {
     EventHub.emit('setFolderStateData', {
@@ -37,8 +37,8 @@ export default class ContextMenuFile extends React.Component {
   async copyFile () {
     let name = await prompt('Copy file as')
     let newfile = path.resolve(path.dirname(this.props.filepath), name)
-    let buf = await (await GitWorker).readFile(this.props.filepath)
-    await (await GitWorker).writeFile(newfile, buf)
+    let buf = await GitWorker.readFile(this.props.filepath)
+    await GitWorker.writeFile(newfile, buf)
     EventHub.emit('refreshGitStatusFile', newfile)
   }
   async addToIndex () {

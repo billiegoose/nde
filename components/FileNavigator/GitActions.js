@@ -7,12 +7,9 @@ import { prompt } from '../SweetAlert'
 
 export async function init ({ filepath, glEventHub }) {
   const dir = filepath
-  // await git.init({fs, dir})
-  GitWorker.catch(console.log)
   try {
     console.log(GitWorker)
-    let worker = await GitWorker
-    await worker.init({ dir })
+    await GitWorker.init({ dir })
     console.log('ya')
   } catch (err) {
     console.log(err)
