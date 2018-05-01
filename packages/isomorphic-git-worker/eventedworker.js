@@ -23,15 +23,28 @@ function print () {
 }
 
 const fsReady = new Promise(function(resolve, reject) {
-  BrowserFS.configure({
-    fs: "MountableFileSystem",
-    options: {
-      "/": {
-        fs: "IndexedDB",
-        options: {}
+  fetch('/nde/index.json').then(res => res.json()).then(index => {
+    BrowserFS.configure({
+      fs: 'MountableFileSystem',
+      options: {
+        '/': {
+          fs: 'InMemory',
+          options: {}
+        },
+        'tmp': {
+          fs: 'InMemory',
+          options: {}
+        },
+        'nde': {
+          fs: 'XmlHttpRequest',
+          options: {
+            baseUrl: '/nde',
+            index
+          }
+        }
       }
-    }
-  }, (err) => err ? reject(err) : resolve())
+    }, (err) => err ? reject(err) : resolve())
+  })
 })
 
 const fs = BrowserFS.BFSRequire('fs')
@@ -221,7 +234,7 @@ async function run(fn, args, REPLYTO) {
   } catch (err) {
     global.postMessage({
       TO: REPLYTO,
-      REJECT: err.message
+      REJECT: err
     })
   }
 }

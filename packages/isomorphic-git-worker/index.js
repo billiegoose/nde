@@ -18,9 +18,9 @@ function wrap (fname) {
       w.addEventListener('message', function listen ({ data }) {
         if (data.TO === timestamp) {
           w.removeEventListener('message', listen)
-          if (data.RESOLVE_VOID) resolve()
-          else if (data.RESOLVE) resolve(data.RESOLVE)
-          else if (data.REJECT) reject(data.REJECT)
+          if (data.RESOLVE_VOID !== undefined) resolve()
+          else if (data.RESOLVE !== undefined) resolve(data.RESOLVE)
+          else if (data.REJECT !== undefined) reject(data.REJECT)
           else reject(new Error(`Problem encountered calling ${fname}`))
         }
       })
@@ -38,6 +38,7 @@ export const GitWorker = {
   rename: wrap('rename'),
   readdir: wrap('readdir'),
   stat: wrap('stat'),
+  Events
 }
 window.GitWorker = GitWorker
 

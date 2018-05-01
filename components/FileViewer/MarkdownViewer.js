@@ -1,5 +1,5 @@
 import React from 'react'
-import fs from 'fs'
+import {GitWorker} from 'isomorphic-git-worker'
 import markyMarkdown from 'marky-markdown/dist/marky-markdown.js'
 
 export default class MarkdownViewer extends React.Component {
@@ -14,18 +14,20 @@ export default class MarkdownViewer extends React.Component {
       content: ''
     }
   }
-  loadFile () {
-    fs.readFile(this.props.filepath, 'utf8', (err, text) => {
-      if (err) return console.log(err)
-      this.setState(state => ({...state, content: text}))
-    })
+  async loadFile () {
+    try {
+      let text = await GitWorker.readFile(this.props.filepath, 'utf8')
+      this.setState(state => ({ ...state, content: text }))
+    } catch (err) {
+      return console.log(err)
+    }
   }
   componentDidMount () {
     this.loadFile();
-    fs.Events.on('write', this.listener);
+    GitWorker.Events.on('change', this.listener);
   }
   componentWillUnmount () {
-    fs.Events.off('write', this.listener);
+    GitWorker.Events.off('change', this.listener);
   }
   render () {
     return <article dangerouslySetInnerHTML={{__html: markyMarkdown(this.state.content)}}></article>

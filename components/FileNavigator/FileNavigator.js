@@ -18,8 +18,12 @@ const isFile = async (fullpath) => {
     DIRECTORY: 0x4000,
     SYMLINK: 0xA000
   }
-  let stat = await GitWorker.stat(fullpath)
-  return (stat.mode & 0xF000) === FileType.FILE;
+  try {
+    let stat = await GitWorker.stat(fullpath)
+    return (stat.mode & 0xF000) === FileType.FILE;
+  } catch (err) {
+    return true
+  }
 }
 
 class FileNavigator extends React.Component {
@@ -102,6 +106,7 @@ class FileNavigator extends React.Component {
     }
   }
   refreshDir = async (fullpath) => {
+    await this.refreshFile(fullpath)
     // For folders that are open...
     if (this.state.fileMap[fullpath] && this.state.fileMap[fullpath].navOpen) {
       let gitdir = null
@@ -115,7 +120,18 @@ class FileNavigator extends React.Component {
         console.log('not tracked by git')
       }
       console.time(fullpath + ' readdir')
-      let files = await GitWorker.readdir(fullpath)
+      let files
+      try {
+        files = await GitWorker.readdir(fullpath)
+      } catch (err) {
+        // Yes, regretably this is the *fastest* way to find out if a filepath is a file, or a directory and read it.
+        if (err.code === 'ENOTDIR') {
+          console.timeEnd(fullpath + ' readdir')
+          return
+        } else {
+          throw err
+        }
+      }
       console.timeEnd(fullpath + ' readdir')
       for (let file of files) {
         let filepath = path.join(fullpath, file)
